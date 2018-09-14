@@ -2,11 +2,13 @@
 
 namespace DrNet.Internal
 {
+    public delegate int IndexOfFunc<T>(ReadOnlySpan<T> span, T value) where T: IEquatable<T>;
+
     // See https://github.com/dotnet/csharplang/issues/1840#issuecomment-419456424
-    public abstract class IEquatablePatternMatchingBase<T>
+    public abstract class MemoryExtensionsEquatablePatternMatching<T>
     {
-        public static IEquatablePatternMatchingBase<T> Instance = (IEquatablePatternMatchingBase<T>)Activator.CreateInstance(
-            typeof(IEquatablePatternMatching<>).MakeGenericType(typeof(T)));
+        public static MemoryExtensionsEquatablePatternMatching<T> Instance = (MemoryExtensionsEquatablePatternMatching<T>)Activator.CreateInstance(
+            typeof(MemoryExtensionsEquatablePatternMatchingImplementation<>).MakeGenericType(typeof(T)));
 
         // Pattern matching for System.MemoryExtensions.IndexOf{T}(ReadOnlySpan{T}, T) where T : IEquatable{T}
         public abstract int IndexOf(ReadOnlySpan<T> span, T value);
@@ -32,7 +34,7 @@ namespace DrNet.Internal
         public abstract bool SequenceEqual(ReadOnlySpan<T> span, ReadOnlySpan<T> other);
     }
 
-    public sealed class IEquatablePatternMatching<T> : IEquatablePatternMatchingBase<T> where T : IEquatable<T>
+    public sealed class MemoryExtensionsEquatablePatternMatchingImplementation<T> : MemoryExtensionsEquatablePatternMatching<T> where T : IEquatable<T>
     {
         public override int IndexOf(ReadOnlySpan<T> span, T value) => System.MemoryExtensions.IndexOf(span, value);
         public override int LastIndexOf(ReadOnlySpan<T> span, T value) => System.MemoryExtensions.LastIndexOf(span, value);
