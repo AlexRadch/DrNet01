@@ -774,9 +774,9 @@ namespace DrNet
 
         #region SequenceEqualTo
 
-        /// <summary>
-        /// Determines whether two sequences are equal by comparing the elements using IEquatable{T}.Equals(T) or Object.Equals(Object).
-        /// </summary>
+        ///// <summary>
+        ///// Determines whether two sequences are equal by comparing the elements using IEquatable{T}.Equals(T) or Object.Equals(Object).
+        ///// </summary>
         //public static bool SequenceEqualTo<T, TOther>(this Span<T> span, ReadOnlySpan<TOther> other)
         //{
         //    int length = span.Length;

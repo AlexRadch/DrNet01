@@ -27,24 +27,30 @@ namespace DrNet.Tests
             _onCompare = (x, y) => log.Add(x, y);
         }
 
-        public bool Equals(TObject<T> other)
-        {
-            _onCompare?.Invoke(Value, other.Value);
-            return Value.Equals(other.Value);
-        }
-
         public bool Equals(T other)
         {
-            _onCompare?.Invoke(Value, Value);
-            return Value.Equals(Value);
+            _onCompare?.Invoke(Value, other);
+            return Value.Equals(other);
+        }
+
+        public bool Equals(TObject<T> other)
+        {
+            return Equals(other.Value);
+        }
+
+        public bool Equals(TEquatable<T> other)
+        {
+            return Equals(other.Value);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj is TObject<T> other)
-                return Equals(other);
             if (obj is T otherT)
                 return Equals(otherT);
+            if (obj is TObject<T> otherO)
+                return Equals(otherO);
+            if (obj is TEquatable<T> otherE)
+                return Equals(otherE);
             throw new NotImplementedException();
         }
 

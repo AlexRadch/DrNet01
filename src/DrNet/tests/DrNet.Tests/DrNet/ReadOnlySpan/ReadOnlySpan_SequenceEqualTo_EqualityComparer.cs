@@ -26,7 +26,7 @@ namespace DrNet.Tests.ReadOnlySpan
 
             ReadOnlySpan<T> first = new ReadOnlySpan<T>(a, 1, 0);
             ReadOnlySpan<T> second = new ReadOnlySpan<T>(a, 2, 0);
-            bool b = first.SequenceEqualTo<T, T>(second, EqualityComparer);
+            bool b = MemoryExt.SequenceEqualTo<T, T>(first, second, EqualityComparer);
             Assert.True(b);
         }
 
@@ -35,7 +35,7 @@ namespace DrNet.Tests.ReadOnlySpan
         {
             T[] a = { CreateValue(4), CreateValue(5), CreateValue(6) };
             ReadOnlySpan<T> span = new ReadOnlySpan<T>(a);
-            bool b = span.SequenceEqualTo<T, T>(span, EqualityComparer);
+            bool b = MemoryExt.SequenceEqualTo<T, T>(span, span, EqualityComparer);
             Assert.True(b);
         }
 
@@ -44,7 +44,7 @@ namespace DrNet.Tests.ReadOnlySpan
         {
             T[] a = { CreateValue(4), CreateValue(5), CreateValue(6) };
             ReadOnlySpan<T> first = new ReadOnlySpan<T>(a, 0, 3);
-            bool b = first.SequenceEqualTo<T, T>(a, EqualityComparer);
+            bool b = MemoryExt.SequenceEqualTo<T, T>(first, a, EqualityComparer);
             Assert.True(b);
         }
 
@@ -56,7 +56,7 @@ namespace DrNet.Tests.ReadOnlySpan
             var segment = new ArraySegment<T>(dst, 1, 3);
 
             ReadOnlySpan<T> first = new ReadOnlySpan<T>(src, 0, 3);
-            bool b = first.SequenceEqualTo<T, T>(segment, EqualityComparer);
+            bool b = MemoryExt.SequenceEqualTo<T, T>(first, segment, EqualityComparer);
             Assert.True(b);
         }
 
@@ -66,9 +66,9 @@ namespace DrNet.Tests.ReadOnlySpan
             T[] a = { CreateValue(4), CreateValue(5), CreateValue(6) };
             ReadOnlySpan<T> first = new ReadOnlySpan<T>(a, 0, 3);
             ReadOnlySpan<T> second = new ReadOnlySpan<T>(a, 0, 2);
-            bool b = first.SequenceEqualTo<T, T>(second, EqualityComparer);
+            bool b = MemoryExt.SequenceEqualTo<T, T>(first, second, EqualityComparer);
             Assert.False(b);
-            b = second.SequenceEqualTo<T, T>(first, EqualityComparer);
+            b = MemoryExt.SequenceEqualTo<T, T>(second, first, EqualityComparer);
             Assert.False(b);
         }
 
@@ -89,7 +89,7 @@ namespace DrNet.Tests.ReadOnlySpan
 
                 ReadOnlySpan<T> firstSpan = new ReadOnlySpan<T>(first);
                 ReadOnlySpan<T> secondSpan = new ReadOnlySpan<T>(second);
-                bool b = firstSpan.SequenceEqualTo(secondSpan, EqualityComparer);
+                bool b = MemoryExt.SequenceEqualTo<T, T>(firstSpan, secondSpan, EqualityComparer);
                 Assert.True(b);
 
                 // Make sure each element of the array was compared once. (Strictly speaking, it would not be illegal for 
@@ -125,7 +125,7 @@ namespace DrNet.Tests.ReadOnlySpan
 
                     ReadOnlySpan<T> firstSpan = new ReadOnlySpan<T>(first);
                     ReadOnlySpan<T> secondSpan = new ReadOnlySpan<T>(second);
-                    bool b = firstSpan.SequenceEqualTo(secondSpan, EqualityComparer);
+                    bool b = MemoryExt.SequenceEqualTo<T, T>(firstSpan, secondSpan, EqualityComparer);
                     Assert.False(b);
 
                     Assert.Equal(1, log.CountCompares(first[mismatchIndex], second[mismatchIndex]));
@@ -162,7 +162,7 @@ namespace DrNet.Tests.ReadOnlySpan
 
                 ReadOnlySpan<TEquatable<T>> firstSpan = new ReadOnlySpan<TEquatable<T>>(first, GuardLength, length);
                 ReadOnlySpan<TEquatable<T>> secondSpan = new ReadOnlySpan<TEquatable<T>>(second, GuardLength, length);
-                bool b = firstSpan.SequenceEqualTo<TEquatable<T>, TEquatable<T>>(secondSpan, EqualityComparer);
+                bool b = MemoryExt.SequenceEqualTo<TEquatable<T>, TEquatable<T>>(firstSpan, secondSpan, EqualityComparer);
                 Assert.True(b);
             }
         }

@@ -80,12 +80,12 @@ namespace DrNet.Tests.Span
             for (int length = 0; length < 32; length++)
             {
                 T[] a = new T[length];
-                int targetI = rnd.Next(0, 256);
-                T target = CreateValue(rnd.Next(0, 256));
+                int targetInt = rnd.Next(0, 256);
+                T target = CreateValue(targetInt);
                 for (int i = 0; i < length; i++)
                 {
                     T val = CreateValue(i + 1);
-                    a[i] = EqualityComparer(val, target) ? CreateValue(targetI + 1) : val;
+                    a[i] = EqualityComparer(val, target) ? CreateValue(targetInt + 1) : val;
                 }
                 Span<T> span = new Span<T>(a);
 
@@ -152,7 +152,7 @@ namespace DrNet.Tests.Span
             Action<T, T> checkForOutOfRangeAccess =
                 delegate (T x, T y)
                 {
-                    if (EqualityComparer(x, y))
+                    if (EqualityComparer(x, GuardValue) || EqualityComparer(y, GuardValue))
                         throw new Exception("Detected out of range access in IndexOfEqual()");
                 };
 

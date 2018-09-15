@@ -40,12 +40,19 @@ namespace DrNet.Tests
             return Equals(other.Value);
         }
 
+        public bool Equals(TObject<T> other)
+        {
+            return Equals(other.Value);
+        }
+
         public override bool Equals(object obj)
         {
             if (obj is T otherT)
                 return Equals(otherT);
-            if (obj is TEquatable<T> other)
-                return Equals(other);
+            if (obj is TEquatable<T> otherE)
+                return Equals(otherE);
+            if (obj is TObject<T> otherO)
+                return Equals(otherO);
             throw new NotImplementedException();
         }
 
