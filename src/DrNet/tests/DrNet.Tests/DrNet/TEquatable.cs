@@ -7,7 +7,7 @@ using System;
 namespace DrNet
 {
     // A wrapped integer that invokes a custom delegate every time Object.Equals() is invoked.
-    internal struct TEquatable<T>: IEquatable<T>, IEquatable<TEquatable<T>>
+    public struct TEquatable<T>: IEquatable<T>, IEquatable<TEquatable<T>>
     {
         public TEquatable(T value)
             : this(value, (Action<T, T>)null)

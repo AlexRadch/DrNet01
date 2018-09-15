@@ -2,12 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace System
+namespace DrNet
 {
-    internal sealed class TLog<T>
+    public sealed class TLog<T>
     {
         public void Add(T x, T y) => _log.Add(Tuple.Create(x, y));
         public int Count => _log.Count;

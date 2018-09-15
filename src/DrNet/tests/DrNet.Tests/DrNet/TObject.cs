@@ -7,7 +7,7 @@ using System;
 namespace DrNet
 {
     // A wrapped integer that invokes a custom delegate every time Object.Equals() is invoked.
-    internal struct TObject<T>
+    public struct TObject<T>
     {
         public TObject(T value)
             : this(value, (Action<T, T>)null)
@@ -21,7 +21,7 @@ namespace DrNet
             _onCompare = onCompare;
         }
 
-        public TObject(T value, TLog<T, T> log)
+        public TObject(T value, TLog<T> log)
         {
             Value = value;
             _onCompare = (x, y) => log.Add(x, y);

@@ -8,7 +8,7 @@ using DrNet.Internal.Unsafe;
 
 namespace DrNet
 {
-    public static class MemoryExtensions
+    public static class MemoryExt
     {
         #region IndexOf
 

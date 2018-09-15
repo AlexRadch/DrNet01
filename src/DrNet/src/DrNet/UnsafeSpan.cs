@@ -99,7 +99,7 @@ namespace DrNet
 
         T IList<T>.this[int index] { get => this[index]; set => this[index] = value; }
 
-        public int IndexOf(T item) => MemoryExtensions.IndexOfEqual(AsSpan(), item);
+        public int IndexOf(T item) => MemoryExt.IndexOfEqual(AsSpan(), item);
 
         void IList<T>.Insert(int index, T item) => throw new InvalidOperationException();
 
@@ -115,7 +115,7 @@ namespace DrNet
 
         void ICollection<T>.Clear() => throw new InvalidOperationException();
 
-        public bool Contains(T item) => MemoryExtensions.IndexOfEqual(AsSpan(), item) >= 0;
+        public bool Contains(T item) => MemoryExt.IndexOfEqual(AsSpan(), item) >= 0;
 
         public void CopyTo(T[] array, int arrayIndex) => CopyTo(array.AsSpan(arrayIndex));
 
