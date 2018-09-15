@@ -3,7 +3,7 @@ using Xunit;
 
 namespace DrNet.Tests.ReadOnlySpan
 {
-    public abstract class ReadOnlySpan_IndexOf_EqualityComparer<T>
+    public abstract class ReadOnlySpan_LastIndexOf_EqualityComparer<T>
     {
         public abstract T CreateValue(int value);
 
@@ -23,7 +23,7 @@ namespace DrNet.Tests.ReadOnlySpan
         public void ZeroLengthIndexOf()
         {
             ReadOnlySpan<T> sp = new ReadOnlySpan<T>(Array.Empty<T>());
-            int idx = MemoryExt.IndexOf(sp, CreateValue(0), EqualityComparer);
+            int idx = MemoryExt.LastIndexOf(sp, CreateValue(0), EqualityComparer);
             Assert.Equal(-1, idx);
         }
 
@@ -40,17 +40,15 @@ namespace DrNet.Tests.ReadOnlySpan
                 return;
             }
 
-            for (int length = 0; length < 32; length++)
+            T target0 = default;
+
+            for (int length = 1; length < 32; length++)
             {
                 T[] a = new T[length];
                 ReadOnlySpan<T> span = new ReadOnlySpan<T>(a);
 
-                for (int i = 0; i < length; i++)
-                {
-                    T target0 = default;
-                    int idx = MemoryExt.IndexOf(span, target0, EqualityComparer);
-                    Assert.Equal(0, idx);
-                }
+                int idx = MemoryExt.LastIndexOf(span, target0, EqualityComparer);
+                Assert.Equal(length - 1, idx);
             }
         }
 
@@ -69,7 +67,7 @@ namespace DrNet.Tests.ReadOnlySpan
                 for (int targetIndex = 0; targetIndex < length; targetIndex++)
                 {
                     T target = a[targetIndex];
-                    int idx = MemoryExt.IndexOf(span, target, EqualityComparer);
+                    int idx = MemoryExt.LastIndexOf(span, target, EqualityComparer);
                     Assert.Equal(targetIndex, idx);
                 }
             }
@@ -91,7 +89,7 @@ namespace DrNet.Tests.ReadOnlySpan
                 }
                 ReadOnlySpan<T> span = new ReadOnlySpan<T>(a);
 
-                int idx = MemoryExt.IndexOf(span, target, EqualityComparer);
+                int idx = MemoryExt.LastIndexOf(span, target, EqualityComparer);
                 Assert.Equal(-1, idx);
             }
         }
@@ -107,12 +105,12 @@ namespace DrNet.Tests.ReadOnlySpan
                     a[i] = CreateValue(10 * (i + 1));
                 }
 
-                a[length - 1] = CreateValue(5555);
-                a[length - 2] = CreateValue(5555);
+                a[0] = CreateValue(5555);
+                a[1] = CreateValue(5555);
 
                 ReadOnlySpan<T> span = new ReadOnlySpan<T>(a);
-                int idx = MemoryExt.IndexOf(span, CreateValue(5555), EqualityComparer);
-                Assert.Equal(length - 2, idx);
+                int idx = MemoryExt.LastIndexOf(span, CreateValue(5555), EqualityComparer);
+                Assert.Equal(1, idx);
             }
         }
 
@@ -130,7 +128,7 @@ namespace DrNet.Tests.ReadOnlySpan
                     a[i] = CreateValue(10 * (i + 1));
                 }
                 ReadOnlySpan<T> span = new ReadOnlySpan<T>(a);
-                int idx = MemoryExt.IndexOf(span, CreateValue(9999), EqualityComparer);
+                int idx = MemoryExt.LastIndexOf(span, CreateValue(9999), EqualityComparer);
                 Assert.Equal(-1, idx);
 
                 // Since we asked for a non-existent value, make sure each element of the array was compared once.
@@ -172,18 +170,18 @@ namespace DrNet.Tests.ReadOnlySpan
                 }
 
                 ReadOnlySpan<TEquatable<T>> span = new ReadOnlySpan<TEquatable<T>>(a, GuardLength, length);
-                int idx = MemoryExt.IndexOf(span, new TEquatable<T>(CreateValue(9999), checkForOutOfRangeAccess), EqualityComparer);
+                int idx = MemoryExt.LastIndexOf(span, new TEquatable<T>(CreateValue(9999), checkForOutOfRangeAccess), EqualityComparer);
                 Assert.Equal(-1, idx);
             }
         }
     }
 
-    public class ReadOnlySpan_IndexOf_EqualityComparer_int: ReadOnlySpan_IndexOf_EqualityComparer<int>
+    public class ReadOnlySpan_LastIndexOf_EqualityComparer_int: ReadOnlySpan_LastIndexOf_EqualityComparer<int>
     {
         public override int CreateValue(int value) => value;
     }
 
-    public class ReadOnlySpan_IndexOf_EqualityComparer_string: ReadOnlySpan_IndexOf_EqualityComparer<string>
+    public class ReadOnlySpan_LastIndexOf_EqualityComparer_string: ReadOnlySpan_LastIndexOf_EqualityComparer<string>
     {
         public override string CreateValue(int value) => value.ToString();
     }

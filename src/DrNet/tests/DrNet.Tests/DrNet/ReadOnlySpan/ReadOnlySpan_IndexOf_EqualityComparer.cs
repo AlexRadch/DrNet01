@@ -1,9 +1,9 @@
 ﻿using System;
 using Xunit;
 
-namespace DrNet.Tests.Span
+namespace DrNet.Tests.ReadOnlySpan
 {
-    public abstract class Span_IndexOf_EqualityComparer<T>
+    public abstract class ReadOnlySpan_IndexOf_EqualityComparer<T>
     {
         public abstract T CreateValue(int value);
 
@@ -22,7 +22,7 @@ namespace DrNet.Tests.Span
         [Fact]
         public void ZeroLengthIndexOf()
         {
-            Span<T> sp = new Span<T>(Array.Empty<T>());
+            ReadOnlySpan<T> sp = new ReadOnlySpan<T>(Array.Empty<T>());
             int idx = MemoryExt.IndexOf(sp, CreateValue(0), EqualityComparer);
             Assert.Equal(-1, idx);
         }
@@ -45,7 +45,7 @@ namespace DrNet.Tests.Span
             for (int length = 1; length < 32; length++)
             {
                 T[] a = new T[length];
-                Span<T> span = new Span<T>(a);
+                ReadOnlySpan<T> span = new ReadOnlySpan<T>(a);
 
                 int idx = MemoryExt.IndexOf(span, target0, EqualityComparer);
                 Assert.Equal(0, idx);
@@ -62,7 +62,7 @@ namespace DrNet.Tests.Span
                 {
                     a[i] = CreateValue(10 * (i + 1));
                 }
-                Span<T> span = new Span<T>(a);
+                ReadOnlySpan<T> span = new ReadOnlySpan<T>(a);
 
                 for (int targetIndex = 0; targetIndex < length; targetIndex++)
                 {
@@ -87,7 +87,7 @@ namespace DrNet.Tests.Span
                     T val = CreateValue(i + 1);
                     a[i] = EqualityComparer(val, target) ? CreateValue(targetI + 1) : val;
                 }
-                Span<T> span = new Span<T>(a);
+                ReadOnlySpan<T> span = new ReadOnlySpan<T>(a);
 
                 int idx = MemoryExt.IndexOf(span, target, EqualityComparer);
                 Assert.Equal(-1, idx);
@@ -108,7 +108,7 @@ namespace DrNet.Tests.Span
                 a[length - 1] = CreateValue(5555);
                 a[length - 2] = CreateValue(5555);
 
-                Span<T> span = new Span<T>(a);
+                ReadOnlySpan<T> span = new ReadOnlySpan<T>(a);
                 int idx = MemoryExt.IndexOf(span, CreateValue(5555), EqualityComparer);
                 Assert.Equal(length - 2, idx);
             }
@@ -127,7 +127,7 @@ namespace DrNet.Tests.Span
                 {
                     a[i] = CreateValue(10 * (i + 1));
                 }
-                Span<T> span = new Span<T>(a);
+                ReadOnlySpan<T> span = new ReadOnlySpan<T>(a);
                 int idx = MemoryExt.IndexOf(span, CreateValue(9999), EqualityComparer);
                 Assert.Equal(-1, idx);
 
@@ -169,19 +169,19 @@ namespace DrNet.Tests.Span
                     a[GuardLength + i] = new TEquatable<T>(CreateValue(10 * (i + 1)), checkForOutOfRangeAccess);
                 }
 
-                Span<TEquatable<T>> span = new Span<TEquatable<T>>(a, GuardLength, length);
+                ReadOnlySpan<TEquatable<T>> span = new ReadOnlySpan<TEquatable<T>>(a, GuardLength, length);
                 int idx = MemoryExt.IndexOf(span, new TEquatable<T>(CreateValue(9999), checkForOutOfRangeAccess), EqualityComparer);
                 Assert.Equal(-1, idx);
             }
         }
     }
 
-    public class Span_IndexOf_EqualityComparer_int: Span_IndexOf_EqualityComparer<int>
+    public class ReadOnlySpan_IndexOf_EqualityComparer_int: ReadOnlySpan_IndexOf_EqualityComparer<int>
     {
         public override int CreateValue(int value) => value;
     }
 
-    public class Span_IndexOf_EqualityComparer_string: Span_IndexOf_EqualityComparer<string>
+    public class ReadOnlySpan_IndexOf_EqualityComparer_string: ReadOnlySpan_IndexOf_EqualityComparer<string>
     {
         public override string CreateValue(int value) => value.ToString();
     }
