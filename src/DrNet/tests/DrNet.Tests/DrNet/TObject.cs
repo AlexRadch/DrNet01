@@ -30,6 +30,8 @@ namespace DrNet.Tests
         public bool Equals(T other)
         {
             _onCompare?.Invoke(Value, other);
+            if (Value is IEquatable<T> equatable)
+                return equatable.Equals(other);
             return Value.Equals(other);
         }
 

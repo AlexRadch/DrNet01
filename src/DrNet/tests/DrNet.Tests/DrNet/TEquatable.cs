@@ -27,12 +27,12 @@ namespace DrNet.Tests
             _onCompare = (x, y) => log.Add(x, y);
         }
 
-        public bool Equals(T value)
+        public bool Equals(T other)
         {
-            _onCompare?.Invoke(Value, value);
+            _onCompare?.Invoke(Value, other);
             if (Value is IEquatable<T> equatable)
-                return equatable.Equals(value);
-            return Value.Equals(value);
+                return equatable.Equals(other);
+            return Value.Equals(other);
         }
 
         public bool Equals(TEquatable<T> other)

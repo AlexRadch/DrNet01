@@ -132,7 +132,7 @@ namespace DrNet.Tests.ReadOnlySpan
                 Assert.Equal(-1, idx);
 
                 // Since we asked for a non-existent value, make sure each element of the array was compared once.
-                // (Strictly speaking, it would not be illegal for IndexOfEqual to compare an element more than once but
+                // (Strictly speaking, it would not be illegal for IndexOf to compare an element more than once but
                 // that would be a non-optimal implementation and a red flag. So we'll stick with the stricter test.)
                 Assert.Equal(a.Length, log.Count);
                 foreach (T elem in a)
@@ -153,7 +153,7 @@ namespace DrNet.Tests.ReadOnlySpan
                 delegate (T x, T y)
                 {
                     if (EqualityComparer(x, GuardValue) || EqualityComparer(y, GuardValue))
-                        throw new Exception("Detected out of range access in IndexOfEqual()");
+                        throw new Exception("Detected out of range access in IndexOf()");
                 };
 
             for (int length = 0; length < 100; length++)
