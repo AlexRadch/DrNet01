@@ -187,11 +187,11 @@ namespace DrNet.Internal.Unsafe
             return -1;
         }
 
-        public static bool SequenceEqual<T1, T2>(ref T1 first, ref T2 second, int length, Func<T1, T2, bool> equalityComparer)
+        public static bool SequenceEqual<TFirst, TSecond>(ref TFirst first, ref TSecond second, int length, Func<TFirst, TSecond, bool> equalityComparer)
         {
             Debug.Assert(length >= 0);
 
-            if (CSUnsafe.AreSame(ref first, ref CSUnsafe.As<T2, T1>(ref second)))
+            if (CSUnsafe.AreSame(ref first, ref CSUnsafe.As<TSecond, TFirst>(ref second)))
                 goto Equal;
 
             IntPtr index = (IntPtr)0; // Use IntPtr for arithmetic to avoid unnecessary 64->32->64 truncations
