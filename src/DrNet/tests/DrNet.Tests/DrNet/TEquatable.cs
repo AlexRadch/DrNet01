@@ -4,7 +4,7 @@
 
 using System;
 
-namespace DrNet
+namespace DrNet.Tests
 {
     // A wrapped integer that invokes a custom delegate every time Object.Equals() is invoked.
     public struct TEquatable<T>: IEquatable<T>, IEquatable<TEquatable<T>>

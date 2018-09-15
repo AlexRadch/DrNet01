@@ -5,7 +5,7 @@
 
     <IsPackable>false</IsPackable>
 
-    <RootNamespace>Tests</RootNamespace>
+    <RootNamespace>DrNet.Tests</RootNamespace>
 
     <ApplicationIcon />
 

@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DrNet
+namespace DrNet.Tests
 {
     public sealed class TLog<T>
     {

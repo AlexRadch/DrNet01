@@ -1,9 +1,7 @@
 ﻿using System;
 using Xunit;
 
-using DrNet;
-
-namespace Tests.DrNet
+namespace DrNet.Tests.Span
 {
     public abstract class Span_IndexOf_EqualityComparer<T>
     {
