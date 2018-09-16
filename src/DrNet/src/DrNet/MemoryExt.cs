@@ -774,44 +774,67 @@ namespace DrNet
 
         #region SequenceEqualTo
 
-        ///// <summary>
-        ///// Determines whether two sequences are equal by comparing the elements using IEquatable{T}.Equals(T) or Object.Equals(Object).
-        ///// </summary>
-        //public static bool SequenceEqualTo<T, TOther>(this Span<T> span, ReadOnlySpan<TOther> other)
-        //{
-        //    int length = span.Length;
-        //    if (length != other.Length)
-        //        return false;
-        //    if (typeof(IEquatable<T>).IsAssignableFrom(typeof(TOther)))
-        //    {
-        //        if (typeof(TOther) == typeof(T))
-        //        {
+        /// <summary>
+        /// Determines whether two sequences are equal by comparing the elements using IEquatable{T}.Equals(T) or Object.Equals(Object).
+        /// </summary>
+        public static bool SequenceEqualTo<T, TOther>(this Span<T> span, ReadOnlySpan<TOther> other)
+        {
+            int length = span.Length;
+            if (length != other.Length)
+                return false;
+            if (typeof(IEquatable<T>).IsAssignableFrom(typeof(TOther)))
+            {
+                if (typeof(TOther) == typeof(T))
+                {
 
-        //            ReadOnlySpan<T> tOther;
-        //            unsafe
-        //            {
-        //                tOther = new ReadOnlySpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(other)), length);
-        //            }
-        //            return MemoryExtensionsEquatablePatternMatching<T>.Instance.SequenceEqual(span, tOther);
+                    ReadOnlySpan<T> tOther;
+                    unsafe
+                    {
+                        tOther = new ReadOnlySpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(other)), length);
+                    }
+                    return MemoryExtensionsEquatablePatternMatching<T>.Instance.SequenceEqual(span, tOther);
 
-        //        }
-        //        return SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span), ref MemoryMarshal.GetReference(other), length, );
-        //    }
-        //    return SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span), ref MemoryMarshal.GetReference(other), length);
-        //}
+                }
+                return SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span), ref MemoryMarshal.GetReference(other), length, (tv, ov) => 
+                    ov is IEquatable<T> oEquatable ? oEquatable.Equals(tv) : ov.Equals(tv));
+            }
+            if (typeof(IEquatable<TOther>).IsAssignableFrom(typeof(T)))
+                return SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span), ref MemoryMarshal.GetReference(other), length, (tv, ov) => 
+                    tv is IEquatable<T> tEquatable ? tEquatable.Equals(ov) : ov.Equals(tv));
+            return SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span), ref MemoryMarshal.GetReference(other), length, (tv, ov) => 
+                tv.Equals(ov));
+        }
 
-        ///// <summary>
-        ///// Determines whether two sequences are equal by comparing the elements using IEquatable{T}.Equals(T) or Object.Equals(Object).
-        ///// </summary>
-        //public static bool SequenceEqualTo<T>(this ReadOnlySpan<T> span, ReadOnlySpan<T> other)
-        //{
-        //    int length = span.Length;
-        //    if (length != other.Length)
-        //        return false;
-        //    if (typeof(IEquatable<T>).IsAssignableFrom(typeof(T)))
-        //        return MemoryExtensionsEquatablePatternMatching<T>.Instance.SequenceEqual(span, other);
-        //    return SpanHelpers.SequenceEqualObject(ref MemoryMarshal.GetReference(span), ref MemoryMarshal.GetReference(other), length);
-        //}
+        /// <summary>
+        /// Determines whether two sequences are equal by comparing the elements using IEquatable{T}.Equals(T) or Object.Equals(Object).
+        /// </summary>
+        public static bool SequenceEqualTo<T, TOther>(this ReadOnlySpan<T> span, ReadOnlySpan<TOther> other)
+        {
+            int length = span.Length;
+            if (length != other.Length)
+                return false;
+            if (typeof(IEquatable<T>).IsAssignableFrom(typeof(TOther)))
+            {
+                if (typeof(TOther) == typeof(T))
+                {
+
+                    ReadOnlySpan<T> tOther;
+                    unsafe
+                    {
+                        tOther = new ReadOnlySpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(other)), length);
+                    }
+                    return MemoryExtensionsEquatablePatternMatching<T>.Instance.SequenceEqual(span, tOther);
+
+                }
+                return SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span), ref MemoryMarshal.GetReference(other), length, (tv, ov) => 
+                    ov is IEquatable<T> oEquatable ? oEquatable.Equals(tv) : ov.Equals(tv));
+            }
+            if (typeof(IEquatable<TOther>).IsAssignableFrom(typeof(T)))
+                return SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span), ref MemoryMarshal.GetReference(other), length, (tv, ov) => 
+                    tv is IEquatable<T> tEquatable ? tEquatable.Equals(ov) : ov.Equals(tv));
+            return SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span), ref MemoryMarshal.GetReference(other), length, (tv, ov) => 
+                tv.Equals(ov));
+        }
 
         /// <summary>
         /// Determines whether two sequences are equal by comparing the elements using IEqualityComparer{T}.Equals(T, T).
