@@ -784,17 +784,17 @@ namespace DrNet
                 return false;
             if (typeof(IEquatable<T>).IsAssignableFrom(typeof(TOther)))
             {
-                if (typeof(TOther) == typeof(T))
-                {
+                //if (typeof(TOther) == typeof(T))
+                //{
 
-                    ReadOnlySpan<T> tOther;
-                    unsafe
-                    {
-                        tOther = new ReadOnlySpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(other)), length);
-                    }
-                    return MemoryExtensionsEquatablePatternMatching<T>.Instance.SequenceEqual(span, tOther);
+                //    ReadOnlySpan<T> tOther;
+                //    unsafe
+                //    {
+                //        tOther = new ReadOnlySpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(other)), length);
+                //    }
+                //    return MemoryExtensionsEquatablePatternMatching<T>.Instance.SequenceEqual(span, tOther);
 
-                }
+                //}
                 return SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span), ref MemoryMarshal.GetReference(other), length, (tv, ov) => 
                     ov is IEquatable<T> oEquatable ? oEquatable.Equals(tv) : ov.Equals(tv));
             }
@@ -815,17 +815,17 @@ namespace DrNet
                 return false;
             if (typeof(IEquatable<T>).IsAssignableFrom(typeof(TOther)))
             {
-                if (typeof(TOther) == typeof(T))
-                {
+                //if (typeof(TOther) == typeof(T))
+                //{
 
-                    ReadOnlySpan<T> tOther;
-                    unsafe
-                    {
-                        tOther = new ReadOnlySpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(other)), length);
-                    }
-                    return MemoryExtensionsEquatablePatternMatching<T>.Instance.SequenceEqual(span, tOther);
+                //    ReadOnlySpan<T> tOther;
+                //    unsafe
+                //    {
+                //        tOther = new ReadOnlySpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(other)), length);
+                //    }
+                //    return MemoryExtensionsEquatablePatternMatching<T>.Instance.SequenceEqual(span, tOther);
 
-                }
+                //}
                 return SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span), ref MemoryMarshal.GetReference(other), length, (tv, ov) => 
                     ov is IEquatable<T> oEquatable ? oEquatable.Equals(tv) : ov.Equals(tv));
             }

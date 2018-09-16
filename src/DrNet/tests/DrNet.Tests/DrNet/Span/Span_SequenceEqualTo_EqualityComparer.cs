@@ -5,7 +5,7 @@ namespace DrNet.Tests.Span
 {
     public abstract class Span_SequenceEqualTo_EqualityComparer<T>
     {
-        public abstract T CreateValue(int value);
+        public abstract T NewT(int value);
 
         protected Action<T, T> onCompare;
 
@@ -33,7 +33,7 @@ namespace DrNet.Tests.Span
         [Fact]
         public void SameSpanSequenceEqual()
         {
-            T[] a = { CreateValue(4), CreateValue(5), CreateValue(6) };
+            T[] a = { NewT(4), NewT(5), NewT(6) };
             Span<T> span = new Span<T>(a);
             bool b = MemoryExt.SequenceEqualTo<T, T>(span, span, EqualityComparer);
             Assert.True(b);
@@ -42,7 +42,7 @@ namespace DrNet.Tests.Span
         [Fact]
         public void SequenceEqualArrayImplicit()
         {
-            T[] a = { CreateValue(4), CreateValue(5), CreateValue(6) };
+            T[] a = { NewT(4), NewT(5), NewT(6) };
             Span<T> first = new Span<T>(a, 0, 3);
             bool b = MemoryExt.SequenceEqualTo<T, T>(first, a, EqualityComparer);
             Assert.True(b);
@@ -51,8 +51,8 @@ namespace DrNet.Tests.Span
         [Fact]
         public void SequenceEqualArraySegmentImplicit()
         {
-            T[] src = { CreateValue(1), CreateValue(2), CreateValue(3) };
-            T[] dst = { CreateValue(5), CreateValue(1), CreateValue(2), CreateValue(3), CreateValue(10) };
+            T[] src = { NewT(1), NewT(2), NewT(3) };
+            T[] dst = { NewT(5), NewT(1), NewT(2), NewT(3), NewT(10) };
             var segment = new ArraySegment<T>(dst, 1, 3);
 
             Span<T> first = new Span<T>(src, 0, 3);
@@ -63,7 +63,7 @@ namespace DrNet.Tests.Span
         [Fact]
         public void LengthMismatchSequenceEqual()
         {
-            T[] a = { CreateValue(4), CreateValue(5), CreateValue(6) };
+            T[] a = { NewT(4), NewT(5), NewT(6) };
             Span<T> first = new Span<T>(a, 0, 3);
             Span<T> second = new Span<T>(a, 0, 2);
             bool b = MemoryExt.SequenceEqualTo<T, T>(first, second, EqualityComparer);
@@ -84,7 +84,7 @@ namespace DrNet.Tests.Span
                 T[] second = new T[length];
                 for (int i = 0; i < length; i++)
                 {
-                    first[i] = second[i] = CreateValue(10 * (i + 1));
+                    first[i] = second[i] = NewT(10 * (i + 1));
                 }
 
                 Span<T> firstSpan = new Span<T>(first);
@@ -118,16 +118,17 @@ namespace DrNet.Tests.Span
                     T[] second = new T[length];
                     for (int i = 0; i < length; i++)
                     {
-                        first[i] = second[i] = CreateValue(10 * (i + 1));
+                        first[i] = second[i] = NewT(10 * (i + 1));
                     }
 
-                    second[mismatchIndex] = CreateValue(10 * (mismatchIndex + 2));
+                    second[mismatchIndex] = NewT(10 * (mismatchIndex + 2));
 
                     Span<T> firstSpan = new Span<T>(first);
                     Span<T> secondSpan = new Span<T>(second);
                     bool b = MemoryExt.SequenceEqualTo<T, T>(firstSpan, secondSpan, EqualityComparer);
                     Assert.False(b);
 
+                    Assert.Equal(mismatchIndex + 1, log.Count);
                     Assert.Equal(1, log.CountCompares(first[mismatchIndex], second[mismatchIndex]));
                 }
             }
@@ -136,7 +137,7 @@ namespace DrNet.Tests.Span
         [Fact]
         public void MakeSureNoSequenceEqualChecksGoOutOfRange()
         {
-            T GuardValue = CreateValue(77777);
+            T GuardValue = NewT(77777);
             const int GuardLength = 50;
 
             Action<T, T> checkForOutOfRangeAccess =
@@ -157,7 +158,7 @@ namespace DrNet.Tests.Span
 
                 for (int i = 0; i < length; i++)
                 {
-                    first[GuardLength + i] = second[GuardLength + i] = new TEquatable<T>(CreateValue(10 * (i + 1)), checkForOutOfRangeAccess);
+                    first[GuardLength + i] = second[GuardLength + i] = new TEquatable<T>(NewT(10 * (i + 1)), checkForOutOfRangeAccess);
                 }
 
                 Span<TEquatable<T>> firstSpan = new Span<TEquatable<T>>(first, GuardLength, length);
@@ -170,11 +171,11 @@ namespace DrNet.Tests.Span
 
     public class Span_SequenceEqualTo_EqualityComparer_int: Span_SequenceEqualTo_EqualityComparer<int>
     {
-        public override int CreateValue(int value) => value;
+        public override int NewT(int value) => value;
     }
 
     public class Span_SequenceEqualTo_EqualityComparer_string: Span_SequenceEqualTo_EqualityComparer<string>
     {
-        public override string CreateValue(int value) => value.ToString();
+        public override string NewT(int value) => value.ToString();
     }
 }
