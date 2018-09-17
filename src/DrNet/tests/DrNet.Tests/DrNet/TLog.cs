@@ -13,6 +13,7 @@ namespace DrNet.Tests
         public void Add(T x, T y) => _log.Add(Tuple.Create(x, y));
         public int Count => _log.Count;
         public int CountCompares(T x, T y) => _log.Where(t => (t.Item1.Equals(x) && t.Item2.Equals(y)) || (t.Item1.Equals(y) && t.Item2.Equals(x))).Count();
+        public void Clear() => _log.Clear();
 
         private List<Tuple<T, T>> _log = new List<Tuple<T, T>>();
     }
