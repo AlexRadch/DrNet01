@@ -153,75 +153,6 @@ namespace DrNet.Internal.Unsafe
             return (int)(byte*)(index + 7);
         }
 
-        public static unsafe int LastIndexOfSourceComparer<TSource, TValue>(ref TSource searchSpace, int length, TValue value,
-            Func<TSource, TValue, bool> equalityComparer)
-        {
-            Debug.Assert(length >= 0);
-
-            while (length >= 8)
-            {
-                length -= 8;
-
-                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length + 7), value))
-                    goto Found7;
-                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length + 6), value))
-                    goto Found6;
-                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length + 5), value))
-                    goto Found5;
-                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length + 4), value))
-                    goto Found4;
-                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length + 3), value))
-                    goto Found3;
-                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length + 2), value))
-                    goto Found2;
-                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length + 1), value))
-                    goto Found1;
-                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length), value))
-                    goto Found;
-            }
-
-            if (length >= 4)
-            {
-                length -= 4;
-
-                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length + 3), value))
-                    goto Found3;
-                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length + 2), value))
-                    goto Found2;
-                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length + 1), value))
-                    goto Found1;
-                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length), value))
-                    goto Found;
-            }
-
-            while (length > 0)
-            {
-                length--;
-
-                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length), value))
-                    goto Found;
-            }
-            return -1;
-
-        Found: // Workaround for https://github.com/dotnet/coreclr/issues/13549
-            return length;
-        Found1:
-            return length + 1;
-        Found2:
-            return length + 2;
-        Found3:
-            return length + 3;
-        Found4:
-            return length + 4;
-        Found5:
-            return length + 5;
-        Found6:
-            return length + 6;
-        Found7:
-            return length + 7;
-
-        }
-
         public static unsafe int LastIndexOfValueComparer<TSource, TValue>(ref TSource searchSpace, int length, TValue value,
             Func<TValue, TSource, bool> equalityComparer)
         {
@@ -268,6 +199,75 @@ namespace DrNet.Internal.Unsafe
                 length--;
 
                 if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length)))
+                    goto Found;
+            }
+            return -1;
+
+        Found: // Workaround for https://github.com/dotnet/coreclr/issues/13549
+            return length;
+        Found1:
+            return length + 1;
+        Found2:
+            return length + 2;
+        Found3:
+            return length + 3;
+        Found4:
+            return length + 4;
+        Found5:
+            return length + 5;
+        Found6:
+            return length + 6;
+        Found7:
+            return length + 7;
+
+        }
+
+        public static unsafe int LastIndexOfSourceComparer<TSource, TValue>(ref TSource searchSpace, int length, TValue value,
+            Func<TSource, TValue, bool> equalityComparer)
+        {
+            Debug.Assert(length >= 0);
+
+            while (length >= 8)
+            {
+                length -= 8;
+
+                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length + 7), value))
+                    goto Found7;
+                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length + 6), value))
+                    goto Found6;
+                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length + 5), value))
+                    goto Found5;
+                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length + 4), value))
+                    goto Found4;
+                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length + 3), value))
+                    goto Found3;
+                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length + 2), value))
+                    goto Found2;
+                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length + 1), value))
+                    goto Found1;
+                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length), value))
+                    goto Found;
+            }
+
+            if (length >= 4)
+            {
+                length -= 4;
+
+                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length + 3), value))
+                    goto Found3;
+                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length + 2), value))
+                    goto Found2;
+                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length + 1), value))
+                    goto Found1;
+                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length), value))
+                    goto Found;
+            }
+
+            while (length > 0)
+            {
+                length--;
+
+                if (equalityComparer(CSUnsafe.Add(ref searchSpace, length), value))
                     goto Found;
             }
             return -1;
