@@ -20,7 +20,7 @@ namespace DrNet.Tests.Span
         public bool EqualityComparer(TEquatable<T> v1, TEquatable<T> v2) => EqualityComparer(v1.Value, v2.Value);
 
         [Fact]
-        public void ZeroLengthSequenceEqual()
+        public void ZeroLength()
         {
             T[] a = new T[3];
 
@@ -37,7 +37,7 @@ namespace DrNet.Tests.Span
         }
 
         [Fact]
-        public void SameSpanSequenceEqual()
+        public void SameSpan()
         {
             T[] a = { NewT(4), NewT(5), NewT(6) };
             Span<T> span = new Span<T>(a);
@@ -48,7 +48,7 @@ namespace DrNet.Tests.Span
         }
 
         [Fact]
-        public void SequenceEqualArrayImplicit()
+        public void ArrayImplicit()
         {
             T[] a = { NewT(4), NewT(5), NewT(6) };
             Span<T> first = new Span<T>(a, 0, 3);
@@ -63,7 +63,7 @@ namespace DrNet.Tests.Span
         }
 
         [Fact]
-        public void SequenceEqualArraySegmentImplicit()
+        public void ArraySegmentImplicit()
         {
             T[] src = { NewT(1), NewT(2), NewT(3) };
             T[] dst = { NewT(5), NewT(1), NewT(2), NewT(3), NewT(10) };
@@ -81,7 +81,7 @@ namespace DrNet.Tests.Span
         }
 
         [Fact]
-        public void LengthMismatchSequenceEqual()
+        public void LengthMismatch()
         {
             T[] a = { NewT(4), NewT(5), NewT(6) };
             Span<T> first = new Span<T>(a, 0, 3);
@@ -97,7 +97,7 @@ namespace DrNet.Tests.Span
         }
 
         [Fact]
-        public void OnSequenceEqualOfEqualSpansMakeSureEveryElementIsCompared()
+        public void OnEqualSpansMakeSureEveryElementIsCompared()
         {
             for (int length = 0; length < 100; length++)
             {
@@ -144,7 +144,7 @@ namespace DrNet.Tests.Span
         }
 
         [Fact]
-        public void SequenceEqualNoMatch()
+        public void TestNoMatch()
         {
             for (int length = 1; length < 32; length++)
             {
@@ -192,7 +192,7 @@ namespace DrNet.Tests.Span
         }
 
         [Fact]
-        public void MakeSureNoSequenceEqualChecksGoOutOfRange()
+        public void MakeSureNoChecksGoOutOfRange()
         {
             T GuardValue = NewT(77777);
             const int GuardLength = 50;

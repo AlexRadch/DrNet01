@@ -37,7 +37,7 @@ namespace DrNet.Tests.ReadOnlySpan
         }
 
         [Fact]
-        public void ZeroLengthIndexOfNot()
+        public void ZeroLength()
         {
             ReadOnlySpan<T> sp = new ReadOnlySpan<T>(Array.Empty<T>());
             int idx = MemoryExt.IndexOfNotEqual(sp, NewTValue(0, null));
@@ -45,7 +45,7 @@ namespace DrNet.Tests.ReadOnlySpan
         }
 
         [Fact]
-        public void DefaultFilledIndexOfNot()
+        public void DefaultFilled()
         {
             try
             {
@@ -59,14 +59,12 @@ namespace DrNet.Tests.ReadOnlySpan
                 return;
             }
 
-            TValue target0 = default;
-
             for (int length = 1; length < 32; length++)
             {
                 TSpan[] a = new TSpan[length];
                 ReadOnlySpan<TSpan> span = new ReadOnlySpan<TSpan>(a);
 
-                int idx = MemoryExt.IndexOfNotEqual(span, target0);
+                int idx = MemoryExt.IndexOfNotEqual(span, default(TValue));
                 Assert.Equal(-1, idx);
             }
         }

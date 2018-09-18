@@ -37,7 +37,7 @@ namespace DrNet.Tests.Span
         }
 
         [Fact]
-        public void ZeroLengthIndexOf()
+        public void ZeroLength()
         {
             Span<T> sp = new Span<T>(Array.Empty<T>());
             int idx = MemoryExt.IndexOfEqual(sp, NewTValue(0, null));
@@ -45,7 +45,7 @@ namespace DrNet.Tests.Span
         }
 
         [Fact]
-        public void DefaultFilledIndexOf()
+        public void DefaultFilled()
         {
             try
             {
@@ -59,14 +59,12 @@ namespace DrNet.Tests.Span
                 return;
             }
 
-            TValue target0 = default;
-
             for (int length = 1; length < 32; length++)
             {
                 TSpan[] a = new TSpan[length];
                 Span<TSpan> span = new Span<TSpan>(a);
 
-                int idx = MemoryExt.IndexOfEqual(span, target0);
+                int idx = MemoryExt.IndexOfEqual(span, default(TValue));
                 Assert.Equal(0, idx);
             }
         }

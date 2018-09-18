@@ -20,7 +20,7 @@ namespace DrNet.Tests.Span
         public bool EqualityComparer(TEquatable<T> v1, TEquatable<T> v2) => EqualityComparer(v1.Value, v2.Value);
 
         [Fact]
-        public void ZeroLengthIndexOf()
+        public void ZeroLength()
         {
             Span<T> sp = new Span<T>(Array.Empty<T>());
             int idx = MemoryExt.LastIndexOfSourceComparer(sp, NewT(0), EqualityComparer);
@@ -30,7 +30,7 @@ namespace DrNet.Tests.Span
         }
 
         [Fact]
-        public void DefaultFilledIndexOf()
+        public void DefaultFilled()
         {
             try
             {
@@ -42,16 +42,14 @@ namespace DrNet.Tests.Span
                 return;
             }
 
-            T target0 = default;
-
             for (int length = 1; length < 32; length++)
             {
                 T[] a = new T[length];
                 Span<T> span = new Span<T>(a);
 
-                int idx = MemoryExt.LastIndexOfSourceComparer(span, target0, EqualityComparer);
+                int idx = MemoryExt.LastIndexOfSourceComparer(span, default(T), EqualityComparer);
                 Assert.Equal(length - 1, idx);
-                idx = MemoryExt.LastIndexOfValueComparer(span, target0, EqualityComparer);
+                idx = MemoryExt.LastIndexOfValueComparer(span, default(T), EqualityComparer);
                 Assert.Equal(length - 1, idx);
             }
         }

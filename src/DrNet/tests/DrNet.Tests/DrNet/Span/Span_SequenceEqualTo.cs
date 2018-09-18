@@ -12,7 +12,7 @@ namespace DrNet.Tests.Span
         public abstract TValue NewTValue(int value, Action<T, T> onCompare = default);
 
         [Fact]
-        public void ZeroLengthSequenceEqual()
+        public void ZeroLength()
         {
             TSpan[] a = new TSpan[3];
             TValue[] b = new TValue[3];
@@ -24,7 +24,7 @@ namespace DrNet.Tests.Span
         }
 
         [Fact]
-        public void SameSpanSequenceEqual()
+        public void SameSpan()
         {
             TSpan[] a = { NewTSpan(4), NewTSpan(5), NewTSpan(6) };
             Span<TSpan> span = new Span<TSpan>(a);
@@ -33,7 +33,7 @@ namespace DrNet.Tests.Span
         }
 
         [Fact]
-        public void SequenceEqualArrayImplicit()
+        public void ArrayImplicit()
         {
             TSpan[] a = { NewTSpan(4), NewTSpan(5), NewTSpan(6) };
             TValue[] b = { NewTValue(4), NewTValue(5), NewTValue(6) };
@@ -43,7 +43,7 @@ namespace DrNet.Tests.Span
         }
 
         [Fact]
-        public void SequenceEqualArraySegmentImplicit()
+        public void ArraySegmentImplicit()
         {
             TSpan[] src = { NewTSpan(1), NewTSpan(2), NewTSpan(3) };
             TValue[] dst = { NewTValue(5), NewTValue(1), NewTValue(2), NewTValue(3), NewTValue(10) };
@@ -55,7 +55,7 @@ namespace DrNet.Tests.Span
         }
 
         [Fact]
-        public void LengthMismatchSequenceEqual()
+        public void LengthMismatch()
         {
             TSpan[] a = { NewTSpan(4), NewTSpan(5), NewTSpan(6) };
             TValue[] b = { NewTValue(4), NewTValue(5), NewTValue(6) };
@@ -72,7 +72,7 @@ namespace DrNet.Tests.Span
         }
 
         [Fact]
-        public void OnSequenceEqualOfEqualSpansMakeSureEveryElementIsCompared()
+        public void OnEqualSpansMakeSureEveryElementIsCompared()
         {
             for (int length = 0; length < 100; length++)
             {
@@ -106,7 +106,7 @@ namespace DrNet.Tests.Span
         }
 
         [Fact]
-        public void SequenceEqualNoMatch()
+        public void TestNoMatch()
         {
             for (int length = 1; length < 32; length++)
             {
@@ -138,7 +138,7 @@ namespace DrNet.Tests.Span
         }
 
         [Fact]
-        public void MakeSureNoSequenceEqualChecksGoOutOfRange()
+        public void MakeSureNoChecksGoOutOfRange()
         {
             int GuardInt = 77777;
             T GuardValue = NewT(GuardInt);

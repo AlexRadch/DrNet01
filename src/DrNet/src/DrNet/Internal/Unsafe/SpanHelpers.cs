@@ -297,9 +297,6 @@ namespace DrNet.Internal.Unsafe
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
 
-            if (valueLength == 0)
-                return 0;  // A zero-length sequence is always treated as "found" at the start of the search space.
-
             int index = -1;
             for (int i = 0; i < valueLength; i++)
             {
@@ -322,9 +319,6 @@ namespace DrNet.Internal.Unsafe
         {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
-
-            if (valueLength == 0)
-                return 0;  // A zero-length sequence is always treated as "found" at the start of the search space.
 
             int index = -1;
             for (int i = 0; i < valueLength; i++)
