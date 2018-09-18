@@ -153,75 +153,6 @@ namespace DrNet.Internal.Unsafe
             return (int)(byte*)(index + 7);
         }
 
-        public static unsafe int LastIndexOfValueComparer<TSource, TValue>(ref TSource searchSpace, int length, TValue value,
-            Func<TValue, TSource, bool> equalityComparer)
-        {
-            Debug.Assert(length >= 0);
-
-            while (length >= 8)
-            {
-                length -= 8;
-
-                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length + 7)))
-                    goto Found7;
-                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length + 6)))
-                    goto Found6;
-                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length + 5)))
-                    goto Found5;
-                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length + 4)))
-                    goto Found4;
-                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length + 3)))
-                    goto Found3;
-                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length + 2)))
-                    goto Found2;
-                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length + 1)))
-                    goto Found1;
-                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length)))
-                    goto Found;
-            }
-
-            if (length >= 4)
-            {
-                length -= 4;
-
-                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length + 3)))
-                    goto Found3;
-                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length + 2)))
-                    goto Found2;
-                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length + 1)))
-                    goto Found1;
-                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length)))
-                    goto Found;
-            }
-
-            while (length > 0)
-            {
-                length--;
-
-                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length)))
-                    goto Found;
-            }
-            return -1;
-
-        Found: // Workaround for https://github.com/dotnet/coreclr/issues/13549
-            return length;
-        Found1:
-            return length + 1;
-        Found2:
-            return length + 2;
-        Found3:
-            return length + 3;
-        Found4:
-            return length + 4;
-        Found5:
-            return length + 5;
-        Found6:
-            return length + 6;
-        Found7:
-            return length + 7;
-
-        }
-
         public static unsafe int LastIndexOfSourceComparer<TSource, TValue>(ref TSource searchSpace, int length, TValue value,
             Func<TSource, TValue, bool> equalityComparer)
         {
@@ -291,6 +222,75 @@ namespace DrNet.Internal.Unsafe
 
         }
 
+        public static unsafe int LastIndexOfValueComparer<TSource, TValue>(ref TSource searchSpace, int length, TValue value,
+            Func<TValue, TSource, bool> equalityComparer)
+        {
+            Debug.Assert(length >= 0);
+
+            while (length >= 8)
+            {
+                length -= 8;
+
+                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length + 7)))
+                    goto Found7;
+                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length + 6)))
+                    goto Found6;
+                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length + 5)))
+                    goto Found5;
+                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length + 4)))
+                    goto Found4;
+                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length + 3)))
+                    goto Found3;
+                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length + 2)))
+                    goto Found2;
+                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length + 1)))
+                    goto Found1;
+                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length)))
+                    goto Found;
+            }
+
+            if (length >= 4)
+            {
+                length -= 4;
+
+                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length + 3)))
+                    goto Found3;
+                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length + 2)))
+                    goto Found2;
+                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length + 1)))
+                    goto Found1;
+                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length)))
+                    goto Found;
+            }
+
+            while (length > 0)
+            {
+                length--;
+
+                if (equalityComparer(value, CSUnsafe.Add(ref searchSpace, length)))
+                    goto Found;
+            }
+            return -1;
+
+        Found: // Workaround for https://github.com/dotnet/coreclr/issues/13549
+            return length;
+        Found1:
+            return length + 1;
+        Found2:
+            return length + 2;
+        Found3:
+            return length + 3;
+        Found4:
+            return length + 4;
+        Found5:
+            return length + 5;
+        Found6:
+            return length + 6;
+        Found7:
+            return length + 7;
+
+        }
+
         public static int IndexOfEqualAnySourceComparer<TSource, TValue>(ref TSource searchSpace, int searchSpaceLength,
             ref TValue value, int valueLength, Func<TSource, TValue, bool> equalityComparer)
         {
@@ -301,13 +301,13 @@ namespace DrNet.Internal.Unsafe
             for (int i = 0; i < valueLength; i++)
             {
                 var tempIndex = IndexOfSourceComparer(ref searchSpace, searchSpaceLength, CSUnsafe.Add(ref value, i), equalityComparer);
-                if ((uint)tempIndex < (uint)index)
+                if (tempIndex >= 0)
                 {
                     index = tempIndex;
                     // Reduce space for search, cause we don't care if we find the search value after the index of a previously found value
                     searchSpaceLength = tempIndex;
 
-                    if (index == 0)
+                    if (tempIndex == 0)
                         break;
                 }
             }
@@ -324,13 +324,13 @@ namespace DrNet.Internal.Unsafe
             for (int i = 0; i < valueLength; i++)
             {
                 var tempIndex = IndexOfValueComparer(ref searchSpace, searchSpaceLength, CSUnsafe.Add(ref value, i), equalityComparer);
-                if ((uint)tempIndex < (uint)index)
+                if (tempIndex >= 0)
                 {
                     index = tempIndex;
                     // Reduce space for search, cause we don't care if we find the search value after the index of a previously found value
                     searchSpaceLength = tempIndex;
 
-                    if (index == 0)
+                    if (tempIndex == 0)
                         break;
                 }
             }
@@ -367,6 +367,58 @@ namespace DrNet.Internal.Unsafe
                     return i;
 
             return -1;
+        }
+
+        public static int LastIndexOfEqualAnySourceComparer<TSource, TValue>(ref TSource searchSpace, int searchSpaceLength,
+            ref TValue value, int valueLength, Func<TSource, TValue, bool> equalityComparer)
+        {
+            Debug.Assert(searchSpaceLength >= 0);
+            Debug.Assert(valueLength >= 0);
+
+            int index = -1;
+            for (int i = 0; i < valueLength; i++)
+            {
+                var tempIndex = LastIndexOfSourceComparer(ref CSUnsafe.Add(ref searchSpace, index + 1), searchSpaceLength, CSUnsafe.Add(ref value, i), equalityComparer);
+                if (tempIndex >= 0)
+                {
+                    tempIndex++;
+                    index += tempIndex;
+
+                    // Reduce space for search, cause we don't care if we find the search value after the index of a previously found value
+                    //searchSpace = CSUnsafe.Add(ref searchSpace, tempIndex);
+                    searchSpaceLength -= tempIndex;
+
+                    if (searchSpaceLength <= 0)
+                        break;
+                }
+            }
+            return index;
+        }
+
+        public static int LastIndexOfEqualAnyValueComparer<TSource, TValue>(ref TSource searchSpace, int searchSpaceLength,
+            ref TValue value, int valueLength, Func<TValue, TSource, bool> equalityComparer)
+        {
+            Debug.Assert(searchSpaceLength >= 0);
+            Debug.Assert(valueLength >= 0);
+
+            int index = -1;
+            for (int i = 0; i < valueLength; i++)
+            {
+                var tempIndex = LastIndexOfValueComparer(ref CSUnsafe.Add(ref searchSpace, index + 1), searchSpaceLength, CSUnsafe.Add(ref value, i), equalityComparer);
+                if (tempIndex >= 0)
+                {
+                    tempIndex++;
+                    index += tempIndex;
+
+                    // Reduce space for search, cause we don't care if we find the search value after the index of a previously found value
+                    //searchSpace = CSUnsafe.Add(ref searchSpace, tempIndex);
+                    searchSpaceLength -= tempIndex;
+
+                    if (searchSpaceLength <= 0)
+                        break;
+                }
+            }
+            return index;
         }
 
         public static bool SequenceEqual<TFirst, TSecond>(ref TFirst first, ref TSecond second, int length,

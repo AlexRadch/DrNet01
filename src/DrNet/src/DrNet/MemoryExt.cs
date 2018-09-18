@@ -433,257 +433,117 @@ namespace DrNet
 
         #endregion
 
-        //#region LastIndexOfAnyEqual
-
-        //#region value0, value1
+        #region LastIndexOfAnyEqual
 
         ///// <summary>
-        ///// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1.
-        ///// Values are compared using IEquatable{T}.Equals(T) or Object.Equals(Object).
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="value0">One of the values to search for.</param>
-        ///// <param name="value1">One of the values to search for.</param>
-        //public static int LastIndexOfAnyEqual<T>(this Span<T> span, T value0, T value1)
-        //{
-        //    if (value0 is IEquatable<T>)
-        //        return MemoryExtensionsEquatablePatternMatching<T>.Instance.LastIndexOfAny(span, value0, value1);
-        //    return SpanHelpers.LastIndexOfAnyObject(ref MemoryMarshal.GetReference(span), value0, value1, span.Length);
-        //}
-
-        ///// <summary>
-        ///// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1.
-        ///// Values are compared using IEquatable{T}.Equals(T) or Object.Equals(Object).
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="value0">One of the values to search for.</param>
-        ///// <param name="value1">One of the values to search for.</param>
-        //public static int LastIndexOfAnyEqual<T>(this ReadOnlySpan<T> span, T value0, T value1)
-        //{
-        //    if (value0 is IEquatable<T>)
-        //        return MemoryExtensionsEquatablePatternMatching<T>.Instance.LastIndexOfAny(span, value0, value1);
-        //    return SpanHelpers.LastIndexOfAnyObject(ref MemoryMarshal.GetReference(span), value0, value1, span.Length);
-        //}
-
-        ///// <summary>
-        ///// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1.
-        ///// Values are compared using IEqualityComparer{T}.Equals(T, T).
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="value0">One of the values to search for.</param>
-        ///// <param name="value1">One of the values to search for.</param>
-        //public static int LastIndexOfAnyEqual<T>(this Span<T> span, T value0, T value1, IEqualityComparer<T> equalityComparer)
-        //{
-        //    return SpanHelpers.LastIndexOfAny(ref MemoryMarshal.GetReference(span), value0, value1, equalityComparer, span.Length);
-        //}
-
-        ///// <summary>
-        ///// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1.
-        ///// Values are compared using IEqualityComparer{T}.Equals(T, T).
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="value0">One of the values to search for.</param>
-        ///// <param name="value1">One of the values to search for.</param>
-        //public static int LastIndexOfAnyEqual<T>(this ReadOnlySpan<T> span, T value0, T value1, IEqualityComparer<T> equalityComparer)
-        //{
-        //    return SpanHelpers.LastIndexOfAny(ref MemoryMarshal.GetReference(span), value0, value1, equalityComparer, span.Length);
-        //}
-
-        ///// <summary>
-        ///// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1.
-        ///// Values are compared using IEquatable{T}.Equals(T). 
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="value0">One of the values to search for.</param>
-        ///// <param name="value1">One of the values to search for.</param>
-        //public static int LastIndexOfAnyEqual<T>(this Span<T> span, IEquatable<T> value0, IEquatable<T> value1)
-        //{
-        //    if (value0 is T tValue0 && tValue0 is IEquatable<T> && value1 is T tValue1)
-        //        return MemoryExtensionsEquatablePatternMatching<T>.Instance.LastIndexOfAny(span, tValue0, tValue1);
-        //    return SpanHelpers.LastIndexOfAny(ref MemoryMarshal.GetReference(span), value0, value1, span.Length);
-        //}
-
-        ///// <summary>
-        ///// Searches for the дast index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1.
-        ///// Values are compared using IEquatable{T}.Equals(T). 
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="value0">One of the values to search for.</param>
-        ///// <param name="value1">One of the values to search for.</param>
-        //public static int LastIndexOfAnyEqual<T>(this ReadOnlySpan<T> span, IEquatable<T> value0, IEquatable<T> value1)
-        //{
-        //    if (value0 is T tValue0 && tValue0 is IEquatable<T> && value1 is T tValue1)
-        //        return MemoryExtensionsEquatablePatternMatching<T>.Instance.LastIndexOfAny(span, tValue0, tValue1);
-        //    return SpanHelpers.LastIndexOfAny(ref MemoryMarshal.GetReference(span), value0, value1, span.Length);
-        //}
-
-        //#endregion
-
-        //#region value0, value1, value2
-
-        ///// <summary>
-        ///// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1.
-        ///// Values are compared using IEquatable{T}.Equals(T) or Object.Equals(Object).
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="value0">One of the values to search for.</param>
-        ///// <param name="value1">One of the values to search for.</param>
-        ///// <param name="value2">One of the values to search for.</param>
-        //public static int LastIndexOfAnyEqual<T>(this Span<T> span, T value0, T value1, T value2)
-        //{
-        //    if (value0 is IEquatable<T>)
-        //        return MemoryExtensionsEquatablePatternMatching<T>.Instance.LastIndexOfAny(span, value0, value1, value2);
-        //    return SpanHelpers.LastIndexOfAnyObject(ref MemoryMarshal.GetReference(span), value0, value1, value2, span.Length);
-        //}
-
-        ///// <summary>
-        ///// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1.
-        ///// Values are compared using IEquatable{T}.Equals(T) or Object.Equals(Object).
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="value0">One of the values to search for.</param>
-        ///// <param name="value1">One of the values to search for.</param>
-        ///// <param name="value2">One of the values to search for.</param>
-        //public static int LastIndexOfAnyEqual<T>(this ReadOnlySpan<T> span, T value0, T value1, T value2)
-        //{
-        //    if (value0 is IEquatable<T>)
-        //        return MemoryExtensionsEquatablePatternMatching<T>.Instance.LastIndexOfAny(span, value0, value1, value2);
-        //    return SpanHelpers.LastIndexOfAnyObject(ref MemoryMarshal.GetReference(span), value0, value1, value2, span.Length);
-        //}
-
-        ///// <summary>
-        ///// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1.
-        ///// Values are compared using IEqualityComparer{T}.Equals(T, T).
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="value0">One of the values to search for.</param>
-        ///// <param name="value1">One of the values to search for.</param>
-        ///// <param name="value2">One of the values to search for.</param>
-        //public static int LastIndexOfAnyEqual<T>(this Span<T> span, T value0, T value1, T value2, IEqualityComparer<T> equalityComparer)
-        //{
-        //    return SpanHelpers.LastIndexOfAny(ref MemoryMarshal.GetReference(span), value0, value1, value2, equalityComparer, span.Length);
-        //}
-
-        ///// <summary>
-        ///// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1.
-        ///// Values are compared using IEqualityComparer{T}.Equals(T, T).
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="value0">One of the values to search for.</param>
-        ///// <param name="value1">One of the values to search for.</param>
-        ///// <param name="value2">One of the values to search for.</param>
-        //public static int LastIndexOfAnyEqual<T>(this ReadOnlySpan<T> span, T value0, T value1, T value2, IEqualityComparer<T> equalityComparer)
-        //{
-        //    return SpanHelpers.LastIndexOfAny(ref MemoryMarshal.GetReference(span), value0, value1, value2, equalityComparer, span.Length);
-        //}
-
-        ///// <summary>
-        ///// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1.
-        ///// Values are compared using IEquatable{T}.Equals(T). 
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="value0">One of the values to search for.</param>
-        ///// <param name="value1">One of the values to search for.</param>
-        ///// <param name="value2">One of the values to search for.</param>
-        //public static int LastIndexOfAnyEqual<T>(this Span<T> span, IEquatable<T> value0, IEquatable<T> value1, IEquatable<T> value2)
-        //{
-        //    if (value0 is T tValue0 && value1 is T tValue1 && value2 is T tValue2 && tValue0 is IEquatable<T>)
-        //        return MemoryExtensionsEquatablePatternMatching<T>.Instance.LastIndexOfAny(span, tValue0, tValue1, tValue2);
-        //    return SpanHelpers.LastIndexOfAny(ref MemoryMarshal.GetReference(span), value0, value1, value2, span.Length);
-        //}
-
-        ///// <summary>
-        ///// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1.
-        ///// Values are compared using IEquatable{T}.Equals(T). 
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="value0">One of the values to search for.</param>
-        ///// <param name="value1">One of the values to search for.</param>
-        ///// <param name="value2">One of the values to search for.</param>
-        //public static int LastIndexOfAnyEqual<T>(this ReadOnlySpan<T> span, IEquatable<T> value0, IEquatable<T> value1, IEquatable<T> value2)
-        //{
-        //    if (value0 is T tValue0 && value1 is T tValue1 && value2 is T tValue2 && tValue0 is IEquatable<T>)
-        //        return MemoryExtensionsEquatablePatternMatching<T>.Instance.LastIndexOfAny(span, tValue0, tValue1, tValue2);
-        //    return SpanHelpers.LastIndexOfAny(ref MemoryMarshal.GetReference(span), value0, value1, value2, span.Length);
-        //}
-
-        //#endregion
-
-        //#region values
-
-        ///// <summary>
-        ///// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1. 
+        ///// Searches for the first index of any of the specified values similar to calling IndexOf several times with the logical OR operator. If not found, returns -1. 
         ///// Values are compared using IEquatable{T}.Equals(T) or Object.Equals(Object).
         ///// </summary>
         ///// <param name="span">The span to search.</param>
         ///// <param name="values">The set of values to search for.</param>
-        //public static int LastIndexOfAnyEqual<T>(this Span<T> span, ReadOnlySpan<T> values)
+        //public static int IndexOfEqualAny<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> values)
         //{
-        //    if (typeof(IEquatable<T>).IsAssignableFrom(typeof(T)))
-        //        return MemoryExtensionsEquatablePatternMatching<T>.Instance.LastIndexOfAny(span, values);
-        //    return SpanHelpers.LastIndexOfAnyObject(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length);
+        //    if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+        //    {
+        //        if (typeof(TValue) == typeof(TSource))
+        //        {
+        //            ReadOnlySpan<TSource> tValues;
+        //            unsafe
+        //            {
+        //                tValues = new ReadOnlySpan<TSource>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(values)), values.Length);
+        //            }
+        //            return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.IndexOfAny(span, tValues);
+        //        }
+        //        return SpanHelpers.IndexOfEqualAny(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length,
+        //            (vValue, sValue) => vValue is IEquatable<TSource> equatable ? equatable.Equals(sValue) : vValue.Equals(sValue));
+        //    }
+        //    else if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
+        //        return SpanHelpers.IndexOfEqualAny(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length,
+        //            (vValue, sValue) => sValue is IEquatable<TSource> equatable ? equatable.Equals(vValue) : sValue.Equals(vValue));
+        //    else
+        //        return SpanHelpers.IndexOfEqualAny(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length,
+        //            (vValue, sValue) => vValue.Equals(sValue));
         //}
 
         ///// <summary>
-        ///// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1. 
+        ///// Searches for the first index of any of the specified values similar to calling IndexOf several times with the logical OR operator. If not found, returns -1. 
         ///// Values are compared using IEquatable{T}.Equals(T) or Object.Equals(Object).
         ///// </summary>
         ///// <param name="span">The span to search.</param>
         ///// <param name="values">The set of values to search for.</param>
-        //public static int LastIndexOfAnyEqual<T>(this ReadOnlySpan<T> span, ReadOnlySpan<T> values)
+        //public static int IndexOfEqualAny<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> values)
         //{
-        //    if (typeof(IEquatable<T>).IsAssignableFrom(typeof(T)))
-        //        return MemoryExtensionsEquatablePatternMatching<T>.Instance.LastIndexOfAny(span, values);
-        //    return SpanHelpers.LastIndexOfAnyObject(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length);
+        //    if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+        //    {
+        //        if (typeof(TValue) == typeof(TSource))
+        //        {
+        //            ReadOnlySpan<TSource> tValues;
+        //            unsafe
+        //            {
+        //                tValues = new ReadOnlySpan<TSource>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(values)), values.Length);
+        //            }
+        //            return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.IndexOfAny(span, tValues);
+        //        }
+        //        return SpanHelpers.IndexOfEqualAny(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length,
+        //            (vValue, sValue) => vValue is IEquatable<TSource> equatable ? equatable.Equals(sValue) : vValue.Equals(sValue));
+        //    }
+        //    else if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
+        //        return SpanHelpers.IndexOfEqualAny(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length,
+        //            (vValue, sValue) => sValue is IEquatable<TSource> equatable ? equatable.Equals(vValue) : sValue.Equals(vValue));
+        //    else
+        //        return SpanHelpers.IndexOfEqualAny(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length,
+        //            (vValue, sValue) => vValue.Equals(sValue));
         //}
 
-        ///// <summary>
-        ///// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1. 
-        ///// Values are compared using IEqualityComparer{T}.Equals(T, T).
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="values">The set of values to search for.</param>
-        //public static int LastIndexOfAnyEqual<T>(this Span<T> span, ReadOnlySpan<T> values, IEqualityComparer<T> equalityComparer)
-        //{
-        //    return SpanHelpers.LastIndexOfAny(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length, equalityComparer);
-        //}
+        /// <summary>
+        /// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1. 
+        /// </summary>
+        /// <param name="span">The span to search.</param>
+        /// <param name="values">The set of values to search for.</param>
+        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        public static int LastIndexOfEqualAnySourceComparer<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer)
+        {
+            return SpanHelpers.LastIndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length,
+                equalityComparer);
+        }
 
-        ///// <summary>
-        ///// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1. 
-        ///// Values are compared using IEqualityComparer{T}.Equals(T, T).
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="values">The set of values to search for.</param>
-        //public static int LastIndexOfAnyEqual<T>(this ReadOnlySpan<T> span, ReadOnlySpan<T> values, IEqualityComparer<T> equalityComparer)
-        //{
-        //    return SpanHelpers.LastIndexOfAny(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length, equalityComparer);
-        //}
+        /// <summary>
+        /// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1. 
+        /// </summary>
+        /// <param name="span">The span to search.</param>
+        /// <param name="values">The set of values to search for.</param>
+        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        public static int LastIndexOfEqualAnySourceComparer<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer)
+        {
+            return SpanHelpers.LastIndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length,
+                equalityComparer);
+        }
 
-        ///// <summary>
-        ///// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1. 
-        ///// Values are compared using IEquatable{T}.Equals(T). 
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="values">The set of values to search for.</param>
-        //public static int LastIndexOfAnyEqual<T>(this Span<T> span, ReadOnlySpan<IEquatable<T>> values)
-        //{
-        //    return SpanHelpers.LastIndexOfAny(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length);
-        //}
+        /// <summary>
+        /// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1. 
+        /// </summary>
+        /// <param name="span">The span to search.</param>
+        /// <param name="values">The set of values to search for.</param>
+        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        public static int LastIndexOfEqualAnyValueComparer<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer)
+        {
+            return SpanHelpers.LastIndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length,
+                equalityComparer);
+        }
 
-        ///// <summary>
-        ///// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1. 
-        ///// Values are compared using IEquatable{T}.Equals(T). 
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="values">The set of values to search for.</param>
-        //public static int LastIndexOfAnyEqual<T>(this ReadOnlySpan<T> span, ReadOnlySpan<IEquatable<T>> values)
-        //{
-        //    return SpanHelpers.LastIndexOfAny(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length);
-        //}
+        /// <summary>
+        /// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1. 
+        /// </summary>
+        /// <param name="span">The span to search.</param>
+        /// <param name="values">The set of values to search for.</param>
+        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        public static int LastIndexOfEqualAnyValueComparer<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer)
+        {
+            return SpanHelpers.LastIndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length,
+                equalityComparer);
+        }
 
-        //#endregion
-
-        //#endregion
+        #endregion
 
         #region SequenceEqualTo
 

@@ -49,7 +49,7 @@ namespace DrNet.Tests.Span
                 return;
             }
 
-            for (int length = 1; length < byte.MaxValue; length++)
+            for (int length = 1; length < 100; length++)
             {
                 var a = new T[length];
                 var span = new Span<T>(a);
@@ -65,9 +65,7 @@ namespace DrNet.Tests.Span
         [Fact]
         public void TestMatch()
         {
-            var rnd = new Random(42);
-
-            for (int length = 0; length < byte.MaxValue; length++)
+            for (int length = 1; length < 100; length++)
             {
                 var a = new T[length];
                 for (int i = 0; i < length; i++)
@@ -93,11 +91,10 @@ namespace DrNet.Tests.Span
                 values = new ReadOnlySpan<T>(v);
                 for (int targetIndex = 0; targetIndex < length - 3; targetIndex++)
                 {
-                    int index = rnd.Next(0, 4) == 0 ? 0 : 1;
-                    v[0] = a[targetIndex + index];
-                    v[1] = a[targetIndex + (index + 1) % 2];
-                    v[2] = a[targetIndex + (index + 1) % 3];
-                    v[3] = a[targetIndex + (index + 1) % 4];
+                    v[0] = a[targetIndex + 3];
+                    v[1] = a[targetIndex + 2];
+                    v[2] = a[targetIndex + 1];
+                    v[3] = a[targetIndex + 0];
                     int idx = MemoryExt.IndexOfEqualAnySourceComparer(span, values, EqualityComparer);
                     Assert.Equal(targetIndex, idx);
                     idx = MemoryExt.IndexOfEqualAnyValueComparer(span, values, EqualityComparer);
@@ -121,7 +118,7 @@ namespace DrNet.Tests.Span
         public void TestMatchValuesLarger()
         {
             var rnd = new Random(43);
-            for (int length = 2; length < byte.MaxValue; length++)
+            for (int length = 2; length < 100; length++)
             {
                 var a = new T[length];
                 int expectedIndex = length / 2;
@@ -159,7 +156,7 @@ namespace DrNet.Tests.Span
         public void TestNoMatch()
         {
             var rnd = new Random(44);
-            for (int length = 1; length < byte.MaxValue; length++)
+            for (int length = 1; length < 100; length++)
             {
                 var a = new T[length];
                 var targets = new T[length];
@@ -192,7 +189,7 @@ namespace DrNet.Tests.Span
         public void TestNoMatchValuesLarger()
         {
             var rnd = new Random(45);
-            for (int length = 1; length < byte.MaxValue; length++)
+            for (int length = 1; length < 100; length++)
             {
                 var a = new T[length];
                 var targets = new T[length * 2];
@@ -217,7 +214,7 @@ namespace DrNet.Tests.Span
         [Fact]
         public void TestMultipleMatch()
         {
-            for (int length = 5; length < byte.MaxValue; length++)
+            for (int length = 5; length < 100; length++)
             {
                 var a = new T[length];
                 for (int i = 0; i < length; i++)
@@ -288,7 +285,7 @@ namespace DrNet.Tests.Span
         [Fact]
         public void MakeSureNoChecksGoOutOfRange()
         {
-            for (int length = 1; length < byte.MaxValue; length++)
+            for (int length = 1; length < 100; length++)
             {
                 var a = new T[length + 2];
                 for (int i = 0; i < a.Length; i++)
@@ -303,7 +300,7 @@ namespace DrNet.Tests.Span
                 Assert.Equal(-1, index);
             }
 
-            for (int length = 1; length < byte.MaxValue; length++)
+            for (int length = 1; length < 100; length++)
             {
                 var a = new T[length + 2];
                 for (int i = 0; i < a.Length; i++)
