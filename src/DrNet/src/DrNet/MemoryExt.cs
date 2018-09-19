@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 using DrNet.Internal;
 using DrNet.Internal.Unsafe;
 
-namespace DrNet
+namespace DrNet                                                                                                         
 {
     public static class MemoryExt
     {

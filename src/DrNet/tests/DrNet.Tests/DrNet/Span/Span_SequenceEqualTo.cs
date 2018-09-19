@@ -3,71 +3,71 @@ using Xunit;
 
 namespace DrNet.Tests.Span
 {
-    public abstract class Span_SequenceEqualTo<T, TSpan, TValue>
+    public abstract class Span_SequenceEqualTo<T, TSource, TValue>
     {
         public abstract T NewT(int value);
 
-        public abstract TSpan NewTSpan(int value, Action<T, T> onCompare = default);
+        public abstract TSource NewTSource(int value, Action<T, T> onCompare = default);
 
         public abstract TValue NewTValue(int value, Action<T, T> onCompare = default);
 
         [Fact]
         public void ZeroLength()
         {
-            TSpan[] a = new TSpan[3];
+            TSource[] a = new TSource[3];
             TValue[] b = new TValue[3];
 
-            Span<TSpan> first = new Span<TSpan>(a, 1, 0);
+            Span<TSource> first = new Span<TSource>(a, 1, 0);
             Span<TValue> second = new Span<TValue>(b, 2, 0);
-            bool c = MemoryExt.SequenceEqualTo<TSpan, TValue>(first, second);
+            bool c = MemoryExt.SequenceEqualTo<TSource, TValue>(first, second);
             Assert.True(c);
         }
 
         [Fact]
         public void SameSpan()
         {
-            TSpan[] a = { NewTSpan(4), NewTSpan(5), NewTSpan(6) };
-            Span<TSpan> span = new Span<TSpan>(a);
-            bool b = MemoryExt.SequenceEqualTo<TSpan, TSpan>(span, span);
+            TSource[] a = { NewTSource(4), NewTSource(5), NewTSource(6) };
+            Span<TSource> span = new Span<TSource>(a);
+            bool b = MemoryExt.SequenceEqualTo<TSource, TSource>(span, span);
             Assert.True(b);
         }
 
         [Fact]
         public void ArrayImplicit()
         {
-            TSpan[] a = { NewTSpan(4), NewTSpan(5), NewTSpan(6) };
+            TSource[] a = { NewTSource(4), NewTSource(5), NewTSource(6) };
             TValue[] b = { NewTValue(4), NewTValue(5), NewTValue(6) };
-            Span<TSpan> first = new Span<TSpan>(a, 0, 3);
-            bool c = MemoryExt.SequenceEqualTo<TSpan, TValue>(first, b);
+            Span<TSource> first = new Span<TSource>(a, 0, 3);
+            bool c = MemoryExt.SequenceEqualTo<TSource, TValue>(first, b);
             Assert.True(c);
         }
 
         [Fact]
         public void ArraySegmentImplicit()
         {
-            TSpan[] src = { NewTSpan(1), NewTSpan(2), NewTSpan(3) };
+            TSource[] src = { NewTSource(1), NewTSource(2), NewTSource(3) };
             TValue[] dst = { NewTValue(5), NewTValue(1), NewTValue(2), NewTValue(3), NewTValue(10) };
             var segment = new ArraySegment<TValue>(dst, 1, 3);
 
-            Span<TSpan> first = new Span<TSpan>(src, 0, 3);
-            bool b = MemoryExt.SequenceEqualTo<TSpan, TValue>(first, segment);
+            Span<TSource> first = new Span<TSource>(src, 0, 3);
+            bool b = MemoryExt.SequenceEqualTo<TSource, TValue>(first, segment);
             Assert.True(b);
         }
 
         [Fact]
         public void LengthMismatch()
         {
-            TSpan[] a = { NewTSpan(4), NewTSpan(5), NewTSpan(6) };
+            TSource[] a = { NewTSource(4), NewTSource(5), NewTSource(6) };
             TValue[] b = { NewTValue(4), NewTValue(5), NewTValue(6) };
 
-            Span<TSpan> first = new Span<TSpan>(a, 0, 3);
+            Span<TSource> first = new Span<TSource>(a, 0, 3);
             Span<TValue> second = new Span<TValue>(b, 0, 2);
-            bool c = MemoryExt.SequenceEqualTo<TSpan, TValue>(first, second);
+            bool c = MemoryExt.SequenceEqualTo<TSource, TValue>(first, second);
             Assert.False(c);
 
-            first = new Span<TSpan>(a, 0, 2);
+            first = new Span<TSource>(a, 0, 2);
             second = new Span<TValue>(b, 0, 3);
-            c = MemoryExt.SequenceEqualTo<TSpan, TValue>(first, second);
+            c = MemoryExt.SequenceEqualTo<TSource, TValue>(first, second);
             Assert.False(c);
         }
 
@@ -79,18 +79,18 @@ namespace DrNet.Tests.Span
                 TLog<T> log = new TLog<T>();
 
                 T[] items = new T[length];
-                TSpan[] first = new TSpan[length];
+                TSource[] first = new TSource[length];
                 TValue[] second = new TValue[length];
                 for (int i = 0; i < length; i++)
                 {
                     items[i] = NewT(10 * (i + 1));
-                    first[i] = NewTSpan(10 * (i + 1), log.Add);
+                    first[i] = NewTSource(10 * (i + 1), log.Add);
                     second[i] = NewTValue(10 * (i + 1), log.Add);
                 }
 
-                Span<TSpan> firstSpan = new Span<TSpan>(first);
+                Span<TSource> firstSpan = new Span<TSource>(first);
                 Span<TValue> secondSpan = new Span<TValue>(second);
-                bool b = MemoryExt.SequenceEqualTo<TSpan, TValue>(firstSpan, secondSpan);
+                bool b = MemoryExt.SequenceEqualTo<TSource, TValue>(firstSpan, secondSpan);
                 Assert.True(b);
 
                 // Make sure each element of the array was compared once. (Strictly speaking, it would not be illegal for 
@@ -114,11 +114,11 @@ namespace DrNet.Tests.Span
                 {
                     TLog<T> log = new TLog<T>();
 
-                    TSpan[] first = new TSpan[length];
+                    TSource[] first = new TSource[length];
                     TValue[] second = new TValue[length];
                     for (int i = 0; i < length; i++)
                     {
-                        first[i] = NewTSpan(10 * (i + 1), log.Add);
+                        first[i] = NewTSource(10 * (i + 1), log.Add);
                         second[i] = NewTValue(10 * (i + 1), log.Add);
                     }
 
@@ -126,9 +126,9 @@ namespace DrNet.Tests.Span
                     T mismatchValue = NewT(10 * (mismatchIndex + 2));
                     second[mismatchIndex] = NewTValue(10 * (mismatchIndex + 2), log.Add);
 
-                    Span<TSpan> firstSpan = new Span<TSpan>(first);
+                    Span<TSource> firstSpan = new Span<TSource>(first);
                     Span<TValue> secondSpan = new Span<TValue>(second);
-                    bool b = MemoryExt.SequenceEqualTo<TSpan, TValue>(firstSpan, secondSpan);
+                    bool b = MemoryExt.SequenceEqualTo<TSource, TValue>(firstSpan, secondSpan);
                     Assert.False(b);
 
                     Assert.Equal(mismatchIndex + 1, log.Count);
@@ -153,23 +153,23 @@ namespace DrNet.Tests.Span
 
             for (int length = 0; length < 100; length++)
             {
-                TSpan[] first = new TSpan[GuardLength + length + GuardLength];
+                TSource[] first = new TSource[GuardLength + length + GuardLength];
                 TValue[] second = new TValue[GuardLength + length + GuardLength];
                 for (int i = 0; i < first.Length; i++)
                 {
-                    first[i] = NewTSpan(GuardInt, checkForOutOfRangeAccess);
+                    first[i] = NewTSource(GuardInt, checkForOutOfRangeAccess);
                     second[i] = NewTValue(GuardInt, checkForOutOfRangeAccess);
                 }
 
                 for (int i = 0; i < length; i++)
                 {
-                    first[GuardLength + i] = NewTSpan(10 * (i + 1), checkForOutOfRangeAccess);
+                    first[GuardLength + i] = NewTSource(10 * (i + 1), checkForOutOfRangeAccess);
                     second[GuardLength + i] = NewTValue(10 * (i + 1), checkForOutOfRangeAccess);
                 }
 
-                Span<TSpan> firstSpan = new Span<TSpan>(first, GuardLength, length);
+                Span<TSource> firstSpan = new Span<TSource>(first, GuardLength, length);
                 Span<TValue> secondSpan = new Span<TValue>(second, GuardLength, length);
-                bool b = MemoryExt.SequenceEqualTo<TSpan, TValue>(firstSpan, secondSpan);
+                bool b = MemoryExt.SequenceEqualTo<TSource, TValue>(firstSpan, secondSpan);
                 Assert.True(b);
             }
         }
@@ -178,56 +178,56 @@ namespace DrNet.Tests.Span
     public class Span_SequenceEqualTo_intEE: Span_SequenceEqualTo<int, TEquatable<int>, TEquatable<int>>
     {
         public override int NewT(int value) => value;
-        public override TEquatable<int> NewTSpan(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
+        public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
         public override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
     }
 
     public class Span_SequenceEqualTo_intEO: Span_SequenceEqualTo<int, TEquatable<int>, TObject<int>>
     {
         public override int NewT(int value) => value;
-        public override TEquatable<int> NewTSpan(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
+        public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
         public override TObject<int> NewTValue(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
     }
 
     public class Span_SequenceEqualTo_intOE: Span_SequenceEqualTo<int, TObject<int>, TEquatable<int>>
     {
         public override int NewT(int value) => value;
-        public override TObject<int> NewTSpan(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
+        public override TObject<int> NewTSource(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
         public override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
     }
 
     public class Span_SequenceEqualTo_intOO: Span_SequenceEqualTo<int, TObject<int>, TObject<int>>
     {
         public override int NewT(int value) => value;
-        public override TObject<int> NewTSpan(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
+        public override TObject<int> NewTSource(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
         public override TObject<int> NewTValue(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
     }
 
     public class Span_SequenceEqualTo_stringEE: Span_SequenceEqualTo<string, TEquatable<string>, TEquatable<string>>
     {
         public override string NewT(int value) => value.ToString();
-        public override TEquatable<string> NewTSpan(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
+        public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
         public override TEquatable<string> NewTValue(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
     }
 
     public class Span_SequenceEqualTo_stringEO: Span_SequenceEqualTo<string, TEquatable<string>, TObject<string>>
     {
         public override string NewT(int value) => value.ToString();
-        public override TEquatable<string> NewTSpan(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
+        public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
         public override TObject<string> NewTValue(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
     }
 
     public class Span_SequenceEqualTo_stringOE: Span_SequenceEqualTo<string, TObject<string>, TEquatable<string>>
     {
         public override string NewT(int value) => value.ToString();
-        public override TObject<string> NewTSpan(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
+        public override TObject<string> NewTSource(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
         public override TEquatable<string> NewTValue(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
     }
 
     public class Span_SequenceEqualTo_stringOO: Span_SequenceEqualTo<string, TObject<string>, TObject<string>>
     {
         public override string NewT(int value) => value.ToString();
-        public override TObject<string> NewTSpan(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
+        public override TObject<string> NewTSource(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
         public override TObject<string> NewTValue(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
     }
 }

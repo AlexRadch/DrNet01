@@ -3,11 +3,11 @@ using Xunit;
 
 namespace DrNet.Tests.ReadOnlySpan
 {
-    public abstract class ReadOnlySpan_LastIndexOfNotEqual<T, TSpan, TValue>
+    public abstract class ReadOnlySpan_LastIndexOfNotEqual<T, TSource, TValue>
     {
         public abstract T NewT(int value);
 
-        public abstract TSpan NewTSpan(int value, Action<T, T> onCompare = default);
+        public abstract TSource NewTSource(int value, Action<T, T> onCompare = default);
 
         public abstract TValue NewTValue(int value, Action<T, T> onCompare = default);
 
@@ -18,20 +18,20 @@ namespace DrNet.Tests.ReadOnlySpan
             return v1.Equals(v2);
         }
 
-        public bool EqualityComparer(TSpan sValue, TValue vValue)
+        public bool EqualityComparer(TSource sValue, TValue vValue)
         {
-            if (vValue is IEquatable<TSpan> vEquatable)
+            if (vValue is IEquatable<TSource> vEquatable)
                 return vEquatable.Equals(sValue);
             if (sValue is IEquatable<TValue> sEquatable)
                 return sEquatable.Equals(vValue);
             return vValue.Equals(sValue);
         }
 
-        public bool EqualityComparer(TValue vValue, TSpan sValue)
+        public bool EqualityComparer(TValue vValue, TSource sValue)
         {
             if (sValue is IEquatable<TValue> sEquatable)
                 return sEquatable.Equals(vValue);
-            if (vValue is IEquatable<TSpan> vEquatable)
+            if (vValue is IEquatable<TSource> vEquatable)
                 return vEquatable.Equals(sValue);
             return sValue.Equals(vValue);
         }
@@ -49,9 +49,9 @@ namespace DrNet.Tests.ReadOnlySpan
         {
             try
             {
-                if (!EqualityComparer(default(TSpan), default(TValue)))
+                if (!EqualityComparer(default(TSource), default(TValue)))
                     return;
-                if (!EqualityComparer(default(TValue), default(TSpan)))
+                if (!EqualityComparer(default(TValue), default(TSource)))
                     return;
             }
             catch
@@ -61,8 +61,8 @@ namespace DrNet.Tests.ReadOnlySpan
 
             for (int length = 1; length < 32; length++)
             {
-                TSpan[] a = new TSpan[length];
-                ReadOnlySpan<TSpan> span = new ReadOnlySpan<TSpan>(a);
+                TSource[] a = new TSource[length];
+                ReadOnlySpan<TSource> span = new ReadOnlySpan<TSource>(a);
 
                 int idx = MemoryExt.LastIndexOfNotEqual(span, default(TValue));
                 Assert.Equal(-1, idx);
@@ -86,15 +86,15 @@ namespace DrNet.Tests.ReadOnlySpan
 
                     } while (targetInt2 == targetInt1);
 
-                    TSpan[] a = new TSpan[length];
+                    TSource[] a = new TSource[length];
                     for (int i = 0; i < length; i++)
                     {
-                        a[i] = NewTSpan(targetInt1);
+                        a[i] = NewTSource(targetInt1);
                     }
 
-                    a[targetIndex] = NewTSpan(targetInt2);
+                    a[targetIndex] = NewTSource(targetInt2);
 
-                    ReadOnlySpan<TSpan> span = new ReadOnlySpan<TSpan>(a);
+                    ReadOnlySpan<TSource> span = new ReadOnlySpan<TSource>(a);
                     int idx = MemoryExt.LastIndexOfNotEqual(span, NewTValue(targetInt1));
                     Assert.Equal(targetIndex, idx);
                 }
@@ -109,13 +109,13 @@ namespace DrNet.Tests.ReadOnlySpan
             {
                 int targetInt = rnd.Next(0, 256);
 
-                TSpan[] a = new TSpan[length];
+                TSource[] a = new TSource[length];
                 for (int i = 0; i < length; i++)
                 {
-                    a[i] = NewTSpan(targetInt);
+                    a[i] = NewTSource(targetInt);
                 }
 
-                ReadOnlySpan<TSpan> span = new ReadOnlySpan<TSpan>(a);
+                ReadOnlySpan<TSource> span = new ReadOnlySpan<TSource>(a);
                 int idx = MemoryExt.LastIndexOfNotEqual(span, NewTValue(targetInt));
                 Assert.Equal(-1, idx);
             }
@@ -136,17 +136,17 @@ namespace DrNet.Tests.ReadOnlySpan
 
                 } while (targetInt2 == targetInt1);
 
-                TSpan[] a = new TSpan[length];
+                TSource[] a = new TSource[length];
                 for (int i = 0; i < length; i++)
                 {
-                    a[i] = NewTSpan(targetInt1);
+                    a[i] = NewTSource(targetInt1);
                 }
 
-                a[0] = NewTSpan(targetInt2);
-                a[1] = NewTSpan(targetInt2);
+                a[0] = NewTSource(targetInt2);
+                a[1] = NewTSource(targetInt2);
 
-                ReadOnlySpan<TSpan> span = new ReadOnlySpan<TSpan>(a);
-                int idx = MemoryExt.LastIndexOfNotEqual(span, NewTSpan(targetInt1));
+                ReadOnlySpan<TSource> span = new ReadOnlySpan<TSource>(a);
+                int idx = MemoryExt.LastIndexOfNotEqual(span, NewTSource(targetInt1));
                 Assert.Equal(1, idx);
             }
         }
@@ -161,12 +161,12 @@ namespace DrNet.Tests.ReadOnlySpan
 
                 int targetInt = rnd.Next(0, 256);
 
-                TSpan[] a = new TSpan[length];
+                TSource[] a = new TSource[length];
                 for (int i = 0; i < length; i++)
                 {
-                    a[i] = NewTSpan(targetInt, log.Add);
+                    a[i] = NewTSource(targetInt, log.Add);
                 }
-                ReadOnlySpan<TSpan> span = new ReadOnlySpan<TSpan>(a);
+                ReadOnlySpan<TSource> span = new ReadOnlySpan<TSource>(a);
                 int idx = MemoryExt.LastIndexOfNotEqual(span, NewTValue(targetInt, log.Add));
                 Assert.Equal(-1, idx);
 
@@ -193,18 +193,18 @@ namespace DrNet.Tests.ReadOnlySpan
             {
                 int targetInt = rnd.Next(0, 256);
 
-                TSpan[] a = new TSpan[GuardLength + length + GuardLength];
+                TSource[] a = new TSource[GuardLength + length + GuardLength];
                 for (int i = 0; i < a.Length; i++)
                 {
-                    a[i] = NewTSpan(77777, checkForOutOfRangeAccess);
+                    a[i] = NewTSource(77777, checkForOutOfRangeAccess);
                 }
 
                 for (int i = 0; i < length; i++)
                 {
-                    a[GuardLength + i] = NewTSpan(targetInt, checkForOutOfRangeAccess);
+                    a[GuardLength + i] = NewTSource(targetInt, checkForOutOfRangeAccess);
                 }
 
-                ReadOnlySpan<TSpan> span = new ReadOnlySpan<TSpan>(a, GuardLength, length);
+                ReadOnlySpan<TSource> span = new ReadOnlySpan<TSource>(a, GuardLength, length);
                 int idx = MemoryExt.LastIndexOfNotEqual(span, NewTValue(targetInt, checkForOutOfRangeAccess));
                 Assert.Equal(-1, idx);
             }
@@ -214,56 +214,56 @@ namespace DrNet.Tests.ReadOnlySpan
     public class ReadOnlySpan_LastIndexOfNotEqual_intEE: ReadOnlySpan_LastIndexOfNotEqual<int, TEquatable<int>, TEquatable<int>>
     {
         public override int NewT(int value) => value;
-        public override TEquatable<int> NewTSpan(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
+        public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
         public override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
     }
 
     public class ReadOnlySpan_LastIndexOfNotEqual_intEO: ReadOnlySpan_LastIndexOfNotEqual<int, TEquatable<int>, TObject<int>>
     {
         public override int NewT(int value) => value;
-        public override TEquatable<int> NewTSpan(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
+        public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
         public override TObject<int> NewTValue(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
     }
 
     public class ReadOnlySpan_LastIndexOfNotEqual_intOE: ReadOnlySpan_LastIndexOfNotEqual<int, TObject<int>, TEquatable<int>>
     {
         public override int NewT(int value) => value;
-        public override TObject<int> NewTSpan(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
+        public override TObject<int> NewTSource(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
         public override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
     }
 
     public class ReadOnlySpan_LastIndexOfNotEqual_intOO: ReadOnlySpan_LastIndexOfNotEqual<int, TObject<int>, TObject<int>>
     {
         public override int NewT(int value) => value;
-        public override TObject<int> NewTSpan(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
+        public override TObject<int> NewTSource(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
         public override TObject<int> NewTValue(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
     }
 
     public class ReadOnlySpan_LastIndexOfNotEqual_stringEE: ReadOnlySpan_LastIndexOfNotEqual<string, TEquatable<string>, TEquatable<string>>
     {
         public override string NewT(int value) => value.ToString();
-        public override TEquatable<string> NewTSpan(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
+        public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
         public override TEquatable<string> NewTValue(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
     }
 
     public class ReadOnlySpan_LastIndexOfNotEqual_stringEO: ReadOnlySpan_LastIndexOfNotEqual<string, TEquatable<string>, TObject<string>>
     {
         public override string NewT(int value) => value.ToString();
-        public override TEquatable<string> NewTSpan(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
+        public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
         public override TObject<string> NewTValue(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
     }
 
     public class ReadOnlySpan_LastIndexOfNotEqual_stringOE: ReadOnlySpan_LastIndexOfNotEqual<string, TObject<string>, TEquatable<string>>
     {
         public override string NewT(int value) => value.ToString();
-        public override TObject<string> NewTSpan(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
+        public override TObject<string> NewTSource(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
         public override TEquatable<string> NewTValue(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
     }
 
     public class ReadOnlySpan_LastIndexOfNotEqual_stringOO: ReadOnlySpan_LastIndexOfNotEqual<string, TObject<string>, TObject<string>>
     {
         public override string NewT(int value) => value.ToString();
-        public override TObject<string> NewTSpan(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
+        public override TObject<string> NewTSource(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
         public override TObject<string> NewTValue(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
     }
 }

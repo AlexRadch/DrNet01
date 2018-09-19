@@ -184,7 +184,6 @@ namespace DrNet.Tests.Span
                 idx = MemoryExt.IndexOfEqualAnyValueComparer(span, values, EqualityComparer);
                 Assert.Equal(-1, idx);
             }
-
         }
 
         [Fact]
@@ -232,7 +231,8 @@ namespace DrNet.Tests.Span
                 a[length - 5] = NewT(200);
 
                 var span = new Span<T>(a);
-                var values = new ReadOnlySpan<T>(new T[] { NewT(200), NewT(200), NewT(200), NewT(200), NewT(200), NewT(200), NewT(200), NewT(200), NewT(200) });
+                var values = new ReadOnlySpan<T>(new T[] { NewT(200), NewT(200), NewT(200), NewT(200), NewT(200),
+                    NewT(200), NewT(200), NewT(200), NewT(200) });
                 int idx = MemoryExt.IndexOfEqualAnySourceComparer(span, values, EqualityComparer);
                 Assert.Equal(length - 5, idx);
                 idx = MemoryExt.IndexOfEqualAnyValueComparer(span, values, EqualityComparer);
