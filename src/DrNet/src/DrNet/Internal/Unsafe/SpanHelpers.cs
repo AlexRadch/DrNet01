@@ -7,8 +7,10 @@ namespace DrNet.Internal.Unsafe
 {
     public static class SpanHelpers
     {
-        public static unsafe int IndexOfSourceComparer<TSource, TValue>(ref TSource searchSpace, int length, TValue value,
-            Func<TSource, TValue, bool> equalityComparer)
+        #region IndexOf
+
+        public static unsafe int IndexOfSourceComparer<TSource, TValue>(ref TSource searchSpace, int length, 
+            TValue value, Func<TSource, TValue, bool> equalityComparer)
         {
             Debug.Assert(length >= 0);
 
@@ -80,8 +82,8 @@ namespace DrNet.Internal.Unsafe
             return (int)(byte*)(index + 7);
         }
 
-        public static unsafe int IndexOfValueComparer<TSource, TValue>(ref TSource searchSpace, int length, TValue value,
-            Func<TValue, TSource, bool> equalityComparer)
+        public static unsafe int IndexOfValueComparer<TSource, TValue>(ref TSource searchSpace, int length, 
+            TValue value, Func<TValue, TSource, bool> equalityComparer)
         {
             Debug.Assert(length >= 0);
 
@@ -153,8 +155,8 @@ namespace DrNet.Internal.Unsafe
             return (int)(byte*)(index + 7);
         }
 
-        public static unsafe int LastIndexOfSourceComparer<TSource, TValue>(ref TSource searchSpace, int length, TValue value,
-            Func<TSource, TValue, bool> equalityComparer)
+        public static unsafe int LastIndexOfSourceComparer<TSource, TValue>(ref TSource searchSpace, int length, 
+            TValue value, Func<TSource, TValue, bool> equalityComparer)
         {
             Debug.Assert(length >= 0);
 
@@ -222,8 +224,8 @@ namespace DrNet.Internal.Unsafe
 
         }
 
-        public static unsafe int LastIndexOfValueComparer<TSource, TValue>(ref TSource searchSpace, int length, TValue value,
-            Func<TValue, TSource, bool> equalityComparer)
+        public static unsafe int LastIndexOfValueComparer<TSource, TValue>(ref TSource searchSpace, int length, 
+            TValue value, Func<TValue, TSource, bool> equalityComparer)
         {
             Debug.Assert(length >= 0);
 
@@ -291,6 +293,10 @@ namespace DrNet.Internal.Unsafe
 
         }
 
+        #endregion
+
+        #region IndexOfAny
+
         public static int IndexOfEqualAnySourceComparer<TSource, TValue>(ref TSource searchSpace, int searchSpaceLength,
             ref TValue value, int valueLength, Func<TSource, TValue, bool> equalityComparer)
         {
@@ -337,8 +343,8 @@ namespace DrNet.Internal.Unsafe
             return index;
         }
 
-        public static int IndexOfNotEqualAllSourceComparer<TSource, TValue>(ref TSource searchSpace, int searchSpaceLength,
-            ref TValue value, int valueLength, Func<TSource, TValue, bool> equalityComparer)
+        public static int IndexOfNotEqualAllSourceComparer<TSource, TValue>(ref TSource searchSpace, 
+            int searchSpaceLength, ref TValue value, int valueLength, Func<TSource, TValue, bool> equalityComparer)
         {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
@@ -353,8 +359,8 @@ namespace DrNet.Internal.Unsafe
             return -1;
         }
 
-        public static int IndexOfNotEqualAllValueComparer<TSource, TValue>(ref TSource searchSpace, int searchSpaceLength,
-            ref TValue value, int valueLength, Func<TValue, TSource, bool> equalityComparer)
+        public static int IndexOfNotEqualAllValueComparer<TSource, TValue>(ref TSource searchSpace, 
+            int searchSpaceLength, ref TValue value, int valueLength, Func<TValue, TSource, bool> equalityComparer)
         {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
@@ -369,8 +375,8 @@ namespace DrNet.Internal.Unsafe
             return -1;
         }
 
-        public static int LastIndexOfEqualAnySourceComparer<TSource, TValue>(ref TSource searchSpace, int searchSpaceLength,
-            ref TValue value, int valueLength, Func<TSource, TValue, bool> equalityComparer)
+        public static int LastIndexOfEqualAnySourceComparer<TSource, TValue>(ref TSource searchSpace, 
+            int searchSpaceLength, ref TValue value, int valueLength, Func<TSource, TValue, bool> equalityComparer)
         {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
@@ -395,8 +401,8 @@ namespace DrNet.Internal.Unsafe
             return index;
         }
 
-        public static int LastIndexOfEqualAnyValueComparer<TSource, TValue>(ref TSource searchSpace, int searchSpaceLength,
-            ref TValue value, int valueLength, Func<TValue, TSource, bool> equalityComparer)
+        public static int LastIndexOfEqualAnyValueComparer<TSource, TValue>(ref TSource searchSpace, 
+            int searchSpaceLength, ref TValue value, int valueLength, Func<TValue, TSource, bool> equalityComparer)
         {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
@@ -420,6 +426,40 @@ namespace DrNet.Internal.Unsafe
             }
             return index;
         }
+
+        public static int LastIndexOfNotEqualAllSourceComparer<TSource, TValue>(ref TSource searchSpace, 
+            int searchSpaceLength, ref TValue value, int valueLength, Func<TSource, TValue, bool> equalityComparer)
+        {
+            Debug.Assert(searchSpaceLength >= 0);
+            Debug.Assert(valueLength >= 0);
+
+            if (valueLength == 0)
+                return 0;  // A zero-length sequence is always treated as "found" at the start of the search space.
+
+            for (int i = searchSpaceLength - 1; i >= 0; i--)
+                if (IndexOfValueComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
+                    return i;
+
+            return -1;
+        }
+
+        public static int LastIndexOfNotEqualAllValueComparer<TSource, TValue>(ref TSource searchSpace,
+            int searchSpaceLength, ref TValue value, int valueLength, Func<TValue, TSource, bool> equalityComparer)
+        {
+            Debug.Assert(searchSpaceLength >= 0);
+            Debug.Assert(valueLength >= 0);
+
+            if (valueLength == 0)
+                return 0;  // A zero-length sequence is always treated as "found" at the start of the search space.
+
+            for (int i = searchSpaceLength - 1; i >= 0; i--)
+                if (IndexOfSourceComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
+                    return i;
+
+            return -1;
+        }
+
+        #endregion
 
         public static bool SequenceEqual<TFirst, TSecond>(ref TFirst first, ref TSecond second, int length,
             Func<TFirst, TSecond, bool> equalityComparer)

@@ -689,110 +689,110 @@ namespace DrNet
 
         #endregion
 
-        //#region LastIndexOfNotEqualAll
+        #region LastIndexOfNotEqualAll
 
-        ///// <summary>
-        ///// Searches for the first value that not equal to the specified values. If not found, returns -1. 
-        ///// Values are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
-        ///// TValue.Equals(TSource).
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="values">The set of values to search for.</param>
-        //public static int LastIndexOfNotEqualAll<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> values)
-        //{
-        //    if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
-        //    {
-        //        return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
-        //            ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) =>
-        //                vValue is IEquatable<TSource> equatable ? equatable.Equals(sValue) : vValue.Equals(sValue));
-        //    }
-        //    else if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
-        //        return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
-        //            ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
-        //                sValue is IEquatable<TValue> equatable ? equatable.Equals(vValue) : sValue.Equals(vValue));
-        //    else
-        //        return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
-        //            ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
-        //                vValue.Equals(sValue));
-        //}
+        /// <summary>
+        /// Searches for the first value that not equal to the specified values. If not found, returns -1. 
+        /// Values are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// TValue.Equals(TSource).
+        /// </summary>
+        /// <param name="span">The span to search.</param>
+        /// <param name="values">The set of values to search for.</param>
+        public static int LastIndexOfNotEqualAll<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> values)
+        {
+            if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+            {
+                return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
+                    ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) =>
+                        vValue is IEquatable<TSource> equatable ? equatable.Equals(sValue) : vValue.Equals(sValue));
+            }
+            else if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
+                return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
+                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
+                        sValue is IEquatable<TValue> equatable ? equatable.Equals(vValue) : sValue.Equals(vValue));
+            else
+                return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
+                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
+                        vValue.Equals(sValue));
+        }
 
-        ///// <summary>
-        ///// Searches for the first value that not equal to the specified values. If not found, returns -1. 
-        ///// Values are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
-        ///// TValue.Equals(TSource).
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="values">The set of values to search for.</param>
-        //public static int LastIndexOfNotEqualAll<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> values)
-        //{
-        //    if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
-        //    {
-        //        return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
-        //            ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) =>
-        //                vValue is IEquatable<TSource> equatable ? equatable.Equals(sValue) : vValue.Equals(sValue));
-        //    }
-        //    else if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
-        //        return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
-        //            ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
-        //                sValue is IEquatable<TValue> equatable ? equatable.Equals(vValue) : sValue.Equals(vValue));
-        //    else
-        //        return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
-        //            ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => vValue.Equals(sValue));
-        //}
+        /// <summary>
+        /// Searches for the first value that not equal to the specified values. If not found, returns -1. 
+        /// Values are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// TValue.Equals(TSource).
+        /// </summary>
+        /// <param name="span">The span to search.</param>
+        /// <param name="values">The set of values to search for.</param>
+        public static int LastIndexOfNotEqualAll<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> values)
+        {
+            if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+            {
+                return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
+                    ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) =>
+                        vValue is IEquatable<TSource> equatable ? equatable.Equals(sValue) : vValue.Equals(sValue));
+            }
+            else if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
+                return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
+                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
+                        sValue is IEquatable<TValue> equatable ? equatable.Equals(vValue) : sValue.Equals(vValue));
+            else
+                return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
+                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => vValue.Equals(sValue));
+        }
 
-        ///// <summary>
-        ///// Searches for the first value that not equal to the specified values. If not found, returns -1. 
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="values">The set of values to search for.</param>
-        ///// <param name="equalityComparer">A function to test each element for a equality.</param>
-        //public static int LastIndexOfNotEqualAllSourceComparer<TSource, TValue>(this Span<TSource> span,
-        //    ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer)
-        //{
-        //    return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
-        //        ref MemoryMarshal.GetReference(values), values.Length, equalityComparer);
-        //}
+        /// <summary>
+        /// Searches for the first value that not equal to the specified values. If not found, returns -1. 
+        /// </summary>
+        /// <param name="span">The span to search.</param>
+        /// <param name="values">The set of values to search for.</param>
+        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        public static int LastIndexOfNotEqualAllSourceComparer<TSource, TValue>(this Span<TSource> span,
+            ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer)
+        {
+            return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
+                ref MemoryMarshal.GetReference(values), values.Length, equalityComparer);
+        }
 
-        ///// <summary>
-        ///// Searches for the first value that not equal to the specified values. If not found, returns -1. 
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="values">The set of values to search for.</param>
-        ///// <param name="equalityComparer">A function to test each element for a equality.</param>
-        //public static int LastIndexOfNotEqualAllSourceComparer<TSource, TValue>(this ReadOnlySpan<TSource> span,
-        //    ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer)
-        //{
-        //    return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
-        //        ref MemoryMarshal.GetReference(values), values.Length, equalityComparer);
-        //}
+        /// <summary>
+        /// Searches for the first value that not equal to the specified values. If not found, returns -1. 
+        /// </summary>
+        /// <param name="span">The span to search.</param>
+        /// <param name="values">The set of values to search for.</param>
+        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        public static int LastIndexOfNotEqualAllSourceComparer<TSource, TValue>(this ReadOnlySpan<TSource> span,
+            ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer)
+        {
+            return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
+                ref MemoryMarshal.GetReference(values), values.Length, equalityComparer);
+        }
 
-        ///// <summary>
-        ///// Searches for the first value that not equal to the specified values. If not found, returns -1. 
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="values">The set of values to search for.</param>
-        ///// <param name="equalityComparer">A function to test each element for a equality.</param>
-        //public static int LastIndexOfNotEqualAllValueComparer<TSource, TValue>(this Span<TSource> span,
-        //    ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer)
-        //{
-        //    return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
-        //        ref MemoryMarshal.GetReference(values), values.Length, equalityComparer);
-        //}
+        /// <summary>
+        /// Searches for the first value that not equal to the specified values. If not found, returns -1. 
+        /// </summary>
+        /// <param name="span">The span to search.</param>
+        /// <param name="values">The set of values to search for.</param>
+        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        public static int LastIndexOfNotEqualAllValueComparer<TSource, TValue>(this Span<TSource> span,
+            ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer)
+        {
+            return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
+                ref MemoryMarshal.GetReference(values), values.Length, equalityComparer);
+        }
 
-        ///// <summary>
-        ///// Searches for the first value that not equal to the specified values. If not found, returns -1. 
-        ///// </summary>
-        ///// <param name="span">The span to search.</param>
-        ///// <param name="values">The set of values to search for.</param>
-        ///// <param name="equalityComparer">A function to test each element for a equality.</param>
-        //public static int LastIndexOfNotEqualAllValueComparer<TSource, TValue>(this ReadOnlySpan<TSource> span,
-        //    ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer)
-        //{
-        //    return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
-        //        ref MemoryMarshal.GetReference(values), values.Length, equalityComparer);
-        //}
+        /// <summary>
+        /// Searches for the first value that not equal to the specified values. If not found, returns -1. 
+        /// </summary>
+        /// <param name="span">The span to search.</param>
+        /// <param name="values">The set of values to search for.</param>
+        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        public static int LastIndexOfNotEqualAllValueComparer<TSource, TValue>(this ReadOnlySpan<TSource> span,
+            ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer)
+        {
+            return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
+                ref MemoryMarshal.GetReference(values), values.Length, equalityComparer);
+        }
 
-        //#endregion
+        #endregion
 
         #region SequenceEqualTo
 
