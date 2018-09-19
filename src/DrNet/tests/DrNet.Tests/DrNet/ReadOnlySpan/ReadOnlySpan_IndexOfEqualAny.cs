@@ -40,11 +40,16 @@ namespace DrNet.Tests.ReadOnlySpan
         public void ZeroLength()
         {
             var sp = new ReadOnlySpan<TSource>(Array.Empty<TSource>());
+
             var values = new ReadOnlySpan<TValue>(new TValue[] { default, default, default, default });
             int idx = MemoryExt.IndexOfEqualAny(sp, values);
             Assert.Equal(-1, idx);
 
             values = new ReadOnlySpan<TValue>(new TValue[] { });
+            idx = MemoryExt.IndexOfEqualAny(sp, values);
+            Assert.Equal(-1, idx);
+
+            sp = new ReadOnlySpan<TSource>(new TSource[] { default, default, default, default });
             idx = MemoryExt.IndexOfEqualAny(sp, values);
             Assert.Equal(-1, idx);
         }
@@ -69,10 +74,14 @@ namespace DrNet.Tests.ReadOnlySpan
                 var a = new TSource[length];
                 var span = new ReadOnlySpan<TSource>(a);
 
-                var values = new ReadOnlySpan<TValue>(new TValue[] 
-                    { default, NewTValue(99), NewTValue(98), NewTValue(0) });
+                var values = new ReadOnlySpan<TValue>(new TValue[]
+                    { NewTValue(99), NewTValue(98), NewTValue(0), default});
                 int idx = MemoryExt.IndexOfEqualAny(span, values);
                 Assert.Equal(0, idx);
+
+                values = new ReadOnlySpan<TValue>(new TValue[] { NewTValue(99), NewTValue(98) });
+                idx = MemoryExt.IndexOfEqualAny(span, values);
+                Assert.Equal(-1, idx);
             }
         }
 

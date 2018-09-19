@@ -8,6 +8,29 @@ namespace DrNet
 {
     public static class MemoryExt
     {
+        #region AsReadOnlySpan
+
+        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this T[] array) => new ReadOnlySpan<T>(array);
+
+        //public static ReadOnlySpan<T> AsReadOnlySpan<T>(this T[] array, int start)
+        //{
+        //    if (array == null)
+        //    {
+        //        if (start != 0)
+        //            throw new ArgumentOutOfRangeException(nameof(start));
+        //        return default;
+        //    }
+        //    return new ReadOnlySpan<T>(array, start, array.Length - start);
+        //}
+
+        //public static ReadOnlySpan<T> AsReadOnlySpan<T>(this T[] array, int start, int length) =>
+        //    new ReadOnlySpan<T>(array, start, length);
+
+        //public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ArraySegment<T> segment, int start);
+        //public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ArraySegment<T> segment, int start, int length);
+
+        #endregion
+
         #region IndexOf
 
         /// <summary>
@@ -702,17 +725,17 @@ namespace DrNet
         {
             if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
             {
-                return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
-                    ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) =>
+                return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span),
+                    span.Length, ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) =>
                         vValue is IEquatable<TSource> equatable ? equatable.Equals(sValue) : vValue.Equals(sValue));
             }
             else if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
-                return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
-                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
+                return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span),
+                    span.Length, ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
                         sValue is IEquatable<TValue> equatable ? equatable.Equals(vValue) : sValue.Equals(vValue));
             else
-                return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
-                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
+                return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span),
+                    span.Length, ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
                         vValue.Equals(sValue));
         }
 
@@ -723,21 +746,23 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        public static int LastIndexOfNotEqualAll<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> values)
+        public static int LastIndexOfNotEqualAll<TSource, TValue>(this ReadOnlySpan<TSource> span,
+            ReadOnlySpan<TValue> values)
         {
             if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
             {
-                return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
-                    ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) =>
+                return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span),
+                    span.Length, ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) =>
                         vValue is IEquatable<TSource> equatable ? equatable.Equals(sValue) : vValue.Equals(sValue));
             }
             else if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
-                return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
-                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
+                return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span),
+                    span.Length, ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
                         sValue is IEquatable<TValue> equatable ? equatable.Equals(vValue) : sValue.Equals(vValue));
             else
-                return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
-                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => vValue.Equals(sValue));
+                return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span),
+                    span.Length, ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => 
+                        vValue.Equals(sValue));
         }
 
         /// <summary>

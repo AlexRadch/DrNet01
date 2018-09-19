@@ -349,9 +349,6 @@ namespace DrNet.Internal.Unsafe
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
 
-            if (valueLength == 0)
-                return 0;  // A zero-length sequence is always treated as "found" at the start of the search space.
-
             for (int i = 0; i < searchSpaceLength; i++)
                 if (IndexOfValueComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
                     return i;
@@ -364,9 +361,6 @@ namespace DrNet.Internal.Unsafe
         {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
-
-            if (valueLength == 0)
-                return 0;  // A zero-length sequence is always treated as "found" at the start of the search space.
 
             for (int i = 0; i < searchSpaceLength; i++)
                 if (IndexOfSourceComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
@@ -433,9 +427,6 @@ namespace DrNet.Internal.Unsafe
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
 
-            if (valueLength == 0)
-                return 0;  // A zero-length sequence is always treated as "found" at the start of the search space.
-
             for (int i = searchSpaceLength - 1; i >= 0; i--)
                 if (IndexOfValueComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
                     return i;
@@ -448,9 +439,6 @@ namespace DrNet.Internal.Unsafe
         {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
-
-            if (valueLength == 0)
-                return 0;  // A zero-length sequence is always treated as "found" at the start of the search space.
 
             for (int i = searchSpaceLength - 1; i >= 0; i--)
                 if (IndexOfSourceComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
