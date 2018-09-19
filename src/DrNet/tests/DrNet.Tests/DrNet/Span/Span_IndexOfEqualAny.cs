@@ -43,8 +43,6 @@ namespace DrNet.Tests.Span
             var values = new ReadOnlySpan<TValue>(new TValue[] { default, default, default, default });
             int idx = MemoryExt.IndexOfEqualAny(sp, values);
             Assert.Equal(-1, idx);
-            idx = MemoryExt.IndexOfEqualAny(sp, values);
-            Assert.Equal(-1, idx);
 
             values = new ReadOnlySpan<TValue>(new TValue[] { });
             idx = MemoryExt.IndexOfEqualAny(sp, values);
