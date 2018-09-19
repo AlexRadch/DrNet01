@@ -66,7 +66,6 @@ namespace DrNet.Tests.ReadOnlySpan
         public void TestMatch()
         {
             var rnd = new Random(42);
-
             for (int length = 0; length < 100; length++)
             {
                 var a = new T[length];
@@ -93,11 +92,11 @@ namespace DrNet.Tests.ReadOnlySpan
                 values = new ReadOnlySpan<T>(v);
                 for (int targetIndex = 0; targetIndex < length - 3; targetIndex++)
                 {
-                    int index = rnd.Next(0, 4) == 0 ? 0 : 1;
-                    v[0] = a[targetIndex + index];
-                    v[1] = a[targetIndex + (index + 1) % 2];
-                    v[2] = a[targetIndex + (index + 1) % 3];
-                    v[3] = a[targetIndex + (index + 1) % 4];
+                    int index = rnd.Next(0, 4);
+                    v[0] = a[targetIndex + (index + 0) % 4];
+                    v[1] = a[targetIndex + (index + 1) % 4];
+                    v[2] = a[targetIndex + (index + 2) % 4];
+                    v[3] = a[targetIndex + (index + 3) % 4];
                     int idx = MemoryExt.IndexOfEqualAnySourceComparer(span, values, EqualityComparer);
                     Assert.Equal(targetIndex, idx);
                     idx = MemoryExt.IndexOfEqualAnyValueComparer(span, values, EqualityComparer);
