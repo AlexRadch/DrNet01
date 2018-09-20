@@ -8,26 +8,84 @@ namespace DrNet
 {
     public static class MemoryExt
     {
+        #region AsReadOnlyMemory
+
+        public static ReadOnlyMemory<T> AsReadOnlyMemory<T>(this T[] array) => new ReadOnlyMemory<T>(array);
+        
+        public static ReadOnlyMemory<T> AsReadOnlyMemory<T>(this T[] array, int start)
+        {
+            if (array == null)
+            {
+                if (start != 0)
+                    throw new ArgumentOutOfRangeException(nameof(start));
+            }
+            return new ReadOnlyMemory<T>(array, start, array.Length - start);
+        }
+
+        public static ReadOnlyMemory<T> AsReadOnlyMemory<T>(this T[] array, int start, int length) => 
+            new ReadOnlyMemory<T>(array, start, array.Length - start);
+
+        public static ReadOnlyMemory<T> AsReadOnlyMemory<T>(this ArraySegment<T> segment) =>
+            new ReadOnlyMemory<T>(segment.Array, segment.Offset, segment.Count);
+
+        public static ReadOnlyMemory<T> AsReadOnlyMemory<T>(this ArraySegment<T> segment, int start)
+        {
+            if (((uint)start) > segment.Count)
+                throw new ArgumentOutOfRangeException(nameof(start));
+
+            return new ReadOnlyMemory<T>(segment.Array, segment.Offset + start, segment.Count - start);
+        }
+
+        public static ReadOnlyMemory<T> AsReadOnlyMemory<T>(this ArraySegment<T> segment, int start, int length)
+        {
+            if (((uint)start) > segment.Count)
+                throw new ArgumentOutOfRangeException(nameof(start));
+            if (((uint)length) > segment.Count - start)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
+            return new ReadOnlyMemory<T>(segment.Array, segment.Offset + start, length);
+        }
+
+        #endregion
+
         #region AsReadOnlySpan
 
         public static ReadOnlySpan<T> AsReadOnlySpan<T>(this T[] array) => new ReadOnlySpan<T>(array);
 
-        //public static ReadOnlySpan<T> AsReadOnlySpan<T>(this T[] array, int start)
-        //{
-        //    if (array == null)
-        //    {
-        //        if (start != 0)
-        //            throw new ArgumentOutOfRangeException(nameof(start));
-        //        return default;
-        //    }
-        //    return new ReadOnlySpan<T>(array, start, array.Length - start);
-        //}
+        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this T[] array, int start)
+        {
+            if (array == null)
+            {
+                if (start != 0)
+                    throw new ArgumentOutOfRangeException(nameof(start));
+                return default;
+            }
+            return new ReadOnlySpan<T>(array, start, array.Length - start);
+        }
 
-        //public static ReadOnlySpan<T> AsReadOnlySpan<T>(this T[] array, int start, int length) =>
-        //    new ReadOnlySpan<T>(array, start, length);
+        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this T[] array, int start, int length) =>
+            new ReadOnlySpan<T>(array, start, length);
 
-        //public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ArraySegment<T> segment, int start);
-        //public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ArraySegment<T> segment, int start, int length);
+        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ArraySegment<T> segment) =>
+            new ReadOnlySpan<T>(segment.Array, segment.Offset, segment.Count);
+
+        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ArraySegment<T> segment, int start)
+        {
+            if (((uint)start) > segment.Count)
+                throw new ArgumentOutOfRangeException(nameof(start));
+
+            return new ReadOnlySpan<T>(segment.Array, segment.Offset + start, segment.Count - start);
+        }
+        
+        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ArraySegment<T> segment, int start, int length)
+        {
+            if (((uint)start) > segment.Count)
+                throw new ArgumentOutOfRangeException(nameof(start));
+            if (((uint)length) > segment.Count - start)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
+            return new ReadOnlySpan<T>(segment.Array, segment.Offset + start, length);
+        }
 
         #endregion
 
