@@ -146,7 +146,7 @@ namespace DrNet.Tests.Span
                 a[length - 2] = NewTSource(targetInt2);
 
                 Span<TSource> span = new Span<TSource>(a);
-                int idx = MemoryExt.IndexOfNotEqual(span, NewTSource(targetInt1));
+                int idx = MemoryExt.IndexOfNotEqual(span, NewTValue(targetInt1));
                 Assert.Equal(length - 2, idx);
             }
         }
@@ -211,59 +211,91 @@ namespace DrNet.Tests.Span
         }
     }
 
-    public class Span_IndexOfNotEqual_intEE: Span_IndexOfNotEqual<int, TEquatable<int>, TEquatable<int>>
+    public class Span_IndexOfNotEqual_intEE : Span_IndexOfNotEqual<int, TEquatable<int>, TEquatable<int>>
     {
         public override int NewT(int value) => value;
-        public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
-        public override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
+        public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) =>
+            new TEquatable<int>(value, onCompare);
+        public override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) =>
+            new TEquatable<int>(value, onCompare);
     }
 
     public class Span_IndexOfNotEqual_intEO: Span_IndexOfNotEqual<int, TEquatable<int>, TObject<int>>
     {
         public override int NewT(int value) => value;
-        public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
-        public override TObject<int> NewTValue(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
+        public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) =>
+            new TEquatable<int>(value, onCompare);
+        public override TObject<int> NewTValue(int value, Action<int, int> onCompare)
+        {
+            var result = new TObject<int>(value, onCompare);
+            result.OnCompare += (x, y) => { throw new Exception("Detected Object.Equals comparition call"); };
+            return result;
+        }
     }
 
     public class Span_IndexOfNotEqual_intOE: Span_IndexOfNotEqual<int, TObject<int>, TEquatable<int>>
     {
         public override int NewT(int value) => value;
-        public override TObject<int> NewTSource(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
-        public override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
+        public override TObject<int> NewTSource(int value, Action<int, int> onCompare)
+        {
+            var result = new TObject<int>(value, onCompare);
+            result.OnCompare += (x, y) => { throw new Exception("Detected Object.Equals comparition call"); };
+            return result;
+        }
+        public override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) =>
+            new TEquatable<int>(value, onCompare);
     }
 
     public class Span_IndexOfNotEqual_intOO: Span_IndexOfNotEqual<int, TObject<int>, TObject<int>>
     {
         public override int NewT(int value) => value;
-        public override TObject<int> NewTSource(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
-        public override TObject<int> NewTValue(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
+        public override TObject<int> NewTSource(int value, Action<int, int> onCompare) =>
+            new TObject<int>(value, onCompare);
+        public override TObject<int> NewTValue(int value, Action<int, int> onCompare) =>
+            new TObject<int>(value, onCompare);
     }
 
     public class Span_IndexOfNotEqual_stringEE: Span_IndexOfNotEqual<string, TEquatable<string>, TEquatable<string>>
     {
         public override string NewT(int value) => value.ToString();
-        public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
-        public override TEquatable<string> NewTValue(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
+        public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) =>
+            new TEquatable<string>(value.ToString(), onCompare);
+        public override TEquatable<string> NewTValue(int value, Action<string, string> onCompare) =>
+            new TEquatable<string>(value.ToString(), onCompare);
     }
 
     public class Span_IndexOfNotEqual_stringEO: Span_IndexOfNotEqual<string, TEquatable<string>, TObject<string>>
     {
         public override string NewT(int value) => value.ToString();
-        public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
-        public override TObject<string> NewTValue(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
+        public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) =>
+            new TEquatable<string>(value.ToString(), onCompare);
+        public override TObject<string> NewTValue(int value, Action<string, string> onCompare)
+        {
+            var result = new TObject<string>(value.ToString(), onCompare);
+            result.OnCompare += (x, y) => { throw new Exception("Detected Object.Equals comparition call"); };
+            return result;
+        }
     }
 
     public class Span_IndexOfNotEqual_stringOE: Span_IndexOfNotEqual<string, TObject<string>, TEquatable<string>>
     {
         public override string NewT(int value) => value.ToString();
-        public override TObject<string> NewTSource(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
-        public override TEquatable<string> NewTValue(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
+        public override TObject<string> NewTSource(int value, Action<string, string> onCompare)
+        {
+            var result = new TObject<string>(value.ToString(), onCompare);
+            result.OnCompare += (x, y) => { throw new Exception("Detected Object.Equals comparition call"); };
+            return result;
+        }
+        public override TEquatable<string> NewTValue(int value, Action<string, string> onCompare) =>
+            new TEquatable<string>(value.ToString(), onCompare);
     }
 
     public class Span_IndexOfNotEqual_stringOO: Span_IndexOfNotEqual<string, TObject<string>, TObject<string>>
     {
         public override string NewT(int value) => value.ToString();
-        public override TObject<string> NewTSource(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
-        public override TObject<string> NewTValue(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
+        public override TObject<string> NewTSource(int value, Action<string, string> onCompare) =>
+            new TObject<string>(value.ToString(), onCompare);
+        public override TObject<string> NewTValue(int value, Action<string, string> onCompare) =>
+            new TObject<string>(value.ToString(), onCompare);
     }
 }

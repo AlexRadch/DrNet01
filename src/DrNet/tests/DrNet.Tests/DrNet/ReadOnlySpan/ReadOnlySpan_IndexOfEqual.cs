@@ -128,7 +128,7 @@ namespace DrNet.Tests.ReadOnlySpan
                 a[length - 2] = NewTSource(5555);
 
                 ReadOnlySpan<TSource> span = new ReadOnlySpan<TSource>(a);
-                int idx = MemoryExt.IndexOfEqual(span, NewTSource(5555));
+                int idx = MemoryExt.IndexOfEqual(span, NewTValue(5555));
                 Assert.Equal(length - 2, idx);
             }
         }
@@ -199,56 +199,92 @@ namespace DrNet.Tests.ReadOnlySpan
     public class ReadOnlySpan_IndexOfEqual_intEE: ReadOnlySpan_IndexOfEqual<int, TEquatable<int>, TEquatable<int>>
     {
         public override int NewT(int value) => value;
-        public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
-        public override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
+        public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) =>
+            new TEquatable<int>(value, onCompare);
+        public override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) =>
+            new TEquatable<int>(value, onCompare);
     }
 
     public class ReadOnlySpan_IndexOfEqual_intEO: ReadOnlySpan_IndexOfEqual<int, TEquatable<int>, TObject<int>>
     {
         public override int NewT(int value) => value;
-        public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
-        public override TObject<int> NewTValue(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
+        public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) => 
+            new TEquatable<int>(value, onCompare);
+        public override TObject<int> NewTValue(int value, Action<int, int> onCompare)
+        {
+            var result = new TObject<int>(value, onCompare);
+            result.OnCompare += (x, y) => { throw new Exception("Detected Object.Equals comparition call"); };
+            return result;
+        }
     }
 
     public class ReadOnlySpan_IndexOfEqual_intOE: ReadOnlySpan_IndexOfEqual<int, TObject<int>, TEquatable<int>>
     {
         public override int NewT(int value) => value;
-        public override TObject<int> NewTSource(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
-        public override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
+        public override TObject<int> NewTSource(int value, Action<int, int> onCompare)
+        {
+            var result = new TObject<int>(value, onCompare);
+            result.OnCompare += (x, y) => { throw new Exception("Detected Object.Equals comparition call"); };
+            return result;
+        }
+        public override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) => 
+            new TEquatable<int>(value, onCompare);
     }
 
     public class ReadOnlySpan_IndexOfEqual_intOO: ReadOnlySpan_IndexOfEqual<int, TObject<int>, TObject<int>>
     {
         public override int NewT(int value) => value;
-        public override TObject<int> NewTSource(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
-        public override TObject<int> NewTValue(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
+        public override TObject<int> NewTSource(int value, Action<int, int> onCompare) => 
+            new TObject<int>(value, onCompare);
+        public override TObject<int> NewTValue(int value, Action<int, int> onCompare) =>
+            new TObject<int>(value, onCompare);
     }
 
-    public class ReadOnlySpan_IndexOfEqual_stringEE: ReadOnlySpan_IndexOfEqual<string, TEquatable<string>, TEquatable<string>>
+    public class ReadOnlySpan_IndexOfEqual_stringEE :
+        ReadOnlySpan_IndexOfEqual<string, TEquatable<string>, TEquatable<string>>
     {
         public override string NewT(int value) => value.ToString();
-        public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
-        public override TEquatable<string> NewTValue(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
+        public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) =>
+            new TEquatable<string>(value.ToString(), onCompare);
+        public override TEquatable<string> NewTValue(int value, Action<string, string> onCompare) =>
+            new TEquatable<string>(value.ToString(), onCompare);
     }
 
-    public class ReadOnlySpan_IndexOfEqual_stringEO: ReadOnlySpan_IndexOfEqual<string, TEquatable<string>, TObject<string>>
+    public class ReadOnlySpan_IndexOfEqual_stringEO :
+        ReadOnlySpan_IndexOfEqual<string, TEquatable<string>, TObject<string>>
     {
         public override string NewT(int value) => value.ToString();
-        public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
-        public override TObject<string> NewTValue(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
+        public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) =>
+            new TEquatable<string>(value.ToString(), onCompare);
+        public override TObject<string> NewTValue(int value, Action<string, string> onCompare)
+        {
+            var result = new TObject<string>(value.ToString(), onCompare);
+            result.OnCompare += (x, y) => { throw new Exception("Detected Object.Equals comparition call"); };
+            return result;
+        }
     }
 
-    public class ReadOnlySpan_IndexOfEqual_stringOE: ReadOnlySpan_IndexOfEqual<string, TObject<string>, TEquatable<string>>
+    public class ReadOnlySpan_IndexOfEqual_stringOE:
+        ReadOnlySpan_IndexOfEqual<string, TObject<string>, TEquatable<string>>
     {
         public override string NewT(int value) => value.ToString();
-        public override TObject<string> NewTSource(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
-        public override TEquatable<string> NewTValue(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
+        public override TObject<string> NewTSource(int value, Action<string, string> onCompare)
+        {
+            var result = new TObject<string>(value.ToString(), onCompare);
+            result.OnCompare += (x, y) => { throw new Exception("Detected Object.Equals comparition call"); };
+            return result;
+        }
+        public override TEquatable<string> NewTValue(int value, Action<string, string> onCompare) =>
+            new TEquatable<string>(value.ToString(), onCompare);
     }
 
-    public class ReadOnlySpan_IndexOfEqual_stringOO: ReadOnlySpan_IndexOfEqual<string, TObject<string>, TObject<string>>
+    public class ReadOnlySpan_IndexOfEqual_stringOO:
+        ReadOnlySpan_IndexOfEqual<string, TObject<string>, TObject<string>>
     {
         public override string NewT(int value) => value.ToString();
-        public override TObject<string> NewTSource(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
-        public override TObject<string> NewTValue(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
+        public override TObject<string> NewTSource(int value, Action<string, string> onCompare) =>
+            new TObject<string>(value.ToString(), onCompare);
+        public override TObject<string> NewTValue(int value, Action<string, string> onCompare) =>
+            new TObject<string>(value.ToString(), onCompare);
     }
 }

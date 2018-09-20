@@ -128,7 +128,7 @@ namespace DrNet.Tests.Span
                 a[1] = NewTSource(5555);
 
                 Span<TSource> span = new Span<TSource>(a);
-                int idx = MemoryExt.LastIndexOfEqual(span, NewTSource(5555));
+                int idx = MemoryExt.LastIndexOfEqual(span, NewTValue(5555));
                 Assert.Equal(1, idx);
             }
         }
@@ -196,59 +196,90 @@ namespace DrNet.Tests.Span
         }
     }
 
-    public class Span_LastIndexOfEqual_intEE: Span_LastIndexOfEqual<int, TEquatable<int>, TEquatable<int>>
+    public class Span_LastIndexOfEqual_intEE : Span_LastIndexOfEqual<int, TEquatable<int>, TEquatable<int>>
     {
         public override int NewT(int value) => value;
-        public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
-        public override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
+        public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) =>
+            new TEquatable<int>(value, onCompare);
+        public override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) =>
+            new TEquatable<int>(value, onCompare);
     }
 
-    public class Span_LastIndexOfEqual_intEO: Span_LastIndexOfEqual<int, TEquatable<int>, TObject<int>>
+    public class Span_LastIndexOfEqual_intEO : Span_LastIndexOfEqual<int, TEquatable<int>, TObject<int>>
     {
         public override int NewT(int value) => value;
-        public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
-        public override TObject<int> NewTValue(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
+        public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) =>
+            new TEquatable<int>(value, onCompare);
+        public override TObject<int> NewTValue(int value, Action<int, int> onCompare)
+        {
+            var result = new TObject<int>(value, onCompare);
+            result.OnCompare += (x, y) => { throw new Exception("Detected Object.Equals comparition call"); };
+            return result;
+        }
     }
 
-    public class Span_LastIndexOfEqual_intOE: Span_LastIndexOfEqual<int, TObject<int>, TEquatable<int>>
+    public class Span_LastIndexOfEqual_intOE : Span_LastIndexOfEqual<int, TObject<int>, TEquatable<int>>
     {
         public override int NewT(int value) => value;
-        public override TObject<int> NewTSource(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
-        public override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) => new TEquatable<int>(value, onCompare);
+        public override TObject<int> NewTSource(int value, Action<int, int> onCompare)
+        {
+            var result = new TObject<int>(value, onCompare);
+            result.OnCompare += (x, y) => { throw new Exception("Detected Object.Equals comparition call"); };
+            return result;
+        }
+        public override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) =>
+            new TEquatable<int>(value, onCompare);
     }
 
-    public class Span_LastIndexOfEqual_intOO: Span_LastIndexOfEqual<int, TObject<int>, TObject<int>>
+    public class Span_LastIndexOfEqual_intOO : Span_LastIndexOfEqual<int, TObject<int>, TObject<int>>
     {
         public override int NewT(int value) => value;
-        public override TObject<int> NewTSource(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
-        public override TObject<int> NewTValue(int value, Action<int, int> onCompare) => new TObject<int>(value, onCompare);
+        public override TObject<int> NewTSource(int value, Action<int, int> onCompare) =>
+            new TObject<int>(value, onCompare);
+        public override TObject<int> NewTValue(int value, Action<int, int> onCompare) =>
+            new TObject<int>(value, onCompare);
     }
 
-    public class Span_LastIndexOfEqual_stringEE: Span_LastIndexOfEqual<string, TEquatable<string>, TEquatable<string>>
+    public class Span_LastIndexOfEqual_stringEE : Span_LastIndexOfEqual<string, TEquatable<string>, TEquatable<string>>
     {
         public override string NewT(int value) => value.ToString();
-        public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
+        public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) =>
+            new TEquatable<string>(value.ToString(), onCompare);
+        public override TEquatable<string> NewTValue(int value, Action<string, string> onCompare) =>
+            new TEquatable<string>(value.ToString(), onCompare);
+    }
+
+    public class Span_LastIndexOfEqual_stringEO : Span_LastIndexOfEqual<string, TEquatable<string>, TObject<string>>
+    {
+        public override string NewT(int value) => value.ToString();
+        public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) =>
+            new TEquatable<string>(value.ToString(), onCompare);
+        public override TObject<string> NewTValue(int value, Action<string, string> onCompare)
+        {
+            var result = new TObject<string>(value.ToString(), onCompare);
+            result.OnCompare += (x, y) => { throw new Exception("Detected Object.Equals comparition call"); };
+            return result;
+        }
+    }
+
+    public class Span_LastIndexOfEqual_stringOE : Span_LastIndexOfEqual<string, TObject<string>, TEquatable<string>>
+    {
+        public override string NewT(int value) => value.ToString();
+        public override TObject<string> NewTSource(int value, Action<string, string> onCompare)
+        {
+            var result = new TObject<string>(value.ToString(), onCompare);
+            result.OnCompare += (x, y) => { throw new Exception("Detected Object.Equals comparition call"); };
+            return result;
+        }
         public override TEquatable<string> NewTValue(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
     }
 
-    public class Span_LastIndexOfEqual_stringEO: Span_LastIndexOfEqual<string, TEquatable<string>, TObject<string>>
+    public class Span_LastIndexOfEqual_stringOO : Span_LastIndexOfEqual<string, TObject<string>, TObject<string>>
     {
         public override string NewT(int value) => value.ToString();
-        public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
-        public override TObject<string> NewTValue(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
-    }
-
-    public class Span_LastIndexOfEqual_stringOE: Span_LastIndexOfEqual<string, TObject<string>, TEquatable<string>>
-    {
-        public override string NewT(int value) => value.ToString();
-        public override TObject<string> NewTSource(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
-        public override TEquatable<string> NewTValue(int value, Action<string, string> onCompare) => new TEquatable<string>(value.ToString(), onCompare);
-    }
-
-    public class Span_LastIndexOfEqual_stringOO: Span_LastIndexOfEqual<string, TObject<string>, TObject<string>>
-    {
-        public override string NewT(int value) => value.ToString();
-        public override TObject<string> NewTSource(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
-        public override TObject<string> NewTValue(int value, Action<string, string> onCompare) => new TObject<string>(value.ToString(), onCompare);
+        public override TObject<string> NewTSource(int value, Action<string, string> onCompare) =>
+            new TObject<string>(value.ToString(), onCompare);
+        public override TObject<string> NewTValue(int value, Action<string, string> onCompare) =>
+            new TObject<string>(value.ToString(), onCompare);
     }
 }

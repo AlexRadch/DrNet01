@@ -7,7 +7,7 @@ using System;
 namespace DrNet.Tests
 {
     // A wrapped integer that invokes a custom delegate every time Object.Equals() is invoked.
-    public struct TEquatable<T>: IEquatable<T>, IEquatable<TEquatable<T>>
+    public struct TEquatable<T>: IEquatable<T>, IEquatable<TEquatable<T>>, IEquatable<TObject<T>>
     {
         public TEquatable(T value)
             : this(value, (Action<T, T>)null)
@@ -18,18 +18,23 @@ namespace DrNet.Tests
         public TEquatable(T value, Action<T, T> onCompare)
         {
             Value = value;
-            _onCompare = onCompare;
+            OnCompareT = default;
+            OnCompareTEquatableT = default;
+            OnCompareTObjectT = default;
+
+            if (onCompare != null)
+            {
+                OnCompareT += onCompare;
+                OnCompareTEquatableT += onCompare;
+                OnCompareTObjectT += onCompare;
+            }
         }
 
-        public TEquatable(T value, TLog<T> log)
-        {
-            Value = value;
-            _onCompare = (x, y) => log.Add(x, y);
-        }
+        public TEquatable(T value, TLog<T> log) : this (value, log.Add) { }
 
         public bool Equals(T other)
         {
-            _onCompare?.Invoke(Value, other);
+            OnCompareT?.Invoke(Value, other);
             if (Value is IEquatable<T> equatable)
                 return equatable.Equals(other);
             return Value.Equals(other);
@@ -37,22 +42,22 @@ namespace DrNet.Tests
 
         public bool Equals(TEquatable<T> other)
         {
-            return Equals(other.Value);
+            OnCompareTEquatableT?.Invoke(Value, other.Value);
+            if (Value is IEquatable<T> equatable)
+                return equatable.Equals(other.Value);
+            return Value.Equals(other.Value);
         }
 
         public bool Equals(TObject<T> other)
         {
-            return Equals(other.Value);
+            OnCompareTObjectT?.Invoke(Value, other.Value);
+            if (Value is IEquatable<T> equatable)
+                return equatable.Equals(other.Value);
+            return Value.Equals(other.Value);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj is T otherT)
-                return Equals(otherT);
-            if (obj is TEquatable<T> otherE)
-                return Equals(otherE);
-            if (obj is TObject<T> otherO)
-                return Equals(otherO);
             throw new NotImplementedException();
         }
 
@@ -65,6 +70,8 @@ namespace DrNet.Tests
 
         public T Value { get; }
 
-        private Action<T, T> _onCompare;
+        public event Action<T, T> OnCompareT;
+        public event Action<T, T> OnCompareTEquatableT;
+        public event Action<T, T> OnCompareTObjectT;
     }
 }

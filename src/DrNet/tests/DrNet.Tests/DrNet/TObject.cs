@@ -18,18 +18,17 @@ namespace DrNet.Tests
         public TObject(T value, Action<T, T> onCompare)
         {
             Value = value;
-            _onCompare = onCompare;
+            OnCompare = default;
+
+            if (onCompare != null)
+                OnCompare += onCompare;
         }
 
-        public TObject(T value, TLog<T> log)
-        {
-            Value = value;
-            _onCompare = (x, y) => log.Add(x, y);
-        }
+        public TObject(T value, TLog<T> log) : this (value, log.Add) { }
 
         public bool Equals(T other)
         {
-            _onCompare?.Invoke(Value, other);
+            OnCompare?.Invoke(Value, other);
             if (Value is IEquatable<T> equatable)
                 return equatable.Equals(other);
             return Value.Equals(other);
@@ -65,6 +64,6 @@ namespace DrNet.Tests
 
         public T Value { get; }
 
-        private Action<T, T> _onCompare;
+        public event Action<T, T> OnCompare;
     }
 }
