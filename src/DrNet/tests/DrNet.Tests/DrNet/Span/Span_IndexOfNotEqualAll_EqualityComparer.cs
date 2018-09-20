@@ -86,9 +86,9 @@ namespace DrNet.Tests.Span
                     a[i] = NewT(i + 1);
                 }
                 var span = new Span<T>(a);
-
                 T[] v = a.AsReadOnlySpan().ToArray();
                 Array.Reverse(v);
+
                 ReadOnlySpan<T> values = new ReadOnlySpan<T>(v);
                 for (int targetIndex = 0; targetIndex < length; targetIndex++)
                 {
@@ -103,7 +103,6 @@ namespace DrNet.Tests.Span
                     v[length - targetIndex - 1] = temp;
                 }
 
-                values = new ReadOnlySpan<T>(v);
                 for (int targetIndex = 0; targetIndex < length - 3; targetIndex++)
                 {
                     T temp1 = v[length - targetIndex - 1];

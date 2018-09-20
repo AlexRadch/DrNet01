@@ -25,7 +25,6 @@
   <ItemGroup>
     <Compile Remove="DrNet\MemoryExtensionsTests_IndexOfEqual.cs" />
     <Compile Remove="DrNet\MemoryExtensionsTests_IndexOfEqual_IEquatable.cs" />
-    <Compile Remove="DrNet\Span\Span_IndexOfNotEqualAll.cs" />
   </ItemGroup>
 
   <ItemGroup>

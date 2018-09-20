@@ -3,7 +3,7 @@ using Xunit;
 
 namespace DrNet.Tests.Span
 {
-    public abstract class Span_IndexOfNotEqualAll<T, TSource, TValue>
+    public abstract class Span_LastIndexOfNotEqualAll<T, TSource, TValue>
     {
         public abstract T NewT(int value);
 
@@ -42,16 +42,16 @@ namespace DrNet.Tests.Span
             var sp = new Span<TSource>(Array.Empty<TSource>());
 
             var values = new ReadOnlySpan<TValue>(new TValue[] { default, default, default, default });
-            int idx = MemoryExt.IndexOfNotEqualAll(sp, values);
+            int idx = MemoryExt.LastIndexOfNotEqualAll(sp, values);
             Assert.Equal(-1, idx);
 
             values = new ReadOnlySpan<TValue>(new TValue[] { });
-            idx = MemoryExt.IndexOfNotEqualAll(sp, values);
+            idx = MemoryExt.LastIndexOfNotEqualAll(sp, values);
             Assert.Equal(-1, idx);
 
             sp = new Span<TSource>(new TSource[] { default, default, default, default });
-            idx = MemoryExt.IndexOfNotEqualAll(sp, values);
-            Assert.Equal(0, idx);
+            idx = MemoryExt.LastIndexOfNotEqualAll(sp, values);
+            Assert.Equal(3, idx);
         }
 
         [Fact]
@@ -76,12 +76,12 @@ namespace DrNet.Tests.Span
 
                 var values = new ReadOnlySpan<TValue>(new TValue[] 
                     { NewTValue(99), NewTValue(98), NewTValue(0), default});
-                int idx = MemoryExt.IndexOfNotEqualAll(span, values);
+                int idx = MemoryExt.LastIndexOfNotEqualAll(span, values);
                 Assert.Equal(-1, idx);
 
                 values = new ReadOnlySpan<TValue>(new TValue[] { NewTValue(99), NewTValue(98)});
-                idx = MemoryExt.IndexOfNotEqualAll(span, values);
-                Assert.Equal(0, idx);
+                idx = MemoryExt.LastIndexOfNotEqualAll(span, values);
+                Assert.Equal(length - 1, idx);
             }
         }
 
@@ -91,10 +91,12 @@ namespace DrNet.Tests.Span
             var rnd = new Random(42);
             for (int length = 1; length < 100; length++)
             {
+                //var ai = new int[length];
                 var a = new TSource[length];
                 var v = new TValue[length];
                 for (int i = 0; i < length; i++)
                 {
+                    //ai[i] = i + 1;
                     a[i] = NewTSource(i + 1);
                     v[length - i - 1] = NewTValue(i + 1);
                 }
@@ -106,30 +108,30 @@ namespace DrNet.Tests.Span
                     TValue temp = v[length - targetIndex - 1];
                     v[length - targetIndex - 1] = NewTValue(0);
 
-                    int idx = MemoryExt.IndexOfNotEqualAll(span, values);
+                    int idx = MemoryExt.LastIndexOfNotEqualAll(span, values);
                     Assert.Equal(targetIndex, idx);
 
                     v[length - targetIndex - 1] = temp;
                 }
 
-                for (int targetIndex = 0; targetIndex < length - 3; targetIndex++)
+                for (int targetIndex = 3; targetIndex < length; targetIndex++)
                 {
                     TValue temp1 = v[length - targetIndex - 1];
-                    TValue temp2 = v[length - targetIndex - 2];
-                    TValue temp3 = v[length - targetIndex - 3];
-                    TValue temp4 = v[length - targetIndex - 4];
+                    TValue temp2 = v[length - targetIndex + 0];
+                    TValue temp3 = v[length - targetIndex + 1];
+                    TValue temp4 = v[length - targetIndex + 2];
                     v[length - targetIndex - 1] = NewTValue(0);
-                    v[length - targetIndex - 2] = NewTValue(0);
-                    v[length - targetIndex - 3] = NewTValue(0);
-                    v[length - targetIndex - 4] = NewTValue(0);
+                    v[length - targetIndex + 0] = NewTValue(0);
+                    v[length - targetIndex + 1] = NewTValue(0);
+                    v[length - targetIndex + 2] = NewTValue(0);
 
-                    int idx = MemoryExt.IndexOfNotEqualAll(span, values);
+                    int idx = MemoryExt.LastIndexOfNotEqualAll(span, values);
                     Assert.Equal(targetIndex, idx);
 
                     v[length - targetIndex - 1] = temp1;
-                    v[length - targetIndex - 2] = temp2;
-                    v[length - targetIndex - 3] = temp3;
-                    v[length - targetIndex - 4] = temp4;
+                    v[length - targetIndex + 0] = temp2;
+                    v[length - targetIndex + 1] = temp3;
+                    v[length - targetIndex + 2] = temp4;
                 }
             }
         }
@@ -162,7 +164,7 @@ namespace DrNet.Tests.Span
                 var span = new Span<TSource>(a);
                 var values = new ReadOnlySpan<TValue>(targets);
 
-                int idx = MemoryExt.IndexOfNotEqualAll(span, values);
+                int idx = MemoryExt.LastIndexOfNotEqualAll(span, values);
                 Assert.Equal(expectedIndex, idx);
             }
         }
@@ -184,7 +186,7 @@ namespace DrNet.Tests.Span
                 var span = new Span<TSource>(a);
                 var values = new ReadOnlySpan<TValue>(targets);
 
-                int idx = MemoryExt.IndexOfNotEqualAll(span, values);
+                int idx = MemoryExt.LastIndexOfNotEqualAll(span, values);
                 Assert.Equal(-1, idx);
             }
         }
@@ -210,7 +212,7 @@ namespace DrNet.Tests.Span
                 var span = new Span<TSource>(a);
                 var values = new ReadOnlySpan<TValue>(targets);
 
-                int idx = MemoryExt.IndexOfNotEqualAll(span, values);
+                int idx = MemoryExt.LastIndexOfNotEqualAll(span, values);
                 Assert.Equal(-1, idx);
             }
         }
@@ -231,16 +233,16 @@ namespace DrNet.Tests.Span
                     targets[length - i - 1] = NewTValue(val);
                 }
 
-                a[length - 1] = NewTSource(200);
-                a[length - 2] = NewTSource(200);
-                a[length - 3] = NewTSource(200);
-                a[length - 4] = NewTSource(200);
-                a[length - 5] = NewTSource(200);
+                a[0] = NewTSource(200);
+                a[1] = NewTSource(200);
+                a[2] = NewTSource(200);
+                a[3] = NewTSource(200);
+                a[4] = NewTSource(200);
 
                 var span = new Span<TSource>(a);
                 var values = new ReadOnlySpan<TValue>(targets);
-                int idx = MemoryExt.IndexOfNotEqualAll(span, values);
-                Assert.Equal(length - 5, idx);
+                int idx = MemoryExt.LastIndexOfNotEqualAll(span, values);
+                Assert.Equal(4, idx);
             }
         }
 
@@ -259,7 +261,7 @@ namespace DrNet.Tests.Span
         //            b[i] = NewT(10 * (i + 1));
         //        }
         //        Span<TSource> span = new Span<TSource>(a);
-        //        int idx = MemoryExt.IndexOfNotEqualAll(span, NewTValue(9999, log.Add));
+        //        int idx = MemoryExt.LastIndexOfNotEqualAll(span, NewTValue(9999, log.Add));
         //        Assert.Equal(-1, idx);
 
         //        // Since we asked for a non-existent value, make sure each element of the array was compared once.
@@ -288,7 +290,7 @@ namespace DrNet.Tests.Span
                 var values = new ReadOnlySpan<TValue>(new TValue[]
                     { NewTValue(0), NewTValue(0), NewTValue(0), NewTValue(0), NewTValue(0), NewTValue(0) });
 
-                int index = MemoryExt.IndexOfNotEqualAll(span, values);
+                int index = MemoryExt.LastIndexOfNotEqualAll(span, values);
                 Assert.Equal(-1, index);
             }
 
@@ -303,14 +305,14 @@ namespace DrNet.Tests.Span
                 var values = new ReadOnlySpan<TValue>(new TValue[]
                     { NewTValue(0), NewTValue(0), NewTValue(0), NewTValue(0), NewTValue(0), NewTValue(0) });
 
-                int index = MemoryExt.IndexOfNotEqualAll(span, values);
+                int index = MemoryExt.LastIndexOfNotEqualAll(span, values);
                 Assert.Equal(-1, index);
             }
 
         }
     }
 
-    public class Span_IndexOfNotEqualAll_intEE : Span_IndexOfNotEqualAll<int, TEquatable<int>, TEquatable<int>>
+    public class Span_LastIndexOfNotEqualAll_intEE : Span_LastIndexOfNotEqualAll<int, TEquatable<int>, TEquatable<int>>
     {
         public override int NewT(int value) => value;
         public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) =>
@@ -319,7 +321,7 @@ namespace DrNet.Tests.Span
             new TEquatable<int>(value, onCompare);
     }
 
-    public class Span_IndexOfNotEqualAll_intEO : Span_IndexOfNotEqualAll<int, TEquatable<int>, TObject<int>>
+    public class Span_LastIndexOfNotEqualAll_intEO : Span_LastIndexOfNotEqualAll<int, TEquatable<int>, TObject<int>>
     {
         public override int NewT(int value) => value;
         public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) => 
@@ -332,7 +334,7 @@ namespace DrNet.Tests.Span
         }
     }
 
-    public class Span_IndexOfNotEqualAll_intOE : Span_IndexOfNotEqualAll<int, TObject<int>, TEquatable<int>>
+    public class Span_LastIndexOfNotEqualAll_intOE : Span_LastIndexOfNotEqualAll<int, TObject<int>, TEquatable<int>>
     {
         public override int NewT(int value) => value;
         public override TObject<int> NewTSource(int value, Action<int, int> onCompare)
@@ -345,7 +347,7 @@ namespace DrNet.Tests.Span
             new TEquatable<int>(value, onCompare);
     }
 
-    public class Span_IndexOfNotEqualAll_intOO : Span_IndexOfNotEqualAll<int, TObject<int>, TObject<int>>
+    public class Span_LastIndexOfNotEqualAll_intOO : Span_LastIndexOfNotEqualAll<int, TObject<int>, TObject<int>>
     {
         public override int NewT(int value) => value;
         public override TObject<int> NewTSource(int value, Action<int, int> onCompare) => 
@@ -354,8 +356,8 @@ namespace DrNet.Tests.Span
             new TObject<int>(value, onCompare);
     }
 
-    public class Span_IndexOfNotEqualAll_stringEE : 
-        Span_IndexOfNotEqualAll<string, TEquatable<string>, TEquatable<string>>
+    public class Span_LastIndexOfNotEqualAll_stringEE : 
+        Span_LastIndexOfNotEqualAll<string, TEquatable<string>, TEquatable<string>>
     {
         public override string NewT(int value) => value.ToString();
         public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) => 
@@ -364,7 +366,8 @@ namespace DrNet.Tests.Span
             new TEquatable<string>(value.ToString(), onCompare);
     }
 
-    public class Span_IndexOfNotEqualAll_stringEO : Span_IndexOfNotEqualAll<string, TEquatable<string>, TObject<string>>
+    public class Span_LastIndexOfNotEqualAll_stringEO : 
+        Span_LastIndexOfNotEqualAll<string, TEquatable<string>, TObject<string>>
     {
         public override string NewT(int value) => value.ToString();
         public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) => 
@@ -377,7 +380,8 @@ namespace DrNet.Tests.Span
         }
     }
 
-    public class Span_IndexOfNotEqualAll_stringOE : Span_IndexOfNotEqualAll<string, TObject<string>, TEquatable<string>>
+    public class Span_LastIndexOfNotEqualAll_stringOE : 
+        Span_LastIndexOfNotEqualAll<string, TObject<string>, TEquatable<string>>
     {
         public override string NewT(int value) => value.ToString();
         public override TObject<string> NewTSource(int value, Action<string, string> onCompare)
@@ -390,7 +394,8 @@ namespace DrNet.Tests.Span
             new TEquatable<string>(value.ToString(), onCompare);
     }
 
-    public class Span_IndexOfNotEqualAll_stringOO : Span_IndexOfNotEqualAll<string, TObject<string>, TObject<string>>
+    public class Span_LastIndexOfNotEqualAll_stringOO : 
+        Span_LastIndexOfNotEqualAll<string, TObject<string>, TObject<string>>
     {
         public override string NewT(int value) => value.ToString();
         public override TObject<string> NewTSource(int value, Action<string, string> onCompare) => 
