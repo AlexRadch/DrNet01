@@ -128,207 +128,195 @@ namespace DrNet.Tests.Span
             }
         }
 
+        [Fact]
+        public void TestMatchValuesLarger()
+        {
+            var rnd = new Random(43);
+            for (int length = 1; length < 100; length++)
+            {
+                var a = new T[length];
+                var targets = new T[length * 2];
+
+                int expectedIndex = length / 2;
+                for (int i = 0; i < length; i++)
+                {
+                    targets[i] = NewT(1);
+                    if (i == expectedIndex)
+                    {
+                        a[i] = NewT(0);
+                        targets[length * 2 - 1 - i] = NewT(1);
+                    }
+                    else
+                    {
+                        a[i] = NewT(rnd.Next(2, 255));
+                        targets[length * 2 - 1 - i] = a[i];
+                    }
+                }
+                var span = new Span<T>(a);
+                var values = new ReadOnlySpan<T>(targets);
+
+                int idx = MemoryExt.IndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                Assert.Equal(expectedIndex, idx);
+                idx = MemoryExt.IndexOfNotEqualAllValueComparer(span, values, EqualityComparer);
+                Assert.Equal(expectedIndex, idx);
+            }
+        }
+
+        [Fact]
+        public void TestNoMatch()
+        {
+            var rnd = new Random(44);
+            for (int length = 0; length < 100; length++)
+            {
+                var a = new T[length];
+                for (int i = 0; i < a.Length; i++)
+                {
+                    a[i] = NewT(rnd.Next(2, 256));
+                }
+                T[] targets = a.AsReadOnlySpan().ToArray();
+                Array.Reverse(targets);
+                var span = new Span<T>(a);
+                var values = new ReadOnlySpan<T>(targets);
+
+                int idx = MemoryExt.IndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                Assert.Equal(-1, idx);
+                idx = MemoryExt.IndexOfNotEqualAllValueComparer(span, values, EqualityComparer);
+                Assert.Equal(-1, idx);
+            }
+        }
+
+        [Fact]
+        public void TestNoMatchValuesLarger()
+        {
+            var rnd = new Random(45);
+            for (int length = 1; length < 100; length++)
+            {
+                var a = new T[length];
+                var targets = new T[length * 2];
+
+                int expectedIndex = length / 2;
+                for (int i = 0; i < length; i++)
+                {
+                    targets[i] = NewT(1);
+                    a[i] = NewT(rnd.Next(2, 255));
+                    targets[length * 2 - 1 - i] = a[i];
+                }
+                var span = new Span<T>(a);
+                var values = new ReadOnlySpan<T>(targets);
+
+                int idx = MemoryExt.IndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                Assert.Equal(-1, idx);
+                idx = MemoryExt.IndexOfNotEqualAllValueComparer(span, values, EqualityComparer);
+                Assert.Equal(-1, idx);
+            }
+        }
+
+        [Fact]
+        public void TestMultipleMatch()
+        {
+            for (int length = 5; length < 100; length++)
+            {
+                var a = new T[length];
+                for (int i = 0; i < length; i++)
+                {
+                    int val = i + 1;
+                    a[i] = NewT(val == 200 ? 201 : val);
+                }
+                T[] targets = a.AsReadOnlySpan().ToArray();
+                Array.Reverse(targets);
+
+                a[length - 1] = NewT(200);
+                a[length - 2] = NewT(200);
+                a[length - 3] = NewT(200);
+                a[length - 4] = NewT(200);
+                a[length - 5] = NewT(200);
+
+                var span = new Span<T>(a);
+                var values = new ReadOnlySpan<T>(targets);
+                int idx = MemoryExt.IndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                Assert.Equal(length - 5, idx);
+                idx = MemoryExt.IndexOfNotEqualAllValueComparer(span, values, EqualityComparer);
+                Assert.Equal(length - 5, idx);
+            }
+        }
+
         //[Fact]
-        //public void TestMatchValuesLarger()
+        //public void OnNoMatchMakeSureEveryElementIsCompared()
         //{
-        //    var rnd = new Random(43);
-        //    for (int length = 2; length < 100; length++)
+        //    for (int length = 0; length < 100; length++)
         //    {
-        //        var a = new T[length];
-        //        int expectedIndex = length / 2;
+        //        TLog<T> log = new TLog<T>();
+        //        onCompare = log.Add;
+
+        //        T[] a = new T[length];
         //        for (int i = 0; i < length; i++)
         //        {
-        //            if (i == expectedIndex)
-        //            {
-        //                a[i] = NewT(0);
-        //                continue;
-        //            }
-        //            a[i] = NewT(255);
+        //            a[i] = NewT(10 * (i + 1));
         //        }
-        //        var span = new Span<T>(a);
+        //        Span<T> span = new Span<T>(a);
 
-        //        var targets = new T[length * 2];
-        //        for (int i = 0; i < targets.Length; i++)
+        //        int idx = MemoryExt.IndexOfSourceComparer(span, NewT(9999), EqualityComparer);
+        //        Assert.Equal(-1, idx);
+
+        //        // Since we asked for a non-existent value, make sure each element of the array was compared once.
+        //        // (Strictly speaking, it would not be illegal for IndexOf to compare an element more than once but
+        //        // that would be a non-optimal implementation and a red flag. So we'll stick with the stricter test.)
+        //        Assert.Equal(a.Length, log.Count);
+        //        foreach (T elem in a)
         //        {
-        //            if (i == length + 1)
-        //            {
-        //                targets[i] = NewT(0);
-        //                continue;
-        //            }
-        //            targets[i] = NewT(rnd.Next(1, 255));
+        //            int numCompares = log.CountCompares(elem, NewT(9999));
+        //            Assert.True(numCompares == 1, $"Expected {numCompares} == 1 for element {elem}.");
         //        }
 
-        //        var values = new ReadOnlySpan<T>(targets);
-        //        int idx = MemoryExt.IndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
-        //        Assert.Equal(expectedIndex, idx);
-        //        idx = MemoryExt.IndexOfNotEqualAllValueComparer(span, values, EqualityComparer);
-        //        Assert.Equal(expectedIndex, idx);
+        //        log.Clear();
+        //        idx = MemoryExt.IndexOfValueComparer(span, NewT(9999), EqualityComparer);
+        //        Assert.Equal(-1, idx);
+
+        //        // Since we asked for a non-existent value, make sure each element of the array was compared once.
+        //        // (Strictly speaking, it would not be illegal for IndexOf to compare an element more than once but
+        //        // that would be a non-optimal implementation and a red flag. So we'll stick with the stricter test.)
+        //        Assert.Equal(a.Length, log.Count);
+        //        foreach (T elem in a)
+        //        {
+        //            int numCompares = log.CountCompares(elem, NewT(9999));
+        //            Assert.True(numCompares == 1, $"Expected {numCompares} == 1 for element {elem}.");
+        //        }
         //    }
         //}
 
-        //[Fact]
-        //public void TestNoMatch()
-        //{
-        //    var rnd = new Random(44);
-        //    for (int length = 1; length < 100; length++)
-        //    {
-        //        var a = new T[length];
-        //        var targets = new T[length];
-        //        for (int i = 0; i < a.Length; i++)
-        //        {
-        //            a[i] = NewT(0);
-        //        }
-        //        for (int i = 0; i < targets.Length; i++)
-        //        {
-        //            targets[i] = NewT(rnd.Next(1, 256));
-        //        }
-        //        var span = new Span<T>(a);
-        //        var values = new ReadOnlySpan<T>(targets);
+        [Fact]
+        public void MakeSureNoChecksGoOutOfRange()
+        {
+            for (int length = 0; length < 100; length++)
+            {
+                var a = new T[length + 2];
+                for (int i = 0; i < a.Length; i++)
+                    a[i] = NewT(0);
+                a[0] = NewT(99);
+                a[1] = NewT(99);
+                var span = new Span<T>(a, 2, length);
+                var values = new ReadOnlySpan<T>(new T[] { NewT(0), NewT(0), NewT(0), NewT(0), NewT(0), NewT(0) });
+                int index = MemoryExt.IndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                Assert.Equal(-1, index);
+                index = MemoryExt.IndexOfNotEqualAllValueComparer(span, values, EqualityComparer);
+                Assert.Equal(-1, index);
+            }
 
-        //        int idx = MemoryExt.IndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
-        //        Assert.Equal(-1, idx);
-        //        idx = MemoryExt.IndexOfNotEqualAllValueComparer(span, values, EqualityComparer);
-        //        Assert.Equal(-1, idx);
-
-        //        values = new ReadOnlySpan<T>();
-        //        idx = MemoryExt.IndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
-        //        Assert.Equal(-1, idx);
-        //        idx = MemoryExt.IndexOfNotEqualAllValueComparer(span, values, EqualityComparer);
-        //        Assert.Equal(-1, idx);
-        //    }
-        //}
-
-        //[Fact]
-        //public void TestNoMatchValuesLarger()
-        //{
-        //    var rnd = new Random(45);
-        //    for (int length = 1; length < 100; length++)
-        //    {
-        //        var a = new T[length];
-        //        var targets = new T[length * 2];
-        //        for (int i = 0; i < a.Length; i++)
-        //        {
-        //            a[i] = NewT(0);
-        //        }
-        //        for (int i = 0; i < targets.Length; i++)
-        //        {
-        //            targets[i] = NewT(rnd.Next(1, 256));
-        //        }
-        //        var span = new Span<T>(a);
-        //        var values = new ReadOnlySpan<T>(targets);
-
-        //        int idx = MemoryExt.IndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
-        //        Assert.Equal(-1, idx);
-        //        idx = MemoryExt.IndexOfNotEqualAllValueComparer(span, values, EqualityComparer);
-        //        Assert.Equal(-1, idx);
-        //    }
-        //}
-
-        //[Fact]
-        //public void TestMultipleMatch()
-        //{
-        //    for (int length = 5; length < 100; length++)
-        //    {
-        //        var a = new T[length];
-        //        for (int i = 0; i < length; i++)
-        //        {
-        //            int val = i + 1;
-        //            a[i] = NewT(val == 200 ? 201 : val);
-        //        }
-
-        //        a[length - 1] = NewT(200);
-        //        a[length - 2] = NewT(200);
-        //        a[length - 3] = NewT(200);
-        //        a[length - 4] = NewT(200);
-        //        a[length - 5] = NewT(200);
-
-        //        var span = new Span<T>(a);
-        //        var values = new ReadOnlySpan<T>(new T[] { NewT(200), NewT(200), NewT(200), NewT(200), NewT(200),
-        //            NewT(200), NewT(200), NewT(200), NewT(200) });
-        //        int idx = MemoryExt.IndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
-        //        Assert.Equal(length - 5, idx);
-        //        idx = MemoryExt.IndexOfNotEqualAllValueComparer(span, values, EqualityComparer);
-        //        Assert.Equal(length - 5, idx);
-        //    }
-        //}
-
-        ////[Fact]
-        ////public void OnNoMatchMakeSureEveryElementIsCompared()
-        ////{
-        ////    for (int length = 0; length < 100; length++)
-        ////    {
-        ////        TLog<T> log = new TLog<T>();
-        ////        onCompare = log.Add;
-
-        ////        T[] a = new T[length];
-        ////        for (int i = 0; i < length; i++)
-        ////        {
-        ////            a[i] = NewT(10 * (i + 1));
-        ////        }
-        ////        Span<T> span = new Span<T>(a);
-
-        ////        int idx = MemoryExt.IndexOfSourceComparer(span, NewT(9999), EqualityComparer);
-        ////        Assert.Equal(-1, idx);
-
-        ////        // Since we asked for a non-existent value, make sure each element of the array was compared once.
-        ////        // (Strictly speaking, it would not be illegal for IndexOf to compare an element more than once but
-        ////        // that would be a non-optimal implementation and a red flag. So we'll stick with the stricter test.)
-        ////        Assert.Equal(a.Length, log.Count);
-        ////        foreach (T elem in a)
-        ////        {
-        ////            int numCompares = log.CountCompares(elem, NewT(9999));
-        ////            Assert.True(numCompares == 1, $"Expected {numCompares} == 1 for element {elem}.");
-        ////        }
-
-        ////        log.Clear();
-        ////        idx = MemoryExt.IndexOfValueComparer(span, NewT(9999), EqualityComparer);
-        ////        Assert.Equal(-1, idx);
-
-        ////        // Since we asked for a non-existent value, make sure each element of the array was compared once.
-        ////        // (Strictly speaking, it would not be illegal for IndexOf to compare an element more than once but
-        ////        // that would be a non-optimal implementation and a red flag. So we'll stick with the stricter test.)
-        ////        Assert.Equal(a.Length, log.Count);
-        ////        foreach (T elem in a)
-        ////        {
-        ////            int numCompares = log.CountCompares(elem, NewT(9999));
-        ////            Assert.True(numCompares == 1, $"Expected {numCompares} == 1 for element {elem}.");
-        ////        }
-        ////    }
-        ////}
-
-        //[Fact]
-        //public void MakeSureNoChecksGoOutOfRange()
-        //{
-        //    for (int length = 1; length < 100; length++)
-        //    {
-        //        var a = new T[length + 2];
-        //        for (int i = 0; i < a.Length; i++)
-        //            a[i] = NewT(0);
-        //        a[0] = NewT(99);
-        //        a[length + 1] = NewT(98);
-        //        var span = new Span<T>(a, 1, length - 1);
-        //        var values = new ReadOnlySpan<T>(new T[] { NewT(99), NewT(98), NewT(99), NewT(98), NewT(99), NewT(98) });
-        //        int index = MemoryExt.IndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
-        //        Assert.Equal(-1, index);
-        //        index = MemoryExt.IndexOfNotEqualAllValueComparer(span, values, EqualityComparer);
-        //        Assert.Equal(-1, index);
-        //    }
-
-        //    for (int length = 1; length < 100; length++)
-        //    {
-        //        var a = new T[length + 2];
-        //        for (int i = 0; i < a.Length; i++)
-        //            a[i] = NewT(0);
-        //        a[0] = NewT(99);
-        //        a[length + 1] = NewT(99);
-        //        var span = new Span<T>(a, 1, length - 1);
-        //        var values = new ReadOnlySpan<T>(new T[] { NewT(99), NewT(99), NewT(99), NewT(99), NewT(99), NewT(99) });
-        //        int index = MemoryExt.IndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
-        //        Assert.Equal(-1, index);
-        //        index = MemoryExt.IndexOfNotEqualAllValueComparer(span, values, EqualityComparer);
-        //        Assert.Equal(-1, index);
-        //    }
-        //}
+            for (int length = 0; length < 100; length++)
+            {
+                var a = new T[length + 2];
+                for (int i = 0; i < a.Length; i++)
+                    a[i] = NewT(0);
+                a[length + 0] = NewT(99);
+                a[length + 1] = NewT(99);
+                var span = new Span<T>(a, 0, length);
+                var values = new ReadOnlySpan<T>(new T[] { NewT(0), NewT(0), NewT(0), NewT(0), NewT(0), NewT(0) });
+                int index = MemoryExt.IndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                Assert.Equal(-1, index);
+                index = MemoryExt.IndexOfNotEqualAllValueComparer(span, values, EqualityComparer);
+                Assert.Equal(-1, index);
+            }
+        }
     }
 
     public class Span_IndexOfNotEqualAll_EqualityComparer_int : Span_IndexOfNotEqualAll_EqualityComparer<int>

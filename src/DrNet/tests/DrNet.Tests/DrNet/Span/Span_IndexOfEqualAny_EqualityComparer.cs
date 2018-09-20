@@ -169,7 +169,7 @@ namespace DrNet.Tests.Span
         public void TestNoMatch()
         {
             var rnd = new Random(44);
-            for (int length = 1; length < 100; length++)
+            for (int length = 0; length < 100; length++)
             {
                 var a = new T[length];
                 var targets = new T[length];
@@ -298,14 +298,14 @@ namespace DrNet.Tests.Span
         [Fact]
         public void MakeSureNoChecksGoOutOfRange()
         {
-            for (int length = 1; length < 100; length++)
+            for (int length = 0; length < 100; length++)
             {
                 var a = new T[length + 2];
                 for (int i = 0; i < a.Length; i++)
                     a[i] = NewT(0);
                 a[0] = NewT(99);
                 a[length + 1] = NewT(98);
-                var span = new Span<T>(a, 1, length - 1);
+                var span = new Span<T>(a, 1, length);
                 var values = new ReadOnlySpan<T>(new T[] { NewT(99), NewT(98), NewT(99), NewT(98), NewT(99), NewT(98) });
                 int index = MemoryExt.IndexOfEqualAnySourceComparer(span, values, EqualityComparer);
                 Assert.Equal(-1, index);
@@ -313,14 +313,14 @@ namespace DrNet.Tests.Span
                 Assert.Equal(-1, index);
             }
 
-            for (int length = 1; length < 100; length++)
+            for (int length = 0; length < 100; length++)
             {
                 var a = new T[length + 2];
                 for (int i = 0; i < a.Length; i++)
                     a[i] = NewT(0);
                 a[0] = NewT(99);
                 a[length + 1] = NewT(99);
-                var span = new Span<T>(a, 1, length - 1);
+                var span = new Span<T>(a, 1, length);
                 var values = new ReadOnlySpan<T>(new T[] { NewT(99), NewT(99), NewT(99), NewT(99), NewT(99), NewT(99) });
                 int index = MemoryExt.IndexOfEqualAnySourceComparer(span, values, EqualityComparer);
                 Assert.Equal(-1, index);

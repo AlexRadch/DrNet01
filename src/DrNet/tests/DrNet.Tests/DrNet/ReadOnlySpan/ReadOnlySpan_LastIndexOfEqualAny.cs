@@ -282,28 +282,28 @@ namespace DrNet.Tests.ReadOnlySpan
         [Fact]
         public void MakeSureNoChecksGoOutOfRange()
         {
-            for (int length = 1; length < 100; length++)
+            for (int length = 0; length < 100; length++)
             {
                 var a = new TSource[length + 2];
                 for (int i = 0; i < a.Length; i++)
                     a[i] = NewTSource(0);
                 a[0] = NewTSource(99);
                 a[length + 1] = NewTSource(98);
-                var span = new ReadOnlySpan<TSource>(a, 1, length - 1);
+                var span = new ReadOnlySpan<TSource>(a, 1, length);
                 var values = new ReadOnlySpan<TValue>(new TValue[] { NewTValue(99), NewTValue(98), NewTValue(99),
                     NewTValue(98), NewTValue(99), NewTValue(98) });
                 int index = MemoryExt.LastIndexOfEqualAny(span, values);
                 Assert.Equal(-1, index);
             }
 
-            for (int length = 1; length < 100; length++)
+            for (int length = 0; length < 100; length++)
             {
                 var a = new TSource[length + 2];
                 for (int i = 0; i < a.Length; i++)
                     a[i] = NewTSource(0);
                 a[0] = NewTSource(99);
                 a[length + 1] = NewTSource(99);
-                var span = new ReadOnlySpan<TSource>(a, 1, length - 1);
+                var span = new ReadOnlySpan<TSource>(a, 1, length);
                 var values = new ReadOnlySpan<TValue>(new TValue[] { NewTValue(99), NewTValue(99), NewTValue(99),
                     NewTValue(99), NewTValue(99), NewTValue(99) });
                 int index = MemoryExt.LastIndexOfEqualAny(span, values);
