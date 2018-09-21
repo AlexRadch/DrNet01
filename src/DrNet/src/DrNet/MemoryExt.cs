@@ -18,12 +18,13 @@ namespace DrNet
             {
                 if (start != 0)
                     throw new ArgumentOutOfRangeException(nameof(start));
+                return new ReadOnlyMemory<T>(array);
             }
             return new ReadOnlyMemory<T>(array, start, array.Length - start);
         }
 
         public static ReadOnlyMemory<T> AsReadOnlyMemory<T>(this T[] array, int start, int length) => 
-            new ReadOnlyMemory<T>(array, start, array.Length - start);
+            new ReadOnlyMemory<T>(array, start, length);
 
         public static ReadOnlyMemory<T> AsReadOnlyMemory<T>(this ArraySegment<T> segment) =>
             new ReadOnlyMemory<T>(segment.Array, segment.Offset, segment.Count);
