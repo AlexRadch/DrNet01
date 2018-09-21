@@ -7,8 +7,9 @@ namespace DrNet.Internal
     // See https://github.com/dotnet/csharplang/issues/1840#issuecomment-419456424
     public abstract class MemoryExtensionsEquatablePatternMatching<T>
     {
-        public static MemoryExtensionsEquatablePatternMatching<T> Instance = (MemoryExtensionsEquatablePatternMatching<T>)Activator.CreateInstance(
-            typeof(MemoryExtensionsEquatablePatternMatchingImplementation<>).MakeGenericType(typeof(T)));
+        public static MemoryExtensionsEquatablePatternMatching<T> Instance = 
+            (MemoryExtensionsEquatablePatternMatching<T>)Activator.CreateInstance(
+                typeof(MemoryExtensionsEquatablePatternMatchingImplementation<>).MakeGenericType(typeof(T)));
 
         // Pattern matching for System.MemoryExtensions.IndexOf{T}(ReadOnlySpan{T}, T) where T : IEquatable{T}
         public abstract int IndexOf(ReadOnlySpan<T> span, T value);
@@ -34,16 +35,24 @@ namespace DrNet.Internal
         public abstract bool SequenceEqual(ReadOnlySpan<T> span, ReadOnlySpan<T> other);
     }
 
-    public sealed class MemoryExtensionsEquatablePatternMatchingImplementation<T> : MemoryExtensionsEquatablePatternMatching<T> where T : IEquatable<T>
+    public sealed class MemoryExtensionsEquatablePatternMatchingImplementation<T> : 
+        MemoryExtensionsEquatablePatternMatching<T> where T : IEquatable<T>
     {
-        public override int IndexOf(ReadOnlySpan<T> span, T value) => System.MemoryExtensions.IndexOf(span, value);
-        public override int LastIndexOf(ReadOnlySpan<T> span, T value) => System.MemoryExtensions.LastIndexOf(span, value);
-        public override int IndexOfAny(ReadOnlySpan<T> span, T value0, T value1) => System.MemoryExtensions.IndexOfAny(span, value0, value1);
-        public override int IndexOfAny(ReadOnlySpan<T> span, T value0, T value1, T value2) => System.MemoryExtensions.IndexOfAny(span, value0, value1, value2);
-        public override int IndexOfAny(ReadOnlySpan<T> span, ReadOnlySpan<T> values) => System.MemoryExtensions.IndexOfAny(span, values);
-        public override int LastIndexOfAny(ReadOnlySpan<T> span, T value0, T value1) => System.MemoryExtensions.LastIndexOfAny(span, value0, value1);
-        public override int LastIndexOfAny(ReadOnlySpan<T> span, T value0, T value1, T value2) => System.MemoryExtensions.LastIndexOfAny(span, value0, value1, value2);
-        public override int LastIndexOfAny(ReadOnlySpan<T> span, ReadOnlySpan<T> values) => System.MemoryExtensions.LastIndexOfAny(span, values);
-        public override bool SequenceEqual(ReadOnlySpan<T> span, ReadOnlySpan<T> other) => System.MemoryExtensions.SequenceEqual(span, other);
+        public override int IndexOf(ReadOnlySpan<T> span, T value) => MemoryExtensions.IndexOf(span, value);
+        public override int LastIndexOf(ReadOnlySpan<T> span, T value) => MemoryExtensions.LastIndexOf(span, value);
+        public override int IndexOfAny(ReadOnlySpan<T> span, T value0, T value1) => 
+            MemoryExtensions.IndexOfAny(span, value0, value1);
+        public override int IndexOfAny(ReadOnlySpan<T> span, T value0, T value1, T value2) => 
+            MemoryExtensions.IndexOfAny(span, value0, value1, value2);
+        public override int IndexOfAny(ReadOnlySpan<T> span, ReadOnlySpan<T> values) => 
+            MemoryExtensions.IndexOfAny(span, values);
+        public override int LastIndexOfAny(ReadOnlySpan<T> span, T value0, T value1) => 
+            MemoryExtensions.LastIndexOfAny(span, value0, value1);
+        public override int LastIndexOfAny(ReadOnlySpan<T> span, T value0, T value1, T value2) => 
+            MemoryExtensions.LastIndexOfAny(span, value0, value1, value2);
+        public override int LastIndexOfAny(ReadOnlySpan<T> span, ReadOnlySpan<T> values) => 
+            MemoryExtensions.LastIndexOfAny(span, values);
+        public override bool SequenceEqual(ReadOnlySpan<T> span, ReadOnlySpan<T> other) => 
+            MemoryExtensions.SequenceEqual(span, other);
     }   
 }

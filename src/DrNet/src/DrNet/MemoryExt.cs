@@ -94,7 +94,7 @@ namespace DrNet
 
         /// <summary>
         /// Searches for the specified value and returns the index of its first occurrence. If not found, returns -1.
-        /// Values are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
         /// TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
@@ -120,7 +120,7 @@ namespace DrNet
 
         /// <summary>
         /// Searches for the specified value and returns the index of its first occurrence. If not found, returns -1.
-        /// Values are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
         /// TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
@@ -147,7 +147,7 @@ namespace DrNet
         /// <summary>
         /// Searches for a value that not equal to the specified value and returns the index of its first occurrence.
         /// If not found, returns -1.
-        /// Values are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
         /// TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
@@ -169,7 +169,7 @@ namespace DrNet
         /// <summary>
         /// Searches for a value that not equal to the specified value and returns the index of its first occurrence.
         /// If not found, returns -1.
-        /// Values are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
         /// TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
@@ -193,7 +193,7 @@ namespace DrNet
         /// If not found, returns -1.
         /// </summary>
         /// <param name="span">The span to search.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int IndexOfSourceComparer<TSource, TValue>(this Span<TSource> span, TValue value,
             Func<TSource, TValue, bool> equalityComparer)
         {
@@ -208,7 +208,7 @@ namespace DrNet
         /// If not found, returns -1.
         /// </summary>
         /// <param name="span">The span to search.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int IndexOfSourceComparer<TSource, TValue>(this ReadOnlySpan<TSource> span, TValue value,
             Func<TSource, TValue, bool> equalityComparer)
         {
@@ -223,7 +223,7 @@ namespace DrNet
         /// If not found, returns -1.
         /// </summary>
         /// <param name="span">The span to search.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int IndexOfValueComparer<TSource, TValue>(this Span<TSource> span, TValue value, 
             Func<TValue, TSource, bool> equalityComparer)
         {
@@ -238,7 +238,7 @@ namespace DrNet
         /// If not found, returns -1.
         /// </summary>
         /// <param name="span">The span to search.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int IndexOfValueComparer<TSource, TValue>(this ReadOnlySpan<TSource> span, TValue value, 
             Func<TValue, TSource, bool> equalityComparer)
         {
@@ -254,7 +254,7 @@ namespace DrNet
 
         /// <summary>
         /// Searches for the specified value and returns the index of its last occurrence. If not found, returns -1.
-        /// Values are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
         /// TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
@@ -280,7 +280,7 @@ namespace DrNet
 
         /// <summary>
         /// Searches for the specified value and returns the index of its last occurrence. If not found, returns -1.
-        /// Values are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
         /// TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
@@ -306,7 +306,7 @@ namespace DrNet
         /// <summary>
         /// Searches for a value that not equal to the specified value and returns the index of its last occurrence.
         /// If not found, returns -1.
-        /// Values are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
         /// TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
@@ -328,7 +328,7 @@ namespace DrNet
         /// <summary>
         /// Searches for a value that not equal to the specified value and returns the index of its last occurrence.
         /// If not found, returns -1.
-        /// Values are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
         /// TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
@@ -352,7 +352,7 @@ namespace DrNet
         /// If not found, returns -1.
         /// </summary>
         /// <param name="span">The span to search.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int LastIndexOfSourceComparer<TSource, TValue>(this Span<TSource> span, TValue value,
             Func<TSource, TValue, bool> equalityComparer)
         {
@@ -367,7 +367,7 @@ namespace DrNet
         /// If not found, returns -1.
         /// </summary>
         /// <param name="span">The span to search.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int LastIndexOfSourceComparer<TSource, TValue>(this ReadOnlySpan<TSource> span, TValue value,
             Func<TSource, TValue, bool> equalityComparer)
         {
@@ -382,7 +382,7 @@ namespace DrNet
         /// If not found, returns -1.
         /// </summary>
         /// <param name="span">The span to search.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int LastIndexOfValueComparer<TSource, TValue>(this Span<TSource> span, TValue value,
             Func<TValue, TSource, bool> equalityComparer)
         {
@@ -397,7 +397,7 @@ namespace DrNet
         /// If not found, returns -1.
         /// </summary>
         /// <param name="span">The span to search.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int LastIndexOfValueComparer<TSource, TValue>(this ReadOnlySpan<TSource> span, TValue value,
             Func<TValue, TSource, bool> equalityComparer)
         {
@@ -414,7 +414,7 @@ namespace DrNet
         /// <summary>
         /// Searches for the first index of any of the specified values similar to calling IndexOf several times with 
         /// the logical OR operator. If not found, returns -1. 
-        /// Values are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
         /// TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
@@ -448,7 +448,7 @@ namespace DrNet
         /// <summary>
         /// Searches for the first index of any of the specified values similar to calling IndexOf several times with 
         /// the logical OR operator. If not found, returns -1. 
-        /// Values are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
         /// TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
@@ -485,7 +485,7 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int IndexOfEqualAnySourceComparer<TSource, TValue>(this Span<TSource> span, 
             ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer)
         {
@@ -499,7 +499,7 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int IndexOfEqualAnySourceComparer<TSource, TValue>(this ReadOnlySpan<TSource> span, 
             ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer)
         {
@@ -513,7 +513,7 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int IndexOfEqualAnyValueComparer<TSource, TValue>(this Span<TSource> span, 
             ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer)
         {
@@ -527,7 +527,7 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int IndexOfEqualAnyValueComparer<TSource, TValue>(this ReadOnlySpan<TSource> span, 
             ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer)
         {
@@ -542,7 +542,7 @@ namespace DrNet
         /// <summary>
         /// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with 
         /// the logical OR operator. If not found, returns -1. 
-        /// Values are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
         /// TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
@@ -576,7 +576,7 @@ namespace DrNet
         /// <summary>
         /// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with 
         /// the logical OR operator. If not found, returns -1. 
-        /// Values are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
         /// TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
@@ -614,7 +614,7 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int LastIndexOfEqualAnySourceComparer<TSource, TValue>(this Span<TSource> span, 
             ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer)
         {
@@ -628,7 +628,7 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int LastIndexOfEqualAnySourceComparer<TSource, TValue>(this ReadOnlySpan<TSource> span, 
             ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer)
         {
@@ -642,7 +642,7 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int LastIndexOfEqualAnyValueComparer<TSource, TValue>(this Span<TSource> span, 
             ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer)
         {
@@ -656,7 +656,7 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int LastIndexOfEqualAnyValueComparer<TSource, TValue>(this ReadOnlySpan<TSource> span, 
             ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer)
         {
@@ -670,7 +670,7 @@ namespace DrNet
 
         /// <summary>
         /// Searches for the first value that not equal to the specified values. If not found, returns -1. 
-        /// Values are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
         /// TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
@@ -695,7 +695,7 @@ namespace DrNet
 
         /// <summary>
         /// Searches for the first value that not equal to the specified values. If not found, returns -1. 
-        /// Values are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
         /// TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
@@ -722,7 +722,7 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int IndexOfNotEqualAllSourceComparer<TSource, TValue>(this Span<TSource> span,
             ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer)
         {
@@ -735,7 +735,7 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int IndexOfNotEqualAllSourceComparer<TSource, TValue>(this ReadOnlySpan<TSource> span,
             ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer)
         {
@@ -748,7 +748,7 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int IndexOfNotEqualAllValueComparer<TSource, TValue>(this Span<TSource> span,
             ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer)
         {
@@ -761,7 +761,7 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int IndexOfNotEqualAllValueComparer<TSource, TValue>(this ReadOnlySpan<TSource> span,
             ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer)
         {
@@ -775,7 +775,7 @@ namespace DrNet
 
         /// <summary>
         /// Searches for the first value that not equal to the specified values. If not found, returns -1. 
-        /// Values are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
         /// TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
@@ -800,7 +800,7 @@ namespace DrNet
 
         /// <summary>
         /// Searches for the first value that not equal to the specified values. If not found, returns -1. 
-        /// Values are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
         /// TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
@@ -829,7 +829,7 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int LastIndexOfNotEqualAllSourceComparer<TSource, TValue>(this Span<TSource> span,
             ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer)
         {
@@ -842,7 +842,7 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int LastIndexOfNotEqualAllSourceComparer<TSource, TValue>(this ReadOnlySpan<TSource> span,
             ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer)
         {
@@ -855,7 +855,7 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int LastIndexOfNotEqualAllValueComparer<TSource, TValue>(this Span<TSource> span,
             ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer)
         {
@@ -868,7 +868,7 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        /// <param name="equalityComparer">A function to test each element for a equality.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int LastIndexOfNotEqualAllValueComparer<TSource, TValue>(this ReadOnlySpan<TSource> span,
             ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer)
         {
@@ -881,8 +881,12 @@ namespace DrNet
         #region SequenceEqualTo
 
         /// <summary>
-        /// Determines whether two sequences are equal by comparing the elements using IEquatable{T}.Equals(T) or Object.Equals(Object).
+        /// Determines whether two sequences are equal.
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// TValue.Equals(TSource).
         /// </summary>
+        /// <param name="span">The span to compare.</param>
+        /// <param name="other">The second span to compare.</param>
         public static bool SequenceEqualTo<TSource, TOther>(this Span<TSource> span, ReadOnlySpan<TOther> other)
         {
             int length = span.Length;
@@ -914,8 +918,12 @@ namespace DrNet
         }
 
         /// <summary>
-        /// Determines whether two sequences are equal by comparing the elements using IEquatable{T}.Equals(T) or Object.Equals(Object).
+        /// Determines whether two sequences are equal.
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// TValue.Equals(TSource).
         /// </summary>
+        /// <param name="span">The span to compare.</param>
+        /// <param name="other">The second span to compare.</param>
         public static bool SequenceEqualTo<TSource, TOther>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TOther> other)
         {
             int length = span.Length;
@@ -949,6 +957,9 @@ namespace DrNet
         /// <summary>
         /// Determines whether two sequences are equal by comparing the elements using the equality comparer.
         /// </summary>
+        /// <param name="span">The span to compare.</param>
+        /// <param name="other">The second span to compare.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static bool SequenceEqualTo<TSource, TOther>(this Span<TSource> span, ReadOnlySpan<TOther> other,
             Func<TSource, TOther, bool> equalityComparer)
         {
@@ -960,6 +971,9 @@ namespace DrNet
         /// <summary>
         /// Determines whether two sequences are equal by comparing the elements using the equality comparer.
         /// </summary>
+        /// <param name="span">The span to compare.</param>
+        /// <param name="other">The second span to compare.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static bool SequenceEqualTo<TSource, TOther>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TOther> other,
             Func<TSource, TOther, bool> equalityComparer)
         {
@@ -971,6 +985,9 @@ namespace DrNet
         /// <summary>
         /// Determines whether two sequences are equal by comparing the elements using the equality comparer.
         /// </summary>
+        /// <param name="span">The span to compare.</param>
+        /// <param name="other">The second span to compare.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static bool SequenceEqualFrom<TSource, TOther>(this Span<TSource> span, ReadOnlySpan<TOther> other,
             Func<TOther, TSource, bool> equalityComparer)
         {
@@ -982,6 +999,9 @@ namespace DrNet
         /// <summary>
         /// Determines whether two sequences are equal by comparing the elements using the equality comparer.
         /// </summary>
+        /// <param name="span">The span to compare.</param>
+        /// <param name="other">The second span to compare.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static bool SequenceEqualFrom<TSource, TOther>(this ReadOnlySpan<TSource> span, 
             ReadOnlySpan<TOther> other, Func<TOther, TSource, bool> equalityComparer)
         {
@@ -992,71 +1012,95 @@ namespace DrNet
 
         #endregion
 
-        //#region StartsWithSeq
+        #region StartsWithSeq
 
-        ///// <summary>
-        ///// Determines whether the specified sequence appears at the start of the span by comparing the elements using IEquatable{T}.Equals(T) or Object.Equals(Object).
-        ///// </summary>
-        //public static bool StartsWithSeq<T>(this Span<T> span, ReadOnlySpan<T> value)
-        //{
-        //    int valueLength = value.Length;
-        //    if (valueLength > span.Length)
-        //        return false;
-        //    if (typeof(IEquatable<T>).IsAssignableFrom(typeof(T)))
-        //        return MemoryExtensionsEquatablePatternMatching<T>.Instance.SequenceEqual(span.Slice(0, valueLength), value);
-        //    return SpanHelpers.SequenceEqualObject(ref MemoryMarshal.GetReference(span), ref MemoryMarshal.GetReference(value), valueLength);
-        //}
+        /// <summary>
+        /// Determines whether the specified sequence appears at the start of the span.
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// TValue.Equals(TSource).
+        /// </summary>
+        /// <param name="span">The span to search the specified sequence at the start of it.</param>
+        /// <param name="value">The sequence to search at the start of the span.</param>
+        public static bool StartsWithSeq<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> value)
+        {
+            int valueLength = value.Length;
+            return valueLength <= span.Length && SequenceEqualTo(span.Slice(0, valueLength), value);
+        }
 
-        ///// <summary>
-        ///// Determines whether the specified sequence appears at the start of the span by comparing the elements using IEquatable{T}.Equals(T) or Object.Equals(Object).
-        ///// </summary>
-        //public static bool StartsWithSeq<T>(this ReadOnlySpan<T> span, ReadOnlySpan<T> value)
-        //{
-        //    int valueLength = value.Length;
-        //    if (valueLength > span.Length)
-        //        return false;
-        //    if (typeof(IEquatable<T>).IsAssignableFrom(typeof(T)))
-        //        return MemoryExtensionsEquatablePatternMatching<T>.Instance.SequenceEqual(span.Slice(0, valueLength), value);
-        //    return SpanHelpers.SequenceEqualObject(ref MemoryMarshal.GetReference(span), ref MemoryMarshal.GetReference(value), valueLength);
-        //}
+        /// <summary>
+        /// Determines whether the specified sequence appears at the start of the span.
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// TValue.Equals(TSource).
+        /// </summary>
+        /// <param name="span">The span to search the specified sequence at the start of it.</param>
+        /// <param name="value">The sequence to search at the start of the span.</param>
+        public static bool StartsWithSeq<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> value)
+        {
+            int valueLength = value.Length;
+            return valueLength <= span.Length && SequenceEqualTo(span.Slice(0, valueLength), value);
+        }
 
-        ///// <summary>
-        ///// Determines whether the specified sequence appears at the start of the span by comparing the elements using IEqualityComparer{T}.Equals(T, T).
-        ///// </summary>
-        //public static bool StartsWithSeq<T>(this Span<T> span, ReadOnlySpan<T> value, IEqualityComparer<T> equalityComparer)
-        //{
-        //    int valueLength = value.Length;
-        //    return valueLength <= span.Length && SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span), ref MemoryMarshal.GetReference(value), valueLength, equalityComparer);
-        //}
+        /// <summary>
+        /// Determines whether the specified sequence appears at the start of the span.
+        /// Elements are compared by the equality comparer function.
+        /// </summary>
+        /// <param name="span">The span to search the specified sequence at the start of it.</param>
+        /// <param name="value">The sequence to search at the start of the span.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        public static bool StartsWithSeqSourceComparer<TSource, TValue>(this Span<TSource> span, 
+            ReadOnlySpan<TValue> value, Func<TSource, TValue, bool> equalityComparer)
+        {
+            int valueLength = value.Length;
+            return valueLength <= span.Length && SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span), 
+                ref MemoryMarshal.GetReference(value), valueLength, equalityComparer);
+        }
 
-        ///// <summary>
-        ///// Determines whether the specified sequence appears at the start of the span by comparing the elements using IEqualityComparer{T}.Equals(T, T).
-        ///// </summary>
-        //public static bool StartsWithSeq<T>(this ReadOnlySpan<T> span, ReadOnlySpan<T> value, IEqualityComparer<T> equalityComparer)
-        //{
-        //    int valueLength = value.Length;
-        //    return valueLength <= span.Length && SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span), ref MemoryMarshal.GetReference(value), valueLength, equalityComparer);
-        //}
+        /// <summary>
+        /// Determines whether the specified sequence appears at the start of the span.
+        /// Elements are compared by the equality comparer function.
+        /// </summary>
+        /// <param name="span">The span to search the specified sequence at the start of it.</param>
+        /// <param name="value">The sequence to search at the start of the span.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        public static bool StartsWithSeqSourceComparer<TSource, TValue>(this ReadOnlySpan<TSource> span,
+            ReadOnlySpan<TValue> value, Func<TSource, TValue, bool> equalityComparer)
+        {
+            int valueLength = value.Length;
+            return valueLength <= span.Length && SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span),
+                ref MemoryMarshal.GetReference(value), valueLength, equalityComparer);
+        }
 
-        ///// <summary>
-        ///// Determines whether the specified sequence appears at the start of the span by comparing the elements using IEquatable{T}.Equals(T).
-        ///// </summary>
-        //public static bool StartsWithSeq<T>(this Span<T> span, ReadOnlySpan<IEquatable<T>> value)
-        //{
-        //    int valueLength = value.Length;
-        //    return valueLength <= span.Length && SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span), ref MemoryMarshal.GetReference(value), valueLength);
-        //}
+        /// <summary>
+        /// Determines whether the specified sequence appears at the start of the span.
+        /// Elements are compared by the equality comparer function.
+        /// </summary>
+        /// <param name="span">The span to search the specified sequence at the start of it.</param>
+        /// <param name="value">The sequence to search at the start of the span.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        public static bool StartsWithSeqValueComparer<TSource, TValue>(this Span<TSource> span,
+            ReadOnlySpan<TValue> value, Func<TValue, TSource, bool> equalityComparer)
+        {
+            int valueLength = value.Length;
+            return valueLength <= span.Length && SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(value),
+                ref MemoryMarshal.GetReference(span), valueLength, equalityComparer);
+        }
 
-        ///// <summary>
-        ///// Determines whether the specified sequence appears at the start of the span by comparing the elements using IEquatable{T}.Equals(T).
-        ///// </summary>
-        //public static bool StartsWithSeq<T>(this ReadOnlySpan<T> span, ReadOnlySpan<IEquatable<T>> value)
-        //{
-        //    int valueLength = value.Length;
-        //    return valueLength <= span.Length && SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span), ref MemoryMarshal.GetReference(value), valueLength);
-        //}
+        /// <summary>
+        /// Determines whether the specified sequence appears at the start of the span.
+        /// Elements are compared by the equality comparer function.
+        /// </summary>
+        /// <param name="span">The span to search the specified sequence at the start of it.</param>
+        /// <param name="value">The sequence to search at the start of the span.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        public static bool StartsWithSeqValueComparer<TSource, TValue>(this ReadOnlySpan<TSource> span,
+            ReadOnlySpan<TValue> value, Func<TValue, TSource, bool> equalityComparer)
+        {
+            int valueLength = value.Length;
+            return valueLength <= span.Length && SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(value),
+                ref MemoryMarshal.GetReference(span), valueLength, equalityComparer);
+        }
 
-        //#endregion
+        #endregion
 
         //#region EndsWithSeq
 
