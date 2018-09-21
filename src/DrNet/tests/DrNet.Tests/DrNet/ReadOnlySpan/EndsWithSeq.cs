@@ -1,9 +1,9 @@
 ﻿using System;
 using Xunit;
 
-namespace DrNet.Tests.Span
+namespace DrNet.Tests.ReadOnlySpan
 {
-    public abstract class StartsWithSeq<T, TSource, TValue>
+    public abstract class EndsWithSeq<T, TSource, TValue>
     {
         public abstract T NewT(int value);
 
@@ -24,10 +24,10 @@ namespace DrNet.Tests.Span
             TSource[] f = new TSource[3];
             TValue[] s = new TValue[3];
 
-            Span<TSource> first = new Span<TSource>(f, 1, 0);
+            ReadOnlySpan<TSource> first = new ReadOnlySpan<TSource>(f, 1, 0);
             ReadOnlySpan<TValue> second = new ReadOnlySpan<TValue>(s, 2, 0);
 
-            bool b = MemoryExt.StartsWithSeq(first, second);
+            bool b = MemoryExt.EndsWithSeq(first, second);
             Assert.True(b);
         }
 
@@ -37,10 +37,10 @@ namespace DrNet.Tests.Span
             TSource[] f = { NewTSource(4), NewTSource(5), NewTSource(6) };
             TValue[] s = { NewTValue(4), NewTValue(5), NewTValue(6) };
 
-            Span<TSource> first = new Span<TSource>(f);
+            ReadOnlySpan<TSource> first = new ReadOnlySpan<TSource>(f);
             ReadOnlySpan<TValue> second = new ReadOnlySpan<TValue>(s);
 
-            bool b = MemoryExt.StartsWithSeq(first, second);
+            bool b = MemoryExt.EndsWithSeq(first, second);
             Assert.True(b);
         }
 
@@ -50,10 +50,10 @@ namespace DrNet.Tests.Span
             TSource[] f = { NewTSource(4), NewTSource(5), NewTSource(6) };
             TValue[] s = { NewTValue(4), NewTValue(5), NewTValue(6) };
 
-            Span<TSource> first = new Span<TSource>(f, 0, 2);
+            ReadOnlySpan<TSource> first = new ReadOnlySpan<TSource>(f, 0, 2);
             ReadOnlySpan<TValue> second = new ReadOnlySpan<TValue>(s, 0, 3);
 
-            bool b = MemoryExt.StartsWithSeq(first, second);
+            bool b = MemoryExt.EndsWithSeq(first, second);
             Assert.False(b);
         }
 
@@ -63,10 +63,10 @@ namespace DrNet.Tests.Span
             TSource[] f = { NewTSource(4), NewTSource(5), NewTSource(6) };
             TValue[] s = { NewTValue(4), NewTValue(5), NewTValue(6) };
 
-            Span<TSource> span = new Span<TSource>(f, 0, 3);
-            ReadOnlySpan<TValue> second = new ReadOnlySpan<TValue>(s, 0, 2);
+            ReadOnlySpan<TSource> span = new ReadOnlySpan<TSource>(f, 0, 3);
+            ReadOnlySpan<TValue> second = new ReadOnlySpan<TValue>(s, 1, 2);
 
-            bool b = MemoryExt.StartsWithSeq(span, second);
+            bool b = MemoryExt.EndsWithSeq(span, second);
             Assert.True(b);
         }
 
@@ -76,10 +76,10 @@ namespace DrNet.Tests.Span
             TSource[] f = { NewTSource(4), NewTSource(5), NewTSource(6) };
             TValue[] s = { NewTValue(4), NewTValue(5), NewTValue(6) };
 
-            Span<TSource> span = new Span<TSource>(f, 0, 3);
+            ReadOnlySpan<TSource> span = new ReadOnlySpan<TSource>(f, 0, 3);
             ReadOnlySpan<TValue> second = new ReadOnlySpan<TValue>(s, 0, 3);
 
-            bool b = MemoryExt.StartsWithSeq(span, second);
+            bool b = MemoryExt.EndsWithSeq(span, second);
             Assert.True(b);
         }
 
@@ -100,14 +100,14 @@ namespace DrNet.Tests.Span
                     s[i] = NewTValue(10 * (i + 1), log.Add);
                 }
 
-                Span<TSource> first = new Span<TSource>(f);
+                ReadOnlySpan<TSource> first = new ReadOnlySpan<TSource>(f);
                 ReadOnlySpan<TValue> secondSpan = new ReadOnlySpan<TValue>(s);
 
-                bool b = MemoryExt.StartsWithSeq(first, secondSpan);
+                bool b = MemoryExt.EndsWithSeq(first, secondSpan);
                 Assert.True(b);
 
                 // Make sure each element of the array was compared once. (Strictly speaking, it would not be illegal for 
-                // StartsWith to compare an element more than once but that would be a non-optimal implementation and 
+                // EndsWith to compare an element more than once but that would be a non-optimal implementation and 
                 // a red flag. So we'll stick with the stricter test.)
                 Assert.Equal(first.Length, log.Count);
                 foreach (T elem in a)
@@ -139,10 +139,10 @@ namespace DrNet.Tests.Span
                     T mismatchV = NewT(10 * (mismatchIndex + 1) + 1);
                     s[mismatchIndex] = NewTValue(10 * (mismatchIndex + 1) + 1, log.Add);
 
-                    Span<TSource> first = new Span<TSource>(f);
+                    ReadOnlySpan<TSource> first = new ReadOnlySpan<TSource>(f);
                     ReadOnlySpan<TValue> second = new ReadOnlySpan<TValue>(s);
 
-                    bool b = MemoryExt.StartsWithSeq(first, second);
+                    bool b = MemoryExt.EndsWithSeq(first, second);
                     Assert.False(b);
                     Assert.Equal(1, log.CountCompares(mismatchS, mismatchV));
                 }
@@ -159,7 +159,7 @@ namespace DrNet.Tests.Span
                 delegate (T x, T y)
                 {
                     if (EqualityComparer(x, GuardValue) || EqualityComparer(y, GuardValue))
-                        throw new Exception("Detected out of range access in StartsWithSeq()");
+                        throw new Exception("Detected out of range access in EndsWithSeq()");
                 };
 
             for (int length = 0; length < 100; length++)
@@ -178,16 +178,16 @@ namespace DrNet.Tests.Span
                     s[GuardLength + i] = NewTValue(10 * (i + 1), checkForOutOfRangeAccess);
                 }
 
-                Span<TSource> first = new Span<TSource>(f, GuardLength, length);
+                ReadOnlySpan<TSource> first = new ReadOnlySpan<TSource>(f, GuardLength, length);
                 ReadOnlySpan<TValue> second = new ReadOnlySpan<TValue>(s, GuardLength, length);
 
-                bool b = MemoryExt.StartsWithSeq(first, second);
+                bool b = MemoryExt.EndsWithSeq(first, second);
                 Assert.True(b);
             }
         }
     }
 
-    public class StartsWithSeq_intEE : StartsWithSeq<int, TEquatable<int>, TEquatable<int>>
+    public class EndsWithSeq_intEE : EndsWithSeq<int, TEquatable<int>, TEquatable<int>>
     {
         public override int NewT(int value) => value;
         public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) =>
@@ -196,7 +196,7 @@ namespace DrNet.Tests.Span
             new TEquatable<int>(value, onCompare);
     }
 
-    public class StartsWithSeq_intEO : StartsWithSeq<int, TEquatable<int>, TObject<int>>
+    public class EndsWithSeq_intEO : EndsWithSeq<int, TEquatable<int>, TObject<int>>
     {
         public override int NewT(int value) => value;
         public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) =>
@@ -209,7 +209,7 @@ namespace DrNet.Tests.Span
         }
     }
 
-    public class StartsWithSeq_intOE : StartsWithSeq<int, TObject<int>, TEquatable<int>>
+    public class EndsWithSeq_intOE : EndsWithSeq<int, TObject<int>, TEquatable<int>>
     {
         public override int NewT(int value) => value;
         public override TObject<int> NewTSource(int value, Action<int, int> onCompare)
@@ -222,7 +222,7 @@ namespace DrNet.Tests.Span
             new TEquatable<int>(value, onCompare);
     }
 
-    public class StartsWithSeq_intOO : StartsWithSeq<int, TObject<int>, TObject<int>>
+    public class EndsWithSeq_intOO : EndsWithSeq<int, TObject<int>, TObject<int>>
     {
         public override int NewT(int value) => value;
         public override TObject<int> NewTSource(int value, Action<int, int> onCompare) =>
@@ -231,7 +231,7 @@ namespace DrNet.Tests.Span
             new TObject<int>(value, onCompare);
     }
 
-    public class StartsWithSeq_stringEE : StartsWithSeq<string, TEquatable<string>, TEquatable<string>>
+    public class EndsWithSeq_stringEE : EndsWithSeq<string, TEquatable<string>, TEquatable<string>>
     {
         public override string NewT(int value) => value.ToString();
         public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) =>
@@ -240,7 +240,7 @@ namespace DrNet.Tests.Span
             new TEquatable<string>(value.ToString(), onCompare);
     }
 
-    public class StartsWithSeq_stringEO : StartsWithSeq<string, TEquatable<string>, TObject<string>>
+    public class EndsWithSeq_stringEO : EndsWithSeq<string, TEquatable<string>, TObject<string>>
     {
         public override string NewT(int value) => value.ToString();
         public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) =>
@@ -253,7 +253,7 @@ namespace DrNet.Tests.Span
         }
     }
 
-    public class StartsWithSeq_stringOE : StartsWithSeq<string, TObject<string>, TEquatable<string>>
+    public class EndsWithSeq_stringOE : EndsWithSeq<string, TObject<string>, TEquatable<string>>
     {
         public override string NewT(int value) => value.ToString();
         public override TObject<string> NewTSource(int value, Action<string, string> onCompare)
@@ -266,7 +266,7 @@ namespace DrNet.Tests.Span
             new TEquatable<string>(value.ToString(), onCompare);
     }
 
-    public class StartsWithSeq_stringOO : StartsWithSeq<string, TObject<string>, TObject<string>>
+    public class EndsWithSeq_stringOO : EndsWithSeq<string, TObject<string>, TObject<string>>
     {
         public override string NewT(int value) => value.ToString();
         public override TObject<string> NewTSource(int value, Action<string, string> onCompare) =>
