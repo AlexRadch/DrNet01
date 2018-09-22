@@ -531,6 +531,78 @@ namespace DrNet.Internal.Unsafe
             return -1;
         }
 
+        public static int LastIndexOfSeq<TFirst, TSecond>(ref TFirst searchSpace, int searchSpaceLength,
+            ref TSecond value, int valueLength, Func<TFirst, TSecond, bool> equalityComparer)
+        {
+            Debug.Assert(valueLength > 0);
+            Debug.Assert(searchSpaceLength >= valueLength);
+
+            TSecond valueHead = value;
+            ref TSecond valueTail = ref CSUnsafe.Add(ref value, 1);
+            int valueTailLength = valueLength - 1;
+
+            int index = 0;
+            for (; ; )
+            {
+                // Ensures no deceptive underflows in the computation of "remainingSearchSpaceLength".
+                Debug.Assert(0 <= index && index <= searchSpaceLength);
+                int remainingSearchSpaceLength = searchSpaceLength - index - valueTailLength;
+                // The unsearched portion is now shorter than the sequence we're looking for. So it can't be there.
+                if (remainingSearchSpaceLength <= 0)
+                    break;  
+
+                // Do a quick search for the first element of "value".
+                int relativeIndex = LastIndexOfSourceComparer(ref searchSpace, remainingSearchSpaceLength, valueHead,
+                    equalityComparer);
+                if (relativeIndex == -1)
+                    break;
+
+                // Found the first element of "value". See if the tail matches.
+                if (EqualToSeq(ref CSUnsafe.Add(ref searchSpace, relativeIndex + 1), ref valueTail, valueTailLength, 
+                    equalityComparer))
+                    return relativeIndex;  // The tail matched. Return a successful find.
+
+                index += remainingSearchSpaceLength - relativeIndex;
+            }
+            return -1;
+        }
+
+        public static int LastIndexOfSeqFrom<TFirst, TSecond>(ref TFirst searchSpace, int searchSpaceLength,
+            ref TSecond value, int valueLength, Func<TSecond, TFirst, bool> equalityComparer)
+        {
+            Debug.Assert(valueLength > 0);
+            Debug.Assert(searchSpaceLength >= valueLength);
+
+            TSecond valueHead = value;
+            ref TSecond valueTail = ref CSUnsafe.Add(ref value, 1);
+            int valueTailLength = valueLength - 1;
+
+            int index = 0;
+            for (; ; )
+            {
+                // Ensures no deceptive underflows in the computation of "remainingSearchSpaceLength".
+                Debug.Assert(0 <= index && index <= searchSpaceLength);
+                int remainingSearchSpaceLength = searchSpaceLength - index - valueTailLength;
+                // The unsearched portion is now shorter than the sequence we're looking for. So it can't be there.
+                if (remainingSearchSpaceLength <= 0)
+                    break;  
+
+                // Do a quick search for the first element of "value".
+                int relativeIndex = LastIndexOfValueComparer(ref searchSpace, remainingSearchSpaceLength, valueHead,
+                    equalityComparer);
+                if (relativeIndex == -1)
+                    break;
+
+                // Found the first element of "value". See if the tail matches.
+                if (EqualToSeq(ref valueTail, ref CSUnsafe.Add(ref searchSpace, relativeIndex + 1), valueTailLength, 
+                    equalityComparer))
+                    return relativeIndex;  // The tail matched. Return a successful find.
+
+                index += remainingSearchSpaceLength - relativeIndex;
+            }
+            return -1;
+        }
+
         public static bool EqualToSeq<TFirst, TSecond>(ref TFirst first, ref TSecond second, int length,
             Func<TFirst, TSecond, bool> equalityComparer)
         {
