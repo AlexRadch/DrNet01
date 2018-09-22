@@ -230,18 +230,25 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value to search for not equal value</param>
-        public static int IndexOfNotEqual<TSource, TValue>(this Span<TSource> span, TValue value)
+        public static int IndexOfNotEqual<TSource, TValue>(this Span<TSource> span, TValue value,
+            Func<TSource, TValue, bool> equalityComparer = null)
         {
-            if (value is IEquatable<TSource> vEquatable)
-                return SpanHelpers.IndexOfValueComparer(ref MemoryMarshal.GetReference(span), span.Length, vEquatable,
-                    (eValue, sValue) => !eValue.Equals(sValue));
+            if (equalityComparer == null)
+            {
+                if (value is IEquatable<TSource> vEquatable)
+                    return SpanHelpers.IndexOfValueComparer(ref MemoryMarshal.GetReference(span), span.Length, vEquatable,
+                        (eValue, sValue) => !eValue.Equals(sValue));
 
-            if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
-                return SpanHelpers.IndexOfSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
-                    (sValue, vValue) => sValue is IEquatable<TValue> sEquatable ? !sEquatable.Equals(vValue) : !sValue.Equals(vValue));
+                if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
+                    return SpanHelpers.IndexOfSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
+                        (sValue, vValue) => !((IEquatable<TValue>)sValue).Equals(vValue));
 
-            return SpanHelpers.IndexOfValueComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
-                (vValue, sValue) => !vValue.Equals(sValue));
+                return SpanHelpers.IndexOfValueComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
+                    (vValue, sValue) => !vValue.Equals(sValue));
+            }
+
+            return SpanHelpers.IndexOfSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
+                (sValue, vValue) => !equalityComparer(sValue, vValue));
         }
 
         /// <summary>
@@ -252,18 +259,83 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value to search for not equal value</param>
-        public static int IndexOfNotEqual<TSource, TValue>(this ReadOnlySpan<TSource> span, TValue value)
+        public static int IndexOfNotEqual<TSource, TValue>(this ReadOnlySpan<TSource> span, TValue value,
+            Func<TSource, TValue, bool> equalityComparer = null)
         {
-            if (value is IEquatable<TSource> vEquatable)
-                return SpanHelpers.IndexOfValueComparer(ref MemoryMarshal.GetReference(span), span.Length, vEquatable,
-                    (eValue, sValue) => !eValue.Equals(sValue));
+            if (equalityComparer == null)
+            {
+                if (value is IEquatable<TSource> vEquatable)
+                    return SpanHelpers.IndexOfValueComparer(ref MemoryMarshal.GetReference(span), span.Length, vEquatable,
+                        (eValue, sValue) => !eValue.Equals(sValue));
 
-            if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
-                return SpanHelpers.IndexOfSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value,
-                    (sValue, vValue) => sValue is IEquatable<TValue> sEquatable ? !sEquatable.Equals(vValue) : !sValue.Equals(vValue));
+                if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
+                    return SpanHelpers.IndexOfSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
+                        (sValue, vValue) => !((IEquatable<TValue>)sValue).Equals(vValue));
 
-            return SpanHelpers.IndexOfValueComparer(ref MemoryMarshal.GetReference(span), span.Length, value,
-                (vValue, sValue) => !vValue.Equals(sValue));
+                return SpanHelpers.IndexOfValueComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
+                    (vValue, sValue) => !vValue.Equals(sValue));
+            }
+
+            return SpanHelpers.IndexOfSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
+                (sValue, vValue) => !equalityComparer(sValue, vValue));
+        }
+
+        /// <summary>
+        /// Searches for a value that not equal to the specified value and returns the index of its first occurrence.
+        /// If not found, returns -1.
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// TValue.Equals(TSource).
+        /// </summary>
+        /// <param name="span">The span to search.</param>
+        /// <param name="value">The value to search for not equal value</param>
+        public static int IndexOfNotEqualFrom<TSource, TValue>(this Span<TSource> span, TValue value,
+            Func<TValue, TSource, bool> equalityComparer = null)
+        {
+            if (equalityComparer == null)
+            {
+                if (value is IEquatable<TSource> vEquatable)
+                    return SpanHelpers.IndexOfValueComparer(ref MemoryMarshal.GetReference(span), span.Length, vEquatable,
+                        (eValue, sValue) => !eValue.Equals(sValue));
+
+                if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
+                    return SpanHelpers.IndexOfSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
+                        (sValue, vValue) => !((IEquatable<TValue>)sValue).Equals(vValue));
+
+                return SpanHelpers.IndexOfValueComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
+                    (vValue, sValue) => !vValue.Equals(sValue));
+            }
+
+            return SpanHelpers.IndexOfValueComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
+                (vValue, sValue) => !equalityComparer(vValue, sValue));
+        }
+
+        /// <summary>
+        /// Searches for a value that not equal to the specified value and returns the index of its first occurrence.
+        /// If not found, returns -1.
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// TValue.Equals(TSource).
+        /// </summary>
+        /// <param name="span">The span to search.</param>
+        /// <param name="value">The value to search for not equal value</param>
+        public static int IndexOfNotEqualFrom<TSource, TValue>(this ReadOnlySpan<TSource> span, TValue value,
+            Func<TValue, TSource, bool> equalityComparer = null)
+        {
+            if (equalityComparer == null)
+            {
+                if (value is IEquatable<TSource> vEquatable)
+                    return SpanHelpers.IndexOfValueComparer(ref MemoryMarshal.GetReference(span), span.Length, vEquatable,
+                        (eValue, sValue) => !eValue.Equals(sValue));
+
+                if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
+                    return SpanHelpers.IndexOfSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
+                        (sValue, vValue) => !((IEquatable<TValue>)sValue).Equals(vValue));
+
+                return SpanHelpers.IndexOfValueComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
+                    (vValue, sValue) => !vValue.Equals(sValue));
+            }
+
+            return SpanHelpers.IndexOfValueComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
+                (vValue, sValue) => !equalityComparer(vValue, sValue));
         }
 
         #endregion
