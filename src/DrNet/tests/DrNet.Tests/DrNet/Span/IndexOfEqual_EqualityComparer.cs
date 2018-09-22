@@ -3,7 +3,7 @@ using Xunit;
 
 namespace DrNet.Tests.Span
 {
-    public abstract class IndexOf_EqualityComparer<T>
+    public abstract class IndexOfEqual_EqualityComparer<T>
     {
         public abstract T NewT(int value);
 
@@ -23,9 +23,9 @@ namespace DrNet.Tests.Span
         public void ZeroLength()
         {
             Span<T> sp = new Span<T>(Array.Empty<T>());
-            int idx = MemoryExt.IndexOfSourceComparer(sp, NewT(0), EqualityComparer);
+            int idx = MemoryExt.IndexOfEqual(sp, NewT(0), EqualityComparer);
             Assert.Equal(-1, idx);
-            idx = MemoryExt.IndexOfValueComparer(sp, NewT(0), EqualityComparer);
+            idx = MemoryExt.IndexOfEqualFrom(sp, NewT(0), EqualityComparer);
             Assert.Equal(-1, idx);
         }
 
@@ -47,9 +47,9 @@ namespace DrNet.Tests.Span
                 T[] a = new T[length];
                 Span<T> span = new Span<T>(a);
 
-                int idx = MemoryExt.IndexOfSourceComparer(span, default(T), EqualityComparer);
+                int idx = MemoryExt.IndexOfEqual(span, default(T), EqualityComparer);
                 Assert.Equal(0, idx);
-                idx = MemoryExt.IndexOfValueComparer(span, default(T), EqualityComparer);
+                idx = MemoryExt.IndexOfEqualFrom(span, default(T), EqualityComparer);
                 Assert.Equal(0, idx);
             }
         }
@@ -69,9 +69,9 @@ namespace DrNet.Tests.Span
                 for (int targetIndex = 0; targetIndex < length; targetIndex++)
                 {
                     T target = a[targetIndex];
-                    int idx = MemoryExt.IndexOfSourceComparer(span, target, EqualityComparer);
+                    int idx = MemoryExt.IndexOfEqual(span, target, EqualityComparer);
                     Assert.Equal(targetIndex, idx);
-                    idx = MemoryExt.IndexOfValueComparer(span, target, EqualityComparer);
+                    idx = MemoryExt.IndexOfEqualFrom(span, target, EqualityComparer);
                     Assert.Equal(targetIndex, idx);
                 }
             }
@@ -93,9 +93,9 @@ namespace DrNet.Tests.Span
                 }
                 Span<T> span = new Span<T>(a);
 
-                int idx = MemoryExt.IndexOfSourceComparer(span, target, EqualityComparer);
+                int idx = MemoryExt.IndexOfEqual(span, target, EqualityComparer);
                 Assert.Equal(-1, idx);
-                idx = MemoryExt.IndexOfValueComparer(span, target, EqualityComparer);
+                idx = MemoryExt.IndexOfEqualFrom(span, target, EqualityComparer);
                 Assert.Equal(-1, idx);
             }
         }
@@ -115,9 +115,9 @@ namespace DrNet.Tests.Span
                 a[length - 2] = NewT(5555);
 
                 Span<T> span = new Span<T>(a);
-                int idx = MemoryExt.IndexOfSourceComparer(span, NewT(5555), EqualityComparer);
+                int idx = MemoryExt.IndexOfEqual(span, NewT(5555), EqualityComparer);
                 Assert.Equal(length - 2, idx);
-                idx = MemoryExt.IndexOfValueComparer(span, NewT(5555), EqualityComparer);
+                idx = MemoryExt.IndexOfEqualFrom(span, NewT(5555), EqualityComparer);
                 Assert.Equal(length - 2, idx);
             }
         }
@@ -137,7 +137,7 @@ namespace DrNet.Tests.Span
                 }
                 Span<T> span = new Span<T>(a);
 
-                int idx = MemoryExt.IndexOfSourceComparer(span, NewT(9999), EqualityComparer);
+                int idx = MemoryExt.IndexOfEqual(span, NewT(9999), EqualityComparer);
                 Assert.Equal(-1, idx);
 
                 // Since we asked for a non-existent value, make sure each element of the array was compared once.
@@ -151,7 +151,7 @@ namespace DrNet.Tests.Span
                 }
 
                 log.Clear();
-                idx = MemoryExt.IndexOfValueComparer(span, NewT(9999), EqualityComparer);
+                idx = MemoryExt.IndexOfEqualFrom(span, NewT(9999), EqualityComparer);
                 Assert.Equal(-1, idx);
 
                 // Since we asked for a non-existent value, make sure each element of the array was compared once.
@@ -193,20 +193,22 @@ namespace DrNet.Tests.Span
                 }
 
                 Span<TEquatable<T>> span = new Span<TEquatable<T>>(a, GuardLength, length);
-                int idx = MemoryExt.IndexOfSourceComparer(span, new TEquatable<T>(NewT(9999), checkForOutOfRangeAccess), EqualityComparer);
+                int idx = MemoryExt.IndexOfEqual(span, new TEquatable<T>(NewT(9999), checkForOutOfRangeAccess), 
+                    EqualityComparer);
                 Assert.Equal(-1, idx);
-                idx = MemoryExt.IndexOfValueComparer(span, new TEquatable<T>(NewT(9999), checkForOutOfRangeAccess), EqualityComparer);
+                idx = MemoryExt.IndexOfEqualFrom(span, new TEquatable<T>(NewT(9999), checkForOutOfRangeAccess), 
+                    EqualityComparer);
                 Assert.Equal(-1, idx);
             }
         }
     }
 
-    public class IndexOf_EqualityComparer_int: IndexOf_EqualityComparer<int>
+    public class IndexOfEqual_EqualityComparer_int: IndexOfEqual_EqualityComparer<int>
     {
         public override int NewT(int value) => value;
     }
 
-    public class IndexOf_EqualityComparer_string: IndexOf_EqualityComparer<string>
+    public class IndexOfEqual_EqualityComparer_string: IndexOfEqual_EqualityComparer<string>
     {
         public override string NewT(int value) => value.ToString();
     }
