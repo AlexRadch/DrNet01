@@ -701,7 +701,8 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        public static int IndexOfNotEqualAll<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> values)
+        public static int IndexOfNotEqualAll<TSource, TValue>(this ReadOnlySpan<TSource> span,
+            ReadOnlySpan<TValue> values)
         {
             if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
             {
@@ -879,16 +880,186 @@ namespace DrNet
 
         #endregion
 
-        #region SequenceEqualTo
+        #region IndexOfSeq
 
         /// <summary>
-        /// Determines whether two sequences are equal.
+        /// Searches for the specified sequence and returns the index of its first occurrence. If not found, returns -1.
         /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
         /// TValue.Equals(TSource).
         /// </summary>
+        /// <param name="span">The span to search.</param>
+        /// <param name="value">The sequence to search for.</param>
+        public static int IndexOfSeq<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> value)
+        {
+            int spanLength = span.Length;
+            int valueLength = value.Length;
+            if (valueLength > spanLength)
+                return -1;
+            if (value.Length == 0)
+                return 0;
+
+            if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+            {
+                //if (typeof(TOther) == typeof(T))
+                //{
+
+                //    ReadOnlySpan<T> tOther;
+                //    unsafe
+                //    {
+                //        tOther = new ReadOnlySpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(other)), length);
+                //    }
+                //    return MemoryExtensionsEquatablePatternMatching<T>.Instance.SequenceEqual(span, tOther);
+
+                //}
+                return SpanHelpers.IndexOfSeq(ref MemoryMarshal.GetReference(span), spanLength,
+                    ref MemoryMarshal.GetReference(value), valueLength, (sValue, vValue) => 
+                        sValue is IEquatable<TSource> sEquatable ? sEquatable.Equals(vValue) : sValue.Equals(vValue));
+            }
+            if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+                return SpanHelpers.IndexOfSeqFrom(ref MemoryMarshal.GetReference(span), spanLength,
+                    ref MemoryMarshal.GetReference(value), valueLength, (vValue, sValue) => 
+                        vValue is IEquatable<TSource> vEquatable ? vEquatable.Equals(sValue) : vValue.Equals(sValue));
+            return SpanHelpers.IndexOfSeq(ref MemoryMarshal.GetReference(span), spanLength,
+                ref MemoryMarshal.GetReference(value), valueLength, (sValue, vValue) => sValue.Equals(vValue));
+        }
+
+        /// <summary>
+        /// Searches for the specified sequence and returns the index of its first occurrence. If not found, returns -1.
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
+        /// TValue.Equals(TSource).
+        /// </summary>
+        /// <param name="span">The span to search.</param>
+        /// <param name="value">The sequence to search for.</param>
+        public static int IndexOfSeq<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> value)
+        {
+            int spanLength = span.Length;
+            int valueLength = value.Length;
+            if (valueLength > spanLength)
+                return -1;
+            if (value.Length == 0)
+                return 0;
+
+            if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+            {
+                //if (typeof(TOther) == typeof(T))
+                //{
+
+                //    ReadOnlySpan<T> tOther;
+                //    unsafe
+                //    {
+                //        tOther = new ReadOnlySpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(other)), length);
+                //    }
+                //    return MemoryExtensionsEquatablePatternMatching<T>.Instance.SequenceEqual(span, tOther);
+
+                //}
+                return SpanHelpers.IndexOfSeq(ref MemoryMarshal.GetReference(span), spanLength,
+                    ref MemoryMarshal.GetReference(value), valueLength, (sValue, vValue) => 
+                        sValue is IEquatable<TSource> sEquatable ? sEquatable.Equals(vValue) : sValue.Equals(vValue));
+            }
+            if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+                return SpanHelpers.IndexOfSeqFrom(ref MemoryMarshal.GetReference(span), spanLength,
+                    ref MemoryMarshal.GetReference(value), valueLength, (vValue, sValue) => 
+                        vValue is IEquatable<TSource> vEquatable ? vEquatable.Equals(sValue) : vValue.Equals(sValue));
+            return SpanHelpers.IndexOfSeq(ref MemoryMarshal.GetReference(span), spanLength,
+                ref MemoryMarshal.GetReference(value), valueLength, (sValue, vValue) => sValue.Equals(vValue));
+        }
+
+        /// <summary>
+        /// Searches for the specified sequence and returns the index of its first occurrence. If not found, returns -1.
+        /// Elements are compared using the equality comparer.
+        /// </summary>
+        /// <param name="span">The span to search.</param>
+        /// <param name="value">The sequence to search for.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        public static int IndexOfSeq<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> value, 
+            Func<TSource, TValue, bool> equalityComparer)
+        {
+            int spanLength = span.Length;
+            int valueLength = value.Length;
+            if (valueLength > spanLength)
+                return -1;
+            if (value.Length == 0)
+                return 0;
+
+            return SpanHelpers.IndexOfSeq(ref MemoryMarshal.GetReference(span), spanLength,
+                ref MemoryMarshal.GetReference(value), valueLength, equalityComparer);
+        }
+
+        /// <summary>
+        /// Searches for the specified sequence and returns the index of its first occurrence. If not found, returns -1.
+        /// Elements are compared using the equality comparer.
+        /// </summary>
+        /// <param name="span">The span to search.</param>
+        /// <param name="value">The sequence to search for.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        public static int IndexOfSeq<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> value, 
+            Func<TSource, TValue, bool> equalityComparer)
+        {
+            int spanLength = span.Length;
+            int valueLength = value.Length;
+            if (valueLength > spanLength)
+                return -1;
+            if (value.Length == 0)
+                return 0;
+
+            return SpanHelpers.IndexOfSeq(ref MemoryMarshal.GetReference(span), spanLength,
+                ref MemoryMarshal.GetReference(value), valueLength, equalityComparer);
+        }
+
+        /// <summary>
+        /// Searches for the specified sequence and returns the index of its first occurrence. If not found, returns -1.
+        /// Elements are compared using the equality comparer.
+        /// </summary>
+        /// <param name="span">The span to search.</param>
+        /// <param name="value">The sequence to search for.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        public static int IndexOfSeqFrom<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> value, 
+            Func<TValue, TSource, bool> equalityComparer)
+        {
+            int spanLength = span.Length;
+            int valueLength = value.Length;
+            if (valueLength > spanLength)
+                return -1;
+            if (value.Length == 0)
+                return 0;
+
+            return SpanHelpers.IndexOfSeqFrom(ref MemoryMarshal.GetReference(span), spanLength,
+                ref MemoryMarshal.GetReference(value), valueLength, equalityComparer);
+        }
+
+        /// <summary>
+        /// Searches for the specified sequence and returns the index of its first occurrence. If not found, returns -1.
+        /// Elements are compared using the equality comparer.
+        /// </summary>
+        /// <param name="span">The span to search.</param>
+        /// <param name="value">The sequence to search for.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        public static int IndexOfSeqFrom<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> value, 
+            Func<TValue, TSource, bool> equalityComparer)
+        {
+            int spanLength = span.Length;
+            int valueLength = value.Length;
+            if (valueLength > spanLength)
+                return -1;
+            if (value.Length == 0)
+                return 0;
+
+            return SpanHelpers.IndexOfSeqFrom(ref MemoryMarshal.GetReference(span), spanLength,
+                ref MemoryMarshal.GetReference(value), valueLength, equalityComparer);
+        }
+
+        #endregion
+
+        #region EqualToSeq
+
+        /// <summary>
+        /// Determines whether two sequences are equal.
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TOther}.Equals(TOther) or 
+        /// TOther.Equals(TSource).
+        /// </summary>
         /// <param name="span">The span to compare.</param>
-        /// <param name="other">The second span to compare.</param>
-        public static bool SequenceEqualTo<TSource, TOther>(this Span<TSource> span, ReadOnlySpan<TOther> other)
+        /// <param name="other">The sequence to compare with.</param>
+        public static bool EqualToSeq<TSource, TOther>(this Span<TSource> span, ReadOnlySpan<TOther> other)
         {
             int length = span.Length;
             if (length != other.Length)
@@ -906,26 +1077,26 @@ namespace DrNet
                 //    return MemoryExtensionsEquatablePatternMatching<T>.Instance.SequenceEqual(span, tOther);
 
                 //}
-                return SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(other), 
+                return SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(other), 
                     ref MemoryMarshal.GetReference(span), length, (oValue, sValue) => 
                         oValue is IEquatable<TSource> oEquatable ? oEquatable.Equals(sValue) : oValue.Equals(sValue));
             }
             if (typeof(IEquatable<TOther>).IsAssignableFrom(typeof(TSource)))
-                return SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span), 
+                return SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(span), 
                     ref MemoryMarshal.GetReference(other), length, (sValue, oValue) => 
                         sValue is IEquatable<TOther> sEquatable ? sEquatable.Equals(oValue) : sValue.Equals(oValue));
-            return SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(other), 
+            return SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(other), 
                 ref MemoryMarshal.GetReference(span), length, (oValue, sValue) => oValue.Equals(sValue));
         }
 
         /// <summary>
         /// Determines whether two sequences are equal.
-        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
-        /// TValue.Equals(TSource).
+        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TOther}.Equals(TOther) or 
+        /// TOther.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to compare.</param>
-        /// <param name="other">The second span to compare.</param>
-        public static bool SequenceEqualTo<TSource, TOther>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TOther> other)
+        /// <param name="other">The sequence to compare with.</param>
+        public static bool EqualToSeq<TSource, TOther>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TOther> other)
         {
             int length = span.Length;
             if (length != other.Length)
@@ -943,15 +1114,15 @@ namespace DrNet
                 //    return MemoryExtensionsEquatablePatternMatching<T>.Instance.SequenceEqual(span, tOther);
 
                 //}
-                return SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(other), 
+                return SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(other), 
                     ref MemoryMarshal.GetReference(span), length, (oValue, sValue) => 
                         oValue is IEquatable<TSource> oEquatable ? oEquatable.Equals(sValue) : oValue.Equals(sValue));
             }
             if (typeof(IEquatable<TOther>).IsAssignableFrom(typeof(TSource)))
-                return SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span), 
+                return SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(span), 
                     ref MemoryMarshal.GetReference(other), length, (sValue, oValue) => 
                         sValue is IEquatable<TOther> sEquatable ? sEquatable.Equals(oValue) : sValue.Equals(oValue));
-            return SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(other), 
+            return SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(other), 
                 ref MemoryMarshal.GetReference(span), length, (oValue, sValue) => oValue.Equals(sValue));
         }
 
@@ -961,11 +1132,11 @@ namespace DrNet
         /// <param name="span">The span to compare.</param>
         /// <param name="other">The second span to compare.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
-        public static bool SequenceEqualTo<TSource, TOther>(this Span<TSource> span, ReadOnlySpan<TOther> other,
+        public static bool EqualToSeq<TSource, TOther>(this Span<TSource> span, ReadOnlySpan<TOther> other,
             Func<TSource, TOther, bool> equalityComparer)
         {
             int length = span.Length;
-            return length == other.Length && SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span),
+            return length == other.Length && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(span),
                 ref MemoryMarshal.GetReference(other), length, equalityComparer);
         }
 
@@ -973,13 +1144,13 @@ namespace DrNet
         /// Determines whether two sequences are equal by comparing the elements using the equality comparer.
         /// </summary>
         /// <param name="span">The span to compare.</param>
-        /// <param name="other">The second span to compare.</param>
+        /// <param name="other">The sequence to compare with.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
-        public static bool SequenceEqualTo<TSource, TOther>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TOther> other,
+        public static bool EqualToSeq<TSource, TOther>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TOther> other,
             Func<TSource, TOther, bool> equalityComparer)
         {
             int length = span.Length;
-            return length == other.Length && SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span),
+            return length == other.Length && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(span),
                 ref MemoryMarshal.GetReference(other), length, equalityComparer);
         }
 
@@ -987,13 +1158,13 @@ namespace DrNet
         /// Determines whether two sequences are equal by comparing the elements using the equality comparer.
         /// </summary>
         /// <param name="span">The span to compare.</param>
-        /// <param name="other">The second span to compare.</param>
+        /// <param name="other">The sequence to compare with.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
-        public static bool SequenceEqualFrom<TSource, TOther>(this Span<TSource> span, ReadOnlySpan<TOther> other,
+        public static bool EqualFromSeq<TSource, TOther>(this Span<TSource> span, ReadOnlySpan<TOther> other,
             Func<TOther, TSource, bool> equalityComparer)
         {
             int length = span.Length;
-            return length == other.Length && SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(other), 
+            return length == other.Length && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(other), 
                 ref MemoryMarshal.GetReference(span), length, equalityComparer);
         }
 
@@ -1001,13 +1172,13 @@ namespace DrNet
         /// Determines whether two sequences are equal by comparing the elements using the equality comparer.
         /// </summary>
         /// <param name="span">The span to compare.</param>
-        /// <param name="other">The second span to compare.</param>
+        /// <param name="other">The sequence to compare with.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
-        public static bool SequenceEqualFrom<TSource, TOther>(this ReadOnlySpan<TSource> span, 
+        public static bool EqualFromSeq<TSource, TOther>(this ReadOnlySpan<TSource> span, 
             ReadOnlySpan<TOther> other, Func<TOther, TSource, bool> equalityComparer)
         {
             int length = span.Length;
-            return length == other.Length && SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(other),
+            return length == other.Length && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(other),
                 ref MemoryMarshal.GetReference(span), length, equalityComparer);
         }
 
@@ -1020,12 +1191,12 @@ namespace DrNet
         /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
         /// TValue.Equals(TSource).
         /// </summary>
-        /// <param name="span">The span to search the specified sequence at the start of it.</param>
+        /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search at the start of the span.</param>
         public static bool StartsWithSeq<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> value)
         {
             int valueLength = value.Length;
-            return valueLength <= span.Length && SequenceEqualTo(span.Slice(0, valueLength), value);
+            return valueLength <= span.Length && EqualToSeq(span.Slice(0, valueLength), value);
         }
 
         /// <summary>
@@ -1033,26 +1204,26 @@ namespace DrNet
         /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
         /// TValue.Equals(TSource).
         /// </summary>
-        /// <param name="span">The span to search the specified sequence at the start of it.</param>
+        /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search at the start of the span.</param>
         public static bool StartsWithSeq<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> value)
         {
             int valueLength = value.Length;
-            return valueLength <= span.Length && SequenceEqualTo(span.Slice(0, valueLength), value);
+            return valueLength <= span.Length && EqualToSeq(span.Slice(0, valueLength), value);
         }
 
         /// <summary>
         /// Determines whether the specified sequence appears at the start of the span.
         /// Elements are compared by the equality comparer function.
         /// </summary>
-        /// <param name="span">The span to search the specified sequence at the start of it.</param>
+        /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search at the start of the span.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static bool StartsWithSeqSourceComparer<TSource, TValue>(this Span<TSource> span, 
             ReadOnlySpan<TValue> value, Func<TSource, TValue, bool> equalityComparer)
         {
             int valueLength = value.Length;
-            return valueLength <= span.Length && SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span), 
+            return valueLength <= span.Length && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(span), 
                 ref MemoryMarshal.GetReference(value), valueLength, equalityComparer);
         }
 
@@ -1060,14 +1231,14 @@ namespace DrNet
         /// Determines whether the specified sequence appears at the start of the span.
         /// Elements are compared by the equality comparer function.
         /// </summary>
-        /// <param name="span">The span to search the specified sequence at the start of it.</param>
+        /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search at the start of the span.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static bool StartsWithSeqSourceComparer<TSource, TValue>(this ReadOnlySpan<TSource> span,
             ReadOnlySpan<TValue> value, Func<TSource, TValue, bool> equalityComparer)
         {
             int valueLength = value.Length;
-            return valueLength <= span.Length && SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(span),
+            return valueLength <= span.Length && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(span),
                 ref MemoryMarshal.GetReference(value), valueLength, equalityComparer);
         }
 
@@ -1075,14 +1246,14 @@ namespace DrNet
         /// Determines whether the specified sequence appears at the start of the span.
         /// Elements are compared by the equality comparer function.
         /// </summary>
-        /// <param name="span">The span to search the specified sequence at the start of it.</param>
+        /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search at the start of the span.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static bool StartsWithSeqValueComparer<TSource, TValue>(this Span<TSource> span,
             ReadOnlySpan<TValue> value, Func<TValue, TSource, bool> equalityComparer)
         {
             int valueLength = value.Length;
-            return valueLength <= span.Length && SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(value),
+            return valueLength <= span.Length && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(value),
                 ref MemoryMarshal.GetReference(span), valueLength, equalityComparer);
         }
 
@@ -1090,14 +1261,14 @@ namespace DrNet
         /// Determines whether the specified sequence appears at the start of the span.
         /// Elements are compared by the equality comparer function.
         /// </summary>
-        /// <param name="span">The span to search the specified sequence at the start of it.</param>
+        /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search at the start of the span.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static bool StartsWithSeqValueComparer<TSource, TValue>(this ReadOnlySpan<TSource> span,
             ReadOnlySpan<TValue> value, Func<TValue, TSource, bool> equalityComparer)
         {
             int valueLength = value.Length;
-            return valueLength <= span.Length && SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(value),
+            return valueLength <= span.Length && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(value),
                 ref MemoryMarshal.GetReference(span), valueLength, equalityComparer);
         }
 
@@ -1110,13 +1281,13 @@ namespace DrNet
         /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
         /// TValue.Equals(TSource).
         /// </summary>
-        /// <param name="span">The span to search the specified sequence at the start of it.</param>
-        /// <param name="value">The sequence to search at the start of the span.</param>
+        /// <param name="span">The span to search.</param>
+        /// <param name="value">The sequence to search at the end of the span.</param>
         public static bool EndsWithSeq<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> value)
         {
             int valueLength = value.Length;
             int spanStart = span.Length - valueLength;
-            return spanStart >=0 && SequenceEqualTo(span.Slice(spanStart, valueLength), value);
+            return spanStart >=0 && EqualToSeq(span.Slice(spanStart, valueLength), value);
         }
 
         /// <summary>
@@ -1124,28 +1295,28 @@ namespace DrNet
         /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
         /// TValue.Equals(TSource).
         /// </summary>
-        /// <param name="span">The span to search the specified sequence at the start of it.</param>
-        /// <param name="value">The sequence to search at the start of the span.</param>
+        /// <param name="span">The span to search.</param>
+        /// <param name="value">The sequence to search at the end of the span.</param>
         public static bool EndsWithSeq<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> value)
         {
             int valueLength = value.Length;
             int spanStart = span.Length - valueLength;
-            return spanStart >=0 && SequenceEqualTo(span.Slice(spanStart, valueLength), value);
+            return spanStart >=0 && EqualToSeq(span.Slice(spanStart, valueLength), value);
         }
 
         /// <summary>
         /// Determines whether the specified sequence appears at the end of the span.
         /// Elements are compared by the equality comparer function.
         /// </summary>
-        /// <param name="span">The span to search the specified sequence at the start of it.</param>
-        /// <param name="value">The sequence to search at the start of the span.</param>
+        /// <param name="span">The span to search.</param>
+        /// <param name="value">The sequence to search at the end of the span.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static bool EndsWithSeqSourceComparer<TSource, TValue>(this Span<TSource> span, 
             ReadOnlySpan<TValue> value, Func<TSource, TValue, bool> equalityComparer)
         {
             int valueLength = value.Length;
             int spanStart = span.Length - valueLength;
-            return spanStart >= 0 && SpanHelpers.SequenceEqual(
+            return spanStart >= 0 && SpanHelpers.EqualToSeq(
                 ref CSUnsafe.Add(ref MemoryMarshal.GetReference(span), spanStart),
                 ref MemoryMarshal.GetReference(value), valueLength, equalityComparer);
         }
@@ -1154,15 +1325,15 @@ namespace DrNet
         /// Determines whether the specified sequence appears at the end of the span.
         /// Elements are compared by the equality comparer function.
         /// </summary>
-        /// <param name="span">The span to search the specified sequence at the start of it.</param>
-        /// <param name="value">The sequence to search at the start of the span.</param>
+        /// <param name="span">The span to search.</param>
+        /// <param name="value">The sequence to search at the end of the span.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static bool EndsWithSeqSourceComparer<TSource, TValue>(this ReadOnlySpan<TSource> span,
             ReadOnlySpan<TValue> value, Func<TSource, TValue, bool> equalityComparer)
         {
             int valueLength = value.Length;
             int spanStart = span.Length - valueLength;
-            return spanStart >= 0 && SpanHelpers.SequenceEqual(
+            return spanStart >= 0 && SpanHelpers.EqualToSeq(
                 ref CSUnsafe.Add(ref MemoryMarshal.GetReference(span), spanStart),
                 ref MemoryMarshal.GetReference(value), valueLength, equalityComparer);
         }
@@ -1171,15 +1342,15 @@ namespace DrNet
         /// Determines whether the specified sequence appears at the end of the span.
         /// Elements are compared by the equality comparer function.
         /// </summary>
-        /// <param name="span">The span to search the specified sequence at the start of it.</param>
-        /// <param name="value">The sequence to search at the start of the span.</param>
+        /// <param name="span">The span to search.</param>
+        /// <param name="value">The sequence to search at the end of the span.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static bool EndsWithSeqValueComparer<TSource, TValue>(this Span<TSource> span,
             ReadOnlySpan<TValue> value, Func<TValue, TSource, bool> equalityComparer)
         {
             int valueLength = value.Length;
             int spanStart = span.Length - valueLength;
-            return spanStart >= 0 && SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(value), 
+            return spanStart >= 0 && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(value), 
                 ref CSUnsafe.Add(ref MemoryMarshal.GetReference(span), spanStart), valueLength, equalityComparer);
         }
 
@@ -1187,15 +1358,15 @@ namespace DrNet
         /// Determines whether the specified sequence appears at the end of the span.
         /// Elements are compared by the equality comparer function.
         /// </summary>
-        /// <param name="span">The span to search the specified sequence at the start of it.</param>
-        /// <param name="value">The sequence to search at the start of the span.</param>
+        /// <param name="span">The span to search.</param>
+        /// <param name="value">The sequence to search at the end of the span.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static bool EndsWithSeqValueComparer<TSource, TValue>(this ReadOnlySpan<TSource> span,
             ReadOnlySpan<TValue> value, Func<TValue, TSource, bool> equalityComparer)
         {
             int valueLength = value.Length;
             int spanStart = span.Length - valueLength;
-            return spanStart >= 0 && SpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(value), 
+            return spanStart >= 0 && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(value), 
                 ref CSUnsafe.Add(ref MemoryMarshal.GetReference(span), spanStart), valueLength, equalityComparer);
         }
 

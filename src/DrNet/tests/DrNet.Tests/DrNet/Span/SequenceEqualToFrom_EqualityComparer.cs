@@ -3,7 +3,7 @@ using Xunit;
 
 namespace DrNet.Tests.Span
 {
-    public abstract class SequenceEqualToFrom_EqualityComparer<T>
+    public abstract class EqualToFromSeq_EqualityComparer<T>
     {
         public abstract T NewT(int value);
 
@@ -26,13 +26,13 @@ namespace DrNet.Tests.Span
 
             Span<T> first = new Span<T>(a, 1, 0);
             Span<T> second = new Span<T>(a, 2, 0);
-            bool b = MemoryExt.SequenceEqualTo<T, T>(first, second, EqualityComparer);
+            bool b = MemoryExt.EqualToSeq<T, T>(first, second, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.SequenceEqualTo<T, T>(second, first, EqualityComparer);
+            b = MemoryExt.EqualToSeq<T, T>(second, first, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.SequenceEqualFrom<T, T>(first, second, EqualityComparer);
+            b = MemoryExt.EqualFromSeq<T, T>(first, second, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.SequenceEqualFrom<T, T>(second, first, EqualityComparer);
+            b = MemoryExt.EqualFromSeq<T, T>(second, first, EqualityComparer);
             Assert.True(b);
         }
 
@@ -41,9 +41,9 @@ namespace DrNet.Tests.Span
         {
             T[] a = { NewT(4), NewT(5), NewT(6) };
             Span<T> span = new Span<T>(a);
-            bool b = MemoryExt.SequenceEqualTo<T, T>(span, span, EqualityComparer);
+            bool b = MemoryExt.EqualToSeq<T, T>(span, span, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.SequenceEqualFrom<T, T>(span, span, EqualityComparer);
+            b = MemoryExt.EqualFromSeq<T, T>(span, span, EqualityComparer);
             Assert.True(b);
         }
 
@@ -52,13 +52,13 @@ namespace DrNet.Tests.Span
         {
             T[] a = { NewT(4), NewT(5), NewT(6) };
             Span<T> first = new Span<T>(a, 0, 3);
-            bool b = MemoryExt.SequenceEqualTo<T, T>(first, a, EqualityComparer);
+            bool b = MemoryExt.EqualToSeq<T, T>(first, a, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.SequenceEqualTo<T, T>(a, first, EqualityComparer);
+            b = MemoryExt.EqualToSeq<T, T>(a, first, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.SequenceEqualFrom<T, T>(first, a, EqualityComparer);
+            b = MemoryExt.EqualFromSeq<T, T>(first, a, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.SequenceEqualFrom<T, T>(a, first, EqualityComparer);
+            b = MemoryExt.EqualFromSeq<T, T>(a, first, EqualityComparer);
             Assert.True(b);
         }
 
@@ -70,13 +70,13 @@ namespace DrNet.Tests.Span
             var segment = new ArraySegment<T>(dst, 1, 3);
 
             Span<T> first = new Span<T>(src, 0, 3);
-            bool b = MemoryExt.SequenceEqualTo<T, T>(first, segment, EqualityComparer);
+            bool b = MemoryExt.EqualToSeq<T, T>(first, segment, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.SequenceEqualTo<T, T>(segment, first, EqualityComparer);
+            b = MemoryExt.EqualToSeq<T, T>(segment, first, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.SequenceEqualFrom<T, T>(first, segment, EqualityComparer);
+            b = MemoryExt.EqualFromSeq<T, T>(first, segment, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.SequenceEqualFrom<T, T>(segment, first, EqualityComparer);
+            b = MemoryExt.EqualFromSeq<T, T>(segment, first, EqualityComparer);
             Assert.True(b);
         }
 
@@ -86,13 +86,13 @@ namespace DrNet.Tests.Span
             T[] a = { NewT(4), NewT(5), NewT(6) };
             Span<T> first = new Span<T>(a, 0, 3);
             Span<T> second = new Span<T>(a, 0, 2);
-            bool b = MemoryExt.SequenceEqualTo<T, T>(first, second, EqualityComparer);
+            bool b = MemoryExt.EqualToSeq<T, T>(first, second, EqualityComparer);
             Assert.False(b);
-            b = MemoryExt.SequenceEqualTo<T, T>(second, first, EqualityComparer);
+            b = MemoryExt.EqualToSeq<T, T>(second, first, EqualityComparer);
             Assert.False(b);
-            b = MemoryExt.SequenceEqualFrom<T, T>(first, second, EqualityComparer);
+            b = MemoryExt.EqualFromSeq<T, T>(first, second, EqualityComparer);
             Assert.False(b);
-            b = MemoryExt.SequenceEqualFrom<T, T>(second, first, EqualityComparer);
+            b = MemoryExt.EqualFromSeq<T, T>(second, first, EqualityComparer);
             Assert.False(b);
         }
 
@@ -114,11 +114,11 @@ namespace DrNet.Tests.Span
                 Span<T> firstSpan = new Span<T>(first);
                 Span<T> secondSpan = new Span<T>(second);
 
-                bool b = MemoryExt.SequenceEqualTo<T, T>(firstSpan, secondSpan, EqualityComparer);
+                bool b = MemoryExt.EqualToSeq<T, T>(firstSpan, secondSpan, EqualityComparer);
                 Assert.True(b);
 
                 // Make sure each element of the array was compared once. (Strictly speaking, it would not be illegal for 
-                // SequenceEqual to compare an element more than once but that would be a non-optimal implementation and 
+                // EqualToSeq to compare an element more than once but that would be a non-optimal implementation and 
                 // a red flag. So we'll stick with the stricter test.)
                 Assert.Equal(first.Length, log.Count);
                 foreach (T elem in first)
@@ -128,11 +128,11 @@ namespace DrNet.Tests.Span
                 }
 
                 log.Clear();
-                b = MemoryExt.SequenceEqualFrom<T, T>(firstSpan, secondSpan, EqualityComparer);
+                b = MemoryExt.EqualFromSeq<T, T>(firstSpan, secondSpan, EqualityComparer);
                 Assert.True(b);
 
                 // Make sure each element of the array was compared once. (Strictly speaking, it would not be illegal for 
-                // SequenceEqual to compare an element more than once but that would be a non-optimal implementation and 
+                // EqualFromSeq to compare an element more than once but that would be a non-optimal implementation and 
                 // a red flag. So we'll stick with the stricter test.)
                 Assert.Equal(first.Length, log.Count);
                 foreach (T elem in first)
@@ -165,25 +165,25 @@ namespace DrNet.Tests.Span
                     Span<T> firstSpan = new Span<T>(first);
                     Span<T> secondSpan = new Span<T>(second);
 
-                    bool b = MemoryExt.SequenceEqualTo<T, T>(firstSpan, secondSpan, EqualityComparer);
+                    bool b = MemoryExt.EqualToSeq<T, T>(firstSpan, secondSpan, EqualityComparer);
                     Assert.False(b);
                     Assert.Equal(mismatchIndex + 1, log.Count);
                     Assert.Equal(1, log.CountCompares(first[mismatchIndex], second[mismatchIndex]));
 
                     log.Clear();
-                    b = MemoryExt.SequenceEqualTo<T, T>(secondSpan, firstSpan, EqualityComparer);
+                    b = MemoryExt.EqualToSeq<T, T>(secondSpan, firstSpan, EqualityComparer);
                     Assert.False(b);
                     Assert.Equal(mismatchIndex + 1, log.Count);
                     Assert.Equal(1, log.CountCompares(first[mismatchIndex], second[mismatchIndex]));
 
                     log.Clear();
-                    b = MemoryExt.SequenceEqualFrom<T, T>(firstSpan, secondSpan, EqualityComparer);
+                    b = MemoryExt.EqualFromSeq<T, T>(firstSpan, secondSpan, EqualityComparer);
                     Assert.False(b);
                     Assert.Equal(mismatchIndex + 1, log.Count);
                     Assert.Equal(1, log.CountCompares(first[mismatchIndex], second[mismatchIndex]));
 
                     log.Clear();
-                    b = MemoryExt.SequenceEqualFrom<T, T>(secondSpan, firstSpan, EqualityComparer);
+                    b = MemoryExt.EqualFromSeq<T, T>(secondSpan, firstSpan, EqualityComparer);
                     Assert.False(b);
                     Assert.Equal(mismatchIndex + 1, log.Count);
                     Assert.Equal(1, log.CountCompares(first[mismatchIndex], second[mismatchIndex]));
@@ -221,20 +221,20 @@ namespace DrNet.Tests.Span
                 Span<TEquatable<T>> firstSpan = new Span<TEquatable<T>>(first, GuardLength, length);
                 Span<TEquatable<T>> secondSpan = new Span<TEquatable<T>>(second, GuardLength, length);
 
-                bool b = MemoryExt.SequenceEqualTo<TEquatable<T>, TEquatable<T>>(firstSpan, secondSpan, EqualityComparer);
+                bool b = MemoryExt.EqualToSeq<TEquatable<T>, TEquatable<T>>(firstSpan, secondSpan, EqualityComparer);
                 Assert.True(b);
-                b = MemoryExt.SequenceEqualFrom<TEquatable<T>, TEquatable<T>>(firstSpan, secondSpan, EqualityComparer);
+                b = MemoryExt.EqualFromSeq<TEquatable<T>, TEquatable<T>>(firstSpan, secondSpan, EqualityComparer);
                 Assert.True(b);
             }
         }
     }
 
-    public class SequenceEqualToFrom_EqualityComparer_int : SequenceEqualToFrom_EqualityComparer<int>
+    public class EqualToFromSeq_EqualityComparer_int : EqualToFromSeq_EqualityComparer<int>
     {
         public override int NewT(int value) => value;
     }
 
-    public class SequenceEqualToFrom_EqualityComparer_string : SequenceEqualToFrom_EqualityComparer<string>
+    public class EqualToFromSeq_EqualityComparer_string : EqualToFromSeq_EqualityComparer<string>
     {
         public override string NewT(int value) => value.ToString();
     }

@@ -3,7 +3,7 @@ using Xunit;
 
 namespace DrNet.Tests.ReadOnlySpan
 {
-    public abstract class SequenceEqualTo<T, TSource, TValue>
+    public abstract class EqualToSeq<T, TSource, TValue>
     {
         public abstract T NewT(int value);
 
@@ -19,7 +19,7 @@ namespace DrNet.Tests.ReadOnlySpan
 
             ReadOnlySpan<TSource> first = new ReadOnlySpan<TSource>(a, 1, 0);
             ReadOnlySpan<TValue> second = new ReadOnlySpan<TValue>(b, 2, 0);
-            bool c = MemoryExt.SequenceEqualTo<TSource, TValue>(first, second);
+            bool c = MemoryExt.EqualToSeq<TSource, TValue>(first, second);
             Assert.True(c);
         }
 
@@ -28,7 +28,7 @@ namespace DrNet.Tests.ReadOnlySpan
         {
             TSource[] a = { NewTSource(4), NewTSource(5), NewTSource(6) };
             ReadOnlySpan<TSource> span = new ReadOnlySpan<TSource>(a);
-            bool b = MemoryExt.SequenceEqualTo<TSource, TSource>(span, span);
+            bool b = MemoryExt.EqualToSeq<TSource, TSource>(span, span);
             Assert.True(b);
         }
 
@@ -38,7 +38,7 @@ namespace DrNet.Tests.ReadOnlySpan
             TSource[] a = { NewTSource(4), NewTSource(5), NewTSource(6) };
             TValue[] b = { NewTValue(4), NewTValue(5), NewTValue(6) };
             ReadOnlySpan<TSource> first = new ReadOnlySpan<TSource>(a, 0, 3);
-            bool c = MemoryExt.SequenceEqualTo<TSource, TValue>(first, b);
+            bool c = MemoryExt.EqualToSeq<TSource, TValue>(first, b);
             Assert.True(c);
         }
 
@@ -50,7 +50,7 @@ namespace DrNet.Tests.ReadOnlySpan
             var segment = new ArraySegment<TValue>(dst, 1, 3);
 
             ReadOnlySpan<TSource> first = new ReadOnlySpan<TSource>(src, 0, 3);
-            bool b = MemoryExt.SequenceEqualTo<TSource, TValue>(first, segment);
+            bool b = MemoryExt.EqualToSeq<TSource, TValue>(first, segment);
             Assert.True(b);
         }
 
@@ -62,12 +62,12 @@ namespace DrNet.Tests.ReadOnlySpan
 
             ReadOnlySpan<TSource> first = new ReadOnlySpan<TSource>(a, 0, 3);
             ReadOnlySpan<TValue> second = new ReadOnlySpan<TValue>(b, 0, 2);
-            bool c = MemoryExt.SequenceEqualTo<TSource, TValue>(first, second);
+            bool c = MemoryExt.EqualToSeq<TSource, TValue>(first, second);
             Assert.False(c);
 
             first = new ReadOnlySpan<TSource>(a, 0, 2);
             second = new ReadOnlySpan<TValue>(b, 0, 3);
-            c = MemoryExt.SequenceEqualTo<TSource, TValue>(first, second);
+            c = MemoryExt.EqualToSeq<TSource, TValue>(first, second);
             Assert.False(c);
         }
 
@@ -90,11 +90,11 @@ namespace DrNet.Tests.ReadOnlySpan
 
                 ReadOnlySpan<TSource> firstSpan = new ReadOnlySpan<TSource>(first);
                 ReadOnlySpan<TValue> secondSpan = new ReadOnlySpan<TValue>(second);
-                bool b = MemoryExt.SequenceEqualTo<TSource, TValue>(firstSpan, secondSpan);
+                bool b = MemoryExt.EqualToSeq<TSource, TValue>(firstSpan, secondSpan);
                 Assert.True(b);
 
                 // Make sure each element of the array was compared once. (Strictly speaking, it would not be illegal for 
-                // SequenceEqualTo to compare an element more than once but that would be a non-optimal implementation and 
+                // EqualToSeq to compare an element more than once but that would be a non-optimal implementation and 
                 // a red flag. So we'll stick with the stricter test.)
                 Assert.Equal(first.Length, log.Count);
                 foreach (T elem in items)
@@ -128,7 +128,7 @@ namespace DrNet.Tests.ReadOnlySpan
 
                     ReadOnlySpan<TSource> firstSpan = new ReadOnlySpan<TSource>(first);
                     ReadOnlySpan<TValue> secondSpan = new ReadOnlySpan<TValue>(second);
-                    bool b = MemoryExt.SequenceEqualTo<TSource, TValue>(firstSpan, secondSpan);
+                    bool b = MemoryExt.EqualToSeq<TSource, TValue>(firstSpan, secondSpan);
                     Assert.False(b);
 
                     Assert.Equal(mismatchIndex + 1, log.Count);
@@ -169,13 +169,13 @@ namespace DrNet.Tests.ReadOnlySpan
 
                 ReadOnlySpan<TSource> firstSpan = new ReadOnlySpan<TSource>(first, GuardLength, length);
                 ReadOnlySpan<TValue> secondSpan = new ReadOnlySpan<TValue>(second, GuardLength, length);
-                bool b = MemoryExt.SequenceEqualTo<TSource, TValue>(firstSpan, secondSpan);
+                bool b = MemoryExt.EqualToSeq<TSource, TValue>(firstSpan, secondSpan);
                 Assert.True(b);
             }
         }
     }
 
-    public class SequenceEqualTo_intEE : SequenceEqualTo<int, TEquatable<int>, TEquatable<int>>
+    public class EqualToSeq_intEE : EqualToSeq<int, TEquatable<int>, TEquatable<int>>
     {
         public override int NewT(int value) => value;
         public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) =>
@@ -184,7 +184,7 @@ namespace DrNet.Tests.ReadOnlySpan
             new TEquatable<int>(value, onCompare);
     }
 
-    public class SequenceEqualTo_intEO : SequenceEqualTo<int, TEquatable<int>, TObject<int>>
+    public class EqualToSeq_intEO : EqualToSeq<int, TEquatable<int>, TObject<int>>
     {
         public override int NewT(int value) => value;
         public override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) =>
@@ -197,7 +197,7 @@ namespace DrNet.Tests.ReadOnlySpan
         }
     }
 
-    public class SequenceEqualTo_intOE : SequenceEqualTo<int, TObject<int>, TEquatable<int>>
+    public class EqualToSeq_intOE : EqualToSeq<int, TObject<int>, TEquatable<int>>
     {
         public override int NewT(int value) => value;
         public override TObject<int> NewTSource(int value, Action<int, int> onCompare)
@@ -210,7 +210,7 @@ namespace DrNet.Tests.ReadOnlySpan
             new TEquatable<int>(value, onCompare);
     }
 
-    public class SequenceEqualTo_intOO : SequenceEqualTo<int, TObject<int>, TObject<int>>
+    public class EqualToSeq_intOO : EqualToSeq<int, TObject<int>, TObject<int>>
     {
         public override int NewT(int value) => value;
         public override TObject<int> NewTSource(int value, Action<int, int> onCompare) =>
@@ -219,7 +219,7 @@ namespace DrNet.Tests.ReadOnlySpan
             new TObject<int>(value, onCompare);
     }
 
-    public class SequenceEqualTo_stringEE : SequenceEqualTo<string, TEquatable<string>, TEquatable<string>>
+    public class EqualToSeq_stringEE : EqualToSeq<string, TEquatable<string>, TEquatable<string>>
     {
         public override string NewT(int value) => value.ToString();
         public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) =>
@@ -228,7 +228,7 @@ namespace DrNet.Tests.ReadOnlySpan
             new TEquatable<string>(value.ToString(), onCompare);
     }
 
-    public class SequenceEqualTo_stringEO : SequenceEqualTo<string, TEquatable<string>, TObject<string>>
+    public class EqualToSeq_stringEO : EqualToSeq<string, TEquatable<string>, TObject<string>>
     {
         public override string NewT(int value) => value.ToString();
         public override TEquatable<string> NewTSource(int value, Action<string, string> onCompare) =>
@@ -241,7 +241,7 @@ namespace DrNet.Tests.ReadOnlySpan
         }
     }
 
-    public class SequenceEqualTo_stringOE : SequenceEqualTo<string, TObject<string>, TEquatable<string>>
+    public class EqualToSeq_stringOE : EqualToSeq<string, TObject<string>, TEquatable<string>>
     {
         public override string NewT(int value) => value.ToString();
         public override TObject<string> NewTSource(int value, Action<string, string> onCompare)
@@ -254,7 +254,7 @@ namespace DrNet.Tests.ReadOnlySpan
             new TEquatable<string>(value.ToString(), onCompare);
     }
 
-    public class SequenceEqualTo_stringOO : SequenceEqualTo<string, TObject<string>, TObject<string>>
+    public class EqualToSeq_stringOO : EqualToSeq<string, TObject<string>, TObject<string>>
     {
         public override string NewT(int value) => value.ToString();
         public override TObject<string> NewTSource(int value, Action<string, string> onCompare) =>

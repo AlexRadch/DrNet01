@@ -295,7 +295,7 @@ namespace DrNet.Internal.Unsafe
 
         #endregion
 
-        #region IndexOfAny
+        #region IndexOfEqualAny LastIndexOfEqualAny
 
         public static int IndexOfEqualAnySourceComparer<TSource, TValue>(ref TSource searchSpace, int searchSpaceLength,
             ref TValue value, int valueLength, Func<TSource, TValue, bool> equalityComparer)
@@ -341,32 +341,6 @@ namespace DrNet.Internal.Unsafe
                 }
             }
             return index;
-        }
-
-        public static int IndexOfNotEqualAllSourceComparer<TSource, TValue>(ref TSource searchSpace, 
-            int searchSpaceLength, ref TValue value, int valueLength, Func<TSource, TValue, bool> equalityComparer)
-        {
-            Debug.Assert(searchSpaceLength >= 0);
-            Debug.Assert(valueLength >= 0);
-
-            for (int i = 0; i < searchSpaceLength; i++)
-                if (IndexOfValueComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
-                    return i;
-
-            return -1;
-        }
-
-        public static int IndexOfNotEqualAllValueComparer<TSource, TValue>(ref TSource searchSpace, 
-            int searchSpaceLength, ref TValue value, int valueLength, Func<TValue, TSource, bool> equalityComparer)
-        {
-            Debug.Assert(searchSpaceLength >= 0);
-            Debug.Assert(valueLength >= 0);
-
-            for (int i = 0; i < searchSpaceLength; i++)
-                if (IndexOfSourceComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
-                    return i;
-
-            return -1;
         }
 
         public static int LastIndexOfEqualAnySourceComparer<TSource, TValue>(ref TSource searchSpace, 
@@ -421,6 +395,36 @@ namespace DrNet.Internal.Unsafe
             return index;
         }
 
+        #endregion
+
+        #region IndexOfNotEqualAll LastIndexOfNotEqualAll
+
+        public static int IndexOfNotEqualAllSourceComparer<TSource, TValue>(ref TSource searchSpace, 
+            int searchSpaceLength, ref TValue value, int valueLength, Func<TSource, TValue, bool> equalityComparer)
+        {
+            Debug.Assert(searchSpaceLength >= 0);
+            Debug.Assert(valueLength >= 0);
+
+            for (int i = 0; i < searchSpaceLength; i++)
+                if (IndexOfValueComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
+                    return i;
+
+            return -1;
+        }
+
+        public static int IndexOfNotEqualAllValueComparer<TSource, TValue>(ref TSource searchSpace, 
+            int searchSpaceLength, ref TValue value, int valueLength, Func<TValue, TSource, bool> equalityComparer)
+        {
+            Debug.Assert(searchSpaceLength >= 0);
+            Debug.Assert(valueLength >= 0);
+
+            for (int i = 0; i < searchSpaceLength; i++)
+                if (IndexOfSourceComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
+                    return i;
+
+            return -1;
+        }
+
         public static int LastIndexOfNotEqualAllSourceComparer<TSource, TValue>(ref TSource searchSpace, 
             int searchSpaceLength, ref TValue value, int valueLength, Func<TSource, TValue, bool> equalityComparer)
         {
@@ -449,7 +453,85 @@ namespace DrNet.Internal.Unsafe
 
         #endregion
 
-        public static bool SequenceEqual<TFirst, TSecond>(ref TFirst first, ref TSecond second, int length,
+        #region Sequence
+
+        public static int IndexOfSeq<TFirst, TSecond>(ref TFirst searchSpace, int searchSpaceLength,
+            ref TSecond value, int valueLength, Func<TFirst, TSecond, bool> equalityComparer)
+        {
+            Debug.Assert(valueLength > 0);
+            Debug.Assert(searchSpaceLength >= valueLength);
+
+            TSecond valueHead = value;
+            ref TSecond valueTail = ref CSUnsafe.Add(ref value, 1);
+            int valueTailLength = valueLength - 1;
+
+            int index = 0;
+            for (; ; )
+            {
+                // Ensures no deceptive underflows in the computation of "remainingSearchSpaceLength".
+                Debug.Assert(0 <= index && index <= searchSpaceLength); 
+                
+                int remainingSearchSpaceLength = searchSpaceLength - index - valueTailLength;
+                // The unsearched portion is now shorter than the sequence we're looking for. So it can't be there.
+                if (remainingSearchSpaceLength <= 0)
+                    break;  
+
+                // Do a quick search for the first element of "value".
+                int relativeIndex = IndexOfSourceComparer(ref CSUnsafe.Add(ref searchSpace, index), 
+                    remainingSearchSpaceLength, valueHead, equalityComparer);
+                if (relativeIndex == -1)
+                    break;
+                index += relativeIndex;
+
+                // Found the first element of "value". See if the tail matches.
+                if (EqualToSeq(ref CSUnsafe.Add(ref searchSpace, index + 1), ref valueTail, valueTailLength, 
+                    equalityComparer))
+                    return index;  // The tail matched. Return a successful find.
+
+                index++;
+            }
+            return -1;
+        }
+
+        public static int IndexOfSeqFrom<TFirst, TSecond>(ref TFirst searchSpace, int searchSpaceLength,
+            ref TSecond value, int valueLength, Func<TSecond, TFirst, bool> equalityComparer)
+        {
+            Debug.Assert(valueLength > 0);
+            Debug.Assert(searchSpaceLength >= valueLength);
+
+            TSecond valueHead = value;
+            ref TSecond valueTail = ref CSUnsafe.Add(ref value, 1);
+            int valueTailLength = valueLength - 1;
+
+            int index = 0;
+            for (; ; )
+            {
+                // Ensures no deceptive underflows in the computation of "remainingSearchSpaceLength".
+                Debug.Assert(0 <= index && index <= searchSpaceLength); 
+                
+                int remainingSearchSpaceLength = searchSpaceLength - index - valueTailLength;
+                // The unsearched portion is now shorter than the sequence we're looking for. So it can't be there.
+                if (remainingSearchSpaceLength <= 0)
+                    break;  
+
+                // Do a quick search for the first element of "value".
+                int relativeIndex = IndexOfValueComparer(ref CSUnsafe.Add(ref searchSpace, index), 
+                    remainingSearchSpaceLength, valueHead, equalityComparer);
+                if (relativeIndex == -1)
+                    break;
+                index += relativeIndex;
+
+                // Found the first element of "value". See if the tail matches.
+                if (EqualToSeq(ref valueTail, ref CSUnsafe.Add(ref searchSpace, index + 1), valueTailLength, 
+                    equalityComparer))
+                    return index;  // The tail matched. Return a successful find.
+
+                index++;
+            }
+            return -1;
+        }
+
+        public static bool EqualToSeq<TFirst, TSecond>(ref TFirst first, ref TSecond second, int length,
             Func<TFirst, TSecond, bool> equalityComparer)
         {
             Debug.Assert(length >= 0);
@@ -512,5 +594,7 @@ namespace DrNet.Internal.Unsafe
         NotEqual: // Workaround for https://github.com/dotnet/coreclr/issues/13549
             return false;
         }
+
+        #endregion
     }
 }
