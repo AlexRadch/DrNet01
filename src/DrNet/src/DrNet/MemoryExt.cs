@@ -107,14 +107,15 @@ namespace DrNet
         {
             if (equalityComparer == null)
             {
-                if (value is IEquatable<TSource> vEquatable)
+                if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte) || 
+                    typeof(TSource) == typeof(char) && typeof(TValue) == typeof(char))
                 {
-                    if (typeof(TSource) == typeof(TValue))
-                        return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.IndexOf(span, 
-                            CSUnsafe.As<TValue, TSource>(ref value));
+                    return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.IndexOf(span, 
+                        CSUnsafe.As<TValue, TSource>(ref value));
+                }
+                if (value is IEquatable<TSource> vEquatable)
                     return SpanHelpers.IndexOfValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
                         vEquatable, (eValue, sValue) => eValue.Equals(sValue));
-                }
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
                     return SpanHelpers.IndexOfSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
                         (sValue, vValue) => ((IEquatable<TValue>)sValue).Equals(vValue));
