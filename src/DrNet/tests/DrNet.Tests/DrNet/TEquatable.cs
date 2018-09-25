@@ -7,37 +7,19 @@ using System;
 namespace DrNet.Tests
 {
     // A wrapped integer that invokes a custom delegate every time Object.Equals() is invoked.
-    public struct TEquatable<T>: IEquatable<T>, IEquatable<TEquatable<T>>, IEquatable<TObject<T>>
+    public struct TEquatable<T>: IEquatable<TEquatable<T>>, IEquatable<TObject<T>>
     {
-        public TEquatable(T value)
-            : this(value, (Action<T, T>)null)
-        {
-            // This constructor does not report comparisons but is still useful for catching uses of the boxing Equals().
-        }
-
-        public TEquatable(T value, Action<T, T> onCompare)
+        public TEquatable(T value, Action<T, T> onCompare = null)
         {
             Value = value;
-            OnCompareT = default;
             OnCompareTEquatableT = default;
             OnCompareTObjectT = default;
 
             if (onCompare != null)
             {
-                OnCompareT += onCompare;
                 OnCompareTEquatableT += onCompare;
                 OnCompareTObjectT += onCompare;
             }
-        }
-
-        public TEquatable(T value, TLog<T> log) : this (value, log.Add) { }
-
-        public bool Equals(T other)
-        {
-            OnCompareT?.Invoke(Value, other);
-            if (Value is IEquatable<T> equatable)
-                return equatable.Equals(other);
-            return Value.Equals(other);
         }
 
         public bool Equals(TEquatable<T> other)
@@ -70,7 +52,6 @@ namespace DrNet.Tests
 
         public T Value { get; }
 
-        public event Action<T, T> OnCompareT;
         public event Action<T, T> OnCompareTEquatableT;
         public event Action<T, T> OnCompareTObjectT;
     }

@@ -9,13 +9,7 @@ namespace DrNet.Tests
     // A wrapped integer that invokes a custom delegate every time Object.Equals() is invoked.
     public struct TObject<T>
     {
-        public TObject(T value)
-            : this(value, (Action<T, T>)null)
-        {
-            // This constructor does not report comparisons but is still useful for catching uses of the boxing Equals().
-        }
-
-        public TObject(T value, Action<T, T> onCompare)
+        public TObject(T value, Action<T, T> onCompare = null)
         {
             Value = value;
             OnCompare = default;
@@ -24,9 +18,7 @@ namespace DrNet.Tests
                 OnCompare += onCompare;
         }
 
-        public TObject(T value, TLog<T> log) : this (value, log.Add) { }
-
-        public bool Equals(T other)
+        private bool Equals(T other)
         {
             OnCompare?.Invoke(Value, other);
             if (Value is IEquatable<T> equatable)
@@ -34,12 +26,12 @@ namespace DrNet.Tests
             return Value.Equals(other);
         }
 
-        public bool Equals(TObject<T> other)
+        private bool Equals(TObject<T> other)
         {
             return Equals(other.Value);
         }
 
-        public bool Equals(TEquatable<T> other)
+        private bool Equals(TEquatable<T> other)
         {
             return Equals(other.Value);
         }

@@ -104,7 +104,7 @@ namespace DrNet.Tests.ReadOnlySpan
                 TEquatable<T>[] second = new TEquatable<T>[length];
                 for (int i = 0; i < length; i++)
                 {
-                    first[i] = second[i] = new TEquatable<T>(NewT(10 * (i + 1)), log);
+                    first[i] = second[i] = new TEquatable<T>(NewT(10 * (i + 1)), log.Add);
                 }
 
                 ReadOnlySpan<TEquatable<T>> firstSpan = new ReadOnlySpan<TEquatable<T>>(first);
@@ -152,10 +152,10 @@ namespace DrNet.Tests.ReadOnlySpan
                     TEquatable<T>[] second = new TEquatable<T>[length];
                     for (int i = 0; i < length; i++)
                     {
-                        first[i] = second[i] = new TEquatable<T>(NewT(10 * (i + 1)), log);
+                        first[i] = second[i] = new TEquatable<T>(NewT(10 * (i + 1)), log.Add);
                     }
 
-                    second[mismatchIndex] = new TEquatable<T>(NewT(10 * (mismatchIndex + 1) + 1), log);
+                    second[mismatchIndex] = new TEquatable<T>(NewT(10 * (mismatchIndex + 1) + 1), log.Add);
 
                     ReadOnlySpan<TEquatable<T>> firstSpan = new ReadOnlySpan<TEquatable<T>>(first);
                     ReadOnlySpan<TEquatable<T>> secondSpan = new ReadOnlySpan<TEquatable<T>>(second);
