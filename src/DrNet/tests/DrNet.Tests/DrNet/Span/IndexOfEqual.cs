@@ -11,7 +11,9 @@ namespace DrNet.Tests.Span
 
         protected abstract TValue NewTValue(T value, Action<T, T> onCompare = default);
 
-        private bool EqualityCompare(T v1, T v2)
+        private Action<T, T> onCompare;
+
+        private bool EqualityCompareT(T v1, T v2)
         {
             if (v1 is IEquatable<T> equatable)
                 return equatable.Equals(v2);
@@ -20,6 +22,9 @@ namespace DrNet.Tests.Span
 
         private bool EqualityCompare(TSource sValue, TValue vValue)
         {
+            if (onCompare != null && sValue is T tSource && vValue is T tValue)
+                onCompare(tSource, tValue);
+
             if (sValue is IEquatable<TValue> sEquatable)
                 return sEquatable.Equals(vValue);
             if (vValue is IEquatable<TSource> vEquatable)
@@ -27,8 +32,11 @@ namespace DrNet.Tests.Span
             return sValue.Equals(vValue);
         }
 
-        private bool EqualityCompare(TValue vValue, TSource sValue)
+        private bool EqualityCompareFrom(TValue vValue, TSource sValue)
         {
+            if (onCompare != null && vValue is T tValue && sValue is T tSource)
+                onCompare(tValue, tSource);
+
             if (vValue is IEquatable<TSource> vEquatable)
                 return vEquatable.Equals(sValue);
             if (sValue is IEquatable<TValue> sEquatable)
@@ -40,9 +48,15 @@ namespace DrNet.Tests.Span
         public void ZeroLength()
         {
             var rnd = new Random(42);
-            Span<T> sp = new Span<T>(Array.Empty<T>());
+            T target = NewT(rnd.Next());
 
-            int idx = MemoryExt.IndexOfEqual(sp, NewTValue(NewT(rnd.Next())));
+            Span<TSource> sp = new Span<TSource>(Array.Empty<TSource>());
+
+            int idx = MemoryExt.IndexOfEqual(sp, NewTValue(target));
+            Assert.Equal(-1, idx);
+            idx = MemoryExt.IndexOfEqual(sp, NewTValue(target), EqualityCompare);
+            Assert.Equal(-1, idx);
+            idx = MemoryExt.IndexOfEqualFrom(sp, NewTValue(target), EqualityCompareFrom);
             Assert.Equal(-1, idx);
         }
 
@@ -54,9 +68,9 @@ namespace DrNet.Tests.Span
         {
             try
             {
-                if (!EqualityCompare(default(TSource), default))
+                if (!EqualityCompare(default, default))
                     return;
-                if (!EqualityCompare(default(TValue), default))
+                if (!EqualityCompareFrom(default, default))
                     return;
             }
             catch
@@ -64,10 +78,14 @@ namespace DrNet.Tests.Span
                 return;
             }
 
-            TSource[] a = new TSource[length];
-            Span<TSource> span = new Span<TSource>(a);
+            TSource[] s = new TSource[length];
+            Span<TSource> span = new Span<TSource>(s);
 
             int idx = MemoryExt.IndexOfEqual(span, default(TValue));
+            Assert.Equal(0, idx);
+            idx = MemoryExt.IndexOfEqual(span, default(TValue), EqualityCompare);
+            Assert.Equal(0, idx);
+            idx = MemoryExt.IndexOfEqualFrom(span, default(TValue), EqualityCompareFrom);
             Assert.Equal(0, idx);
         }
 
@@ -87,7 +105,7 @@ namespace DrNet.Tests.Span
                 do
                 {
                     item = NewT(rnd.Next());
-                } while (EqualityCompare(item, target) || EqualityCompare(target, item));
+                } while (EqualityCompareT(item, target) || EqualityCompareT(target, item));
 
                 s[i] = NewTSource(item);
             }
@@ -99,6 +117,10 @@ namespace DrNet.Tests.Span
                 s[targetIndex] = NewTSource(target);
 
                 int idx = MemoryExt.IndexOfEqual(span, NewTValue(target));
+                Assert.Equal(targetIndex, idx);
+                idx = MemoryExt.IndexOfEqual(span, NewTValue(target), EqualityCompare);
+                Assert.Equal(targetIndex, idx);
+                idx = MemoryExt.IndexOfEqualFrom(span, NewTValue(target), EqualityCompareFrom);
                 Assert.Equal(targetIndex, idx);
 
                 s[targetIndex] = temp;
@@ -122,13 +144,17 @@ namespace DrNet.Tests.Span
                 do
                 {
                     item = NewT(rnd.Next());
-                } while (EqualityCompare(item, target) || EqualityCompare(target, item));
+                } while (EqualityCompareT(item, target) || EqualityCompareT(target, item));
 
                 s[i] = NewTSource(item);
             }
             Span<TSource> span = new Span<TSource>(s);
 
             int idx = MemoryExt.IndexOfEqual(span, NewTValue(target));
+            Assert.Equal(-1, idx);
+            idx = MemoryExt.IndexOfEqual(span, NewTValue(target), EqualityCompare);
+            Assert.Equal(-1, idx);
+            idx = MemoryExt.IndexOfEqualFrom(span, NewTValue(target), EqualityCompareFrom);
             Assert.Equal(-1, idx);
         }
 
@@ -149,7 +175,7 @@ namespace DrNet.Tests.Span
                 do
                 {
                     item = NewT(rnd.Next());
-                } while (EqualityCompare(item, target) || EqualityCompare(target, item));
+                } while (EqualityCompareT(item, target) || EqualityCompareT(target, item));
 
                 s[i] = NewTSource(item);
             }
@@ -162,6 +188,10 @@ namespace DrNet.Tests.Span
                 s[targetIndex + 0] = s[targetIndex + 1] = NewTSource(target);
 
                 int idx = MemoryExt.IndexOfEqual(span, NewTValue(target));
+                Assert.Equal(targetIndex, idx);
+                idx = MemoryExt.IndexOfEqual(span, NewTValue(target), EqualityCompare);
+                Assert.Equal(targetIndex, idx);
+                idx = MemoryExt.IndexOfEqualFrom(span, NewTValue(target), EqualityCompareFrom);
                 Assert.Equal(targetIndex, idx);
 
                 s[targetIndex + 0] = temp0;
@@ -178,23 +208,7 @@ namespace DrNet.Tests.Span
         {
             var rnd = new Random(45);
             T target = NewT(rnd.Next());
-
             TLog<T> log = new TLog<T>();
-            {
-                T temp = NewT(rnd.Next());
-                EqualityCompare(NewTSource(temp, log.Add), NewTValue(temp, log.Add));
-                EqualityCompare(NewTValue(temp, log.Add), NewTSource(temp, log.Add));
-
-            }
-            bool logSupported = log.Count == 2;
-            if (!logSupported)
-            {
-                bool sourceWithLog = typeof(TSource) == typeof(TObject<T>) && typeof(TSource) == typeof(TEquatable<T>);
-                bool valueWithLog = typeof(TValue) == typeof(TObject<T>) && typeof(TValue) == typeof(TEquatable<T>);
-                Assert.False(sourceWithLog && valueWithLog);
-                return;
-            }
-            log.Clear();
 
             T[] t = new T[length];
             TSource[] s = new TSource[length];
@@ -204,14 +218,62 @@ namespace DrNet.Tests.Span
                 do
                 {
                     item = NewT(rnd.Next());
-                } while (EqualityCompare(item, target) || EqualityCompare(target, item));
+                } while (EqualityCompareT(item, target) || EqualityCompareT(target, item) || 
+                    Array.IndexOf(t, item, 0, i) >= 0);
 
                 t[i] = item;
                 s[i] = NewTSource(item, log.Add);
             }
             Span<TSource> span = new Span<TSource>(s);
 
+            {
+                T temp = NewT(rnd.Next());
+                EqualityCompare(NewTSource(temp, log.Add), NewTValue(temp, log.Add));
+                EqualityCompareFrom(NewTValue(temp, log.Add), NewTSource(temp, log.Add));
+            }
+            bool logSupported = log.Count == 2;
+            if (!logSupported)
+            {
+                bool sourceWithLog = typeof(TSource) == typeof(TObject<T>) && typeof(TSource) == typeof(TEquatable<T>);
+                bool valueWithLog = typeof(TValue) == typeof(TObject<T>) && typeof(TValue) == typeof(TEquatable<T>);
+                Assert.False(sourceWithLog && valueWithLog);
+            }
+
+            log.Clear();
             int idx = MemoryExt.IndexOfEqual(span, NewTValue(target, log.Add));
+            Assert.Equal(-1, idx);
+            if (logSupported)
+            {
+                // Since we asked for a non-existent value, make sure each element of the array was compared once.
+                // (Strictly speaking, it would not be illegal for IndexOfEqual to compare an element more than once but
+                // that would be a non-optimal implementation and a red flag. So we'll stick with the stricter test.)
+                Assert.Equal(s.Length, log.Count);
+                foreach (T item in t)
+                {
+                    int numCompares = log.CountCompares(item, target);
+                    Assert.True(numCompares == 1, $"Expected {numCompares} == 1 for element {item}.");
+                }
+            }
+
+            log.Clear();
+            if (!logSupported)
+                onCompare = log.Add;
+
+            idx = MemoryExt.IndexOfEqual(span, NewTValue(target, log.Add), EqualityCompare);
+            Assert.Equal(-1, idx);
+
+            // Since we asked for a non-existent value, make sure each element of the array was compared once.
+            // (Strictly speaking, it would not be illegal for IndexOfEqual to compare an element more than once but
+            // that would be a non-optimal implementation and a red flag. So we'll stick with the stricter test.)
+            Assert.Equal(s.Length, log.Count);
+            foreach (T item in t)
+            {
+                int numCompares = log.CountCompares(item, target);
+                Assert.True(numCompares == 1, $"Expected {numCompares} == 1 for element {item}.");
+            }
+
+            log.Clear();
+            idx = MemoryExt.IndexOfEqualFrom(span, NewTValue(target, log.Add), EqualityCompareFrom);
             Assert.Equal(-1, idx);
 
             // Since we asked for a non-existent value, make sure each element of the array was compared once.
@@ -239,8 +301,8 @@ namespace DrNet.Tests.Span
 
             void checkForOutOfRangeAccess(T x, T y)
             {
-                if (EqualityCompare(x, guard) || EqualityCompare(guard, x) ||
-                    EqualityCompare(y, guard) || EqualityCompare(guard, y))
+                if (EqualityCompareT(x, guard) || EqualityCompareT(guard, x) ||
+                    EqualityCompareT(y, guard) || EqualityCompareT(guard, y))
                     throw new Exception("Detected out of range access in IndexOfEqual()");
             }
 
@@ -252,14 +314,20 @@ namespace DrNet.Tests.Span
                 do
                 {
                     item = NewT(rnd.Next());
-                } while (EqualityCompare(item, target) || EqualityCompare(target, item) ||
-                    EqualityCompare(item, guard) || EqualityCompare(guard, item));
+                } while (EqualityCompareT(item, target) || EqualityCompareT(target, item) ||
+                    EqualityCompareT(item, guard) || EqualityCompareT(guard, item));
 
                 s[i + guardLength] = NewTSource(item, checkForOutOfRangeAccess);
             }
             Span<TSource> span = new Span<TSource>(s, guardLength, length);
 
             int idx = MemoryExt.IndexOfEqual(span, NewTValue(target, checkForOutOfRangeAccess));
+            Assert.Equal(-1, idx);
+
+            onCompare = checkForOutOfRangeAccess;
+            idx = MemoryExt.IndexOfEqual(span, NewTValue(target, checkForOutOfRangeAccess), EqualityCompare);
+            Assert.Equal(-1, idx);
+            idx = MemoryExt.IndexOfEqualFrom(span, NewTValue(target, checkForOutOfRangeAccess), EqualityCompareFrom);
             Assert.Equal(-1, idx);
         }
     }
