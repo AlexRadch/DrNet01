@@ -7,9 +7,9 @@ namespace DrNet.Internal.Unsafe
 {
     public static class SpanHelpers
     {
-        #region IndexOf
+        #region IndexOfEqual LastIndexOfEqual
 
-        public static unsafe int IndexOfSourceComparer<TSource, TValue>(ref TSource searchSpace, int length, 
+        public static unsafe int IndexOfEqualSourceComparer<TSource, TValue>(ref TSource searchSpace, int length, 
             TValue value, Func<TSource, TValue, bool> equalityComparer)
         {
             Debug.Assert(length >= 0);
@@ -82,7 +82,7 @@ namespace DrNet.Internal.Unsafe
             return (int)(byte*)(index + 7);
         }
 
-        public static unsafe int IndexOfValueComparer<TSource, TValue>(ref TSource searchSpace, int length, 
+        public static unsafe int IndexOfEqualValueComparer<TSource, TValue>(ref TSource searchSpace, int length, 
             TValue value, Func<TValue, TSource, bool> equalityComparer)
         {
             Debug.Assert(length >= 0);
@@ -155,7 +155,7 @@ namespace DrNet.Internal.Unsafe
             return (int)(byte*)(index + 7);
         }
 
-        public static unsafe int LastIndexOfSourceComparer<TSource, TValue>(ref TSource searchSpace, int length, 
+        public static unsafe int LastIndexOfEqualSourceComparer<TSource, TValue>(ref TSource searchSpace, int length, 
             TValue value, Func<TSource, TValue, bool> equalityComparer)
         {
             Debug.Assert(length >= 0);
@@ -224,7 +224,7 @@ namespace DrNet.Internal.Unsafe
 
         }
 
-        public static unsafe int LastIndexOfValueComparer<TSource, TValue>(ref TSource searchSpace, int length, 
+        public static unsafe int LastIndexOfEqualValueComparer<TSource, TValue>(ref TSource searchSpace, int length, 
             TValue value, Func<TValue, TSource, bool> equalityComparer)
         {
             Debug.Assert(length >= 0);
@@ -306,7 +306,7 @@ namespace DrNet.Internal.Unsafe
             int index = -1;
             for (int i = 0; i < valueLength; i++)
             {
-                var tempIndex = IndexOfSourceComparer(ref searchSpace, searchSpaceLength, CSUnsafe.Add(ref value, i), equalityComparer);
+                var tempIndex = IndexOfEqualSourceComparer(ref searchSpace, searchSpaceLength, CSUnsafe.Add(ref value, i), equalityComparer);
                 if (tempIndex >= 0)
                 {
                     index = tempIndex;
@@ -329,7 +329,7 @@ namespace DrNet.Internal.Unsafe
             int index = -1;
             for (int i = 0; i < valueLength; i++)
             {
-                var tempIndex = IndexOfValueComparer(ref searchSpace, searchSpaceLength, CSUnsafe.Add(ref value, i), equalityComparer);
+                var tempIndex = IndexOfEqualValueComparer(ref searchSpace, searchSpaceLength, CSUnsafe.Add(ref value, i), equalityComparer);
                 if (tempIndex >= 0)
                 {
                     index = tempIndex;
@@ -352,7 +352,7 @@ namespace DrNet.Internal.Unsafe
             int index = -1;
             for (int i = 0; i < valueLength; i++)
             {
-                var tempIndex = LastIndexOfSourceComparer(ref CSUnsafe.Add(ref searchSpace, index + 1), searchSpaceLength, CSUnsafe.Add(ref value, i), equalityComparer);
+                var tempIndex = LastIndexOfEqualSourceComparer(ref CSUnsafe.Add(ref searchSpace, index + 1), searchSpaceLength, CSUnsafe.Add(ref value, i), equalityComparer);
                 if (tempIndex >= 0)
                 {
                     tempIndex++;
@@ -378,7 +378,7 @@ namespace DrNet.Internal.Unsafe
             int index = -1;
             for (int i = 0; i < valueLength; i++)
             {
-                var tempIndex = LastIndexOfValueComparer(ref CSUnsafe.Add(ref searchSpace, index + 1), searchSpaceLength, CSUnsafe.Add(ref value, i), equalityComparer);
+                var tempIndex = LastIndexOfEqualValueComparer(ref CSUnsafe.Add(ref searchSpace, index + 1), searchSpaceLength, CSUnsafe.Add(ref value, i), equalityComparer);
                 if (tempIndex >= 0)
                 {
                     tempIndex++;
@@ -406,7 +406,7 @@ namespace DrNet.Internal.Unsafe
             Debug.Assert(valueLength >= 0);
 
             for (int i = 0; i < searchSpaceLength; i++)
-                if (IndexOfValueComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
+                if (IndexOfEqualValueComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
                     return i;
 
             return -1;
@@ -419,7 +419,7 @@ namespace DrNet.Internal.Unsafe
             Debug.Assert(valueLength >= 0);
 
             for (int i = 0; i < searchSpaceLength; i++)
-                if (IndexOfSourceComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
+                if (IndexOfEqualSourceComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
                     return i;
 
             return -1;
@@ -432,7 +432,7 @@ namespace DrNet.Internal.Unsafe
             Debug.Assert(valueLength >= 0);
 
             for (int i = searchSpaceLength - 1; i >= 0; i--)
-                if (IndexOfValueComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
+                if (IndexOfEqualValueComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
                     return i;
 
             return -1;
@@ -445,7 +445,7 @@ namespace DrNet.Internal.Unsafe
             Debug.Assert(valueLength >= 0);
 
             for (int i = searchSpaceLength - 1; i >= 0; i--)
-                if (IndexOfSourceComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
+                if (IndexOfEqualSourceComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
                     return i;
 
             return -1;
@@ -477,7 +477,7 @@ namespace DrNet.Internal.Unsafe
                     break;  
 
                 // Do a quick search for the first element of "value".
-                int relativeIndex = IndexOfSourceComparer(ref CSUnsafe.Add(ref searchSpace, index), 
+                int relativeIndex = IndexOfEqualSourceComparer(ref CSUnsafe.Add(ref searchSpace, index), 
                     remainingSearchSpaceLength, valueHead, equalityComparer);
                 if (relativeIndex == -1)
                     break;
@@ -515,7 +515,7 @@ namespace DrNet.Internal.Unsafe
                     break;  
 
                 // Do a quick search for the first element of "value".
-                int relativeIndex = IndexOfValueComparer(ref CSUnsafe.Add(ref searchSpace, index), 
+                int relativeIndex = IndexOfEqualValueComparer(ref CSUnsafe.Add(ref searchSpace, index), 
                     remainingSearchSpaceLength, valueHead, equalityComparer);
                 if (relativeIndex == -1)
                     break;
@@ -552,7 +552,7 @@ namespace DrNet.Internal.Unsafe
                     break;  
 
                 // Do a quick search for the first element of "value".
-                int relativeIndex = LastIndexOfSourceComparer(ref searchSpace, remainingSearchSpaceLength, valueHead,
+                int relativeIndex = LastIndexOfEqualSourceComparer(ref searchSpace, remainingSearchSpaceLength, valueHead,
                     equalityComparer);
                 if (relativeIndex == -1)
                     break;
@@ -588,7 +588,7 @@ namespace DrNet.Internal.Unsafe
                     break;  
 
                 // Do a quick search for the first element of "value".
-                int relativeIndex = LastIndexOfValueComparer(ref searchSpace, remainingSearchSpaceLength, valueHead,
+                int relativeIndex = LastIndexOfEqualValueComparer(ref searchSpace, remainingSearchSpaceLength, valueHead,
                     equalityComparer);
                 if (relativeIndex == -1)
                     break;
