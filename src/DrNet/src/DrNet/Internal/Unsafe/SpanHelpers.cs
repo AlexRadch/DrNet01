@@ -13,6 +13,7 @@ namespace DrNet.Internal.Unsafe
             TValue value, Func<TSource, TValue, bool> equalityComparer)
         {
             Debug.Assert(length >= 0);
+            Debug.Assert(equalityComparer != null);
 
             IntPtr index = (IntPtr)0; // Use IntPtr for arithmetic to avoid unnecessary 64->32->64 truncations
             while (length >= 8)
@@ -86,6 +87,7 @@ namespace DrNet.Internal.Unsafe
             TValue value, Func<TValue, TSource, bool> equalityComparer)
         {
             Debug.Assert(length >= 0);
+            Debug.Assert(equalityComparer != null);
 
             IntPtr index = (IntPtr)0; // Use IntPtr for arithmetic to avoid unnecessary 64->32->64 truncations
             while (length >= 8)
@@ -159,6 +161,7 @@ namespace DrNet.Internal.Unsafe
             TValue value, Func<TSource, TValue, bool> equalityComparer)
         {
             Debug.Assert(length >= 0);
+            Debug.Assert(equalityComparer != null);
 
             while (length >= 8)
             {
@@ -228,6 +231,7 @@ namespace DrNet.Internal.Unsafe
             TValue value, Func<TValue, TSource, bool> equalityComparer)
         {
             Debug.Assert(length >= 0);
+            Debug.Assert(equalityComparer != null);
 
             while (length >= 8)
             {
@@ -302,11 +306,13 @@ namespace DrNet.Internal.Unsafe
         {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
+            Debug.Assert(equalityComparer != null);
 
             int index = -1;
             for (int i = 0; i < valueLength; i++)
             {
-                var tempIndex = IndexOfEqualSourceComparer(ref searchSpace, searchSpaceLength, CSUnsafe.Add(ref value, i), equalityComparer);
+                var tempIndex = IndexOfEqualSourceComparer(ref searchSpace, searchSpaceLength, 
+                    CSUnsafe.Add(ref value, i), equalityComparer);
                 if (tempIndex >= 0)
                 {
                     index = tempIndex;
@@ -325,6 +331,7 @@ namespace DrNet.Internal.Unsafe
         {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
+            Debug.Assert(equalityComparer != null);
 
             int index = -1;
             for (int i = 0; i < valueLength; i++)
@@ -348,6 +355,7 @@ namespace DrNet.Internal.Unsafe
         {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
+            Debug.Assert(equalityComparer != null);
 
             int index = -1;
             for (int i = 0; i < valueLength; i++)
@@ -374,6 +382,7 @@ namespace DrNet.Internal.Unsafe
         {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
+            Debug.Assert(equalityComparer != null);
 
             int index = -1;
             for (int i = 0; i < valueLength; i++)
@@ -404,9 +413,11 @@ namespace DrNet.Internal.Unsafe
         {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
+            Debug.Assert(equalityComparer != null);
 
             for (int i = 0; i < searchSpaceLength; i++)
-                if (IndexOfEqualValueComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
+                if (IndexOfEqualValueComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), 
+                    equalityComparer) < 0)
                     return i;
 
             return -1;
@@ -417,9 +428,11 @@ namespace DrNet.Internal.Unsafe
         {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
+            Debug.Assert(equalityComparer != null);
 
             for (int i = 0; i < searchSpaceLength; i++)
-                if (IndexOfEqualSourceComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
+                if (IndexOfEqualSourceComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), 
+                    equalityComparer) < 0)
                     return i;
 
             return -1;
@@ -430,9 +443,11 @@ namespace DrNet.Internal.Unsafe
         {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
+            Debug.Assert(equalityComparer != null);
 
             for (int i = searchSpaceLength - 1; i >= 0; i--)
-                if (IndexOfEqualValueComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
+                if (IndexOfEqualValueComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), 
+                    equalityComparer) < 0)
                     return i;
 
             return -1;
@@ -443,9 +458,11 @@ namespace DrNet.Internal.Unsafe
         {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
+            Debug.Assert(equalityComparer != null);
 
             for (int i = searchSpaceLength - 1; i >= 0; i--)
-                if (IndexOfEqualSourceComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), equalityComparer) < 0)
+                if (IndexOfEqualSourceComparer(ref value, valueLength, CSUnsafe.Add(ref searchSpace, i), 
+                    equalityComparer) < 0)
                     return i;
 
             return -1;
@@ -460,6 +477,7 @@ namespace DrNet.Internal.Unsafe
         {
             Debug.Assert(valueLength > 0);
             Debug.Assert(searchSpaceLength >= valueLength);
+            Debug.Assert(equalityComparer != null);
 
             TSecond valueHead = value;
             ref TSecond valueTail = ref CSUnsafe.Add(ref value, 1);
@@ -498,6 +516,7 @@ namespace DrNet.Internal.Unsafe
         {
             Debug.Assert(valueLength > 0);
             Debug.Assert(searchSpaceLength >= valueLength);
+            Debug.Assert(equalityComparer != null);
 
             TSecond valueHead = value;
             ref TSecond valueTail = ref CSUnsafe.Add(ref value, 1);
@@ -536,6 +555,7 @@ namespace DrNet.Internal.Unsafe
         {
             Debug.Assert(valueLength > 0);
             Debug.Assert(searchSpaceLength >= valueLength);
+            Debug.Assert(equalityComparer != null);
 
             TSecond valueHead = value;
             ref TSecond valueTail = ref CSUnsafe.Add(ref value, 1);
@@ -572,6 +592,7 @@ namespace DrNet.Internal.Unsafe
         {
             Debug.Assert(valueLength > 0);
             Debug.Assert(searchSpaceLength >= valueLength);
+            Debug.Assert(equalityComparer != null);
 
             TSecond valueHead = value;
             ref TSecond valueTail = ref CSUnsafe.Add(ref value, 1);
@@ -607,6 +628,7 @@ namespace DrNet.Internal.Unsafe
             Func<TFirst, TSecond, bool> equalityComparer)
         {
             Debug.Assert(length >= 0);
+            Debug.Assert(equalityComparer != null);
 
             if (CSUnsafe.AreSame(ref first, ref CSUnsafe.As<TSecond, TFirst>(ref second)))
                 goto Equal;

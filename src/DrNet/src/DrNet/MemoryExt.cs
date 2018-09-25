@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using CSUnsafe = System.Runtime.CompilerServices.Unsafe;
+using System.Runtime.CompilerServices;
 
 using DrNet.Internal;
 using DrNet.Internal.Unsafe;
-using System.Runtime.CompilerServices;
 
 namespace DrNet                                                                                                         
 {
@@ -111,7 +110,7 @@ namespace DrNet
                     typeof(TSource) == typeof(char) && typeof(TValue) == typeof(char))
                 {
                     return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.IndexOf(span, 
-                        CSUnsafe.As<TValue, TSource>(ref value));
+                        Unsafe.As<TValue, TSource>(ref value));
                 }
                 if (value is IEquatable<TSource> vEquatable)
                     return SpanHelpers.IndexOfEqualValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
@@ -145,7 +144,7 @@ namespace DrNet
                     typeof(TSource) == typeof(char) && typeof(TValue) == typeof(char))
                 {
                     return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.IndexOf(span, 
-                        CSUnsafe.As<TValue, TSource>(ref value));
+                        Unsafe.As<TValue, TSource>(ref value));
                 }
                 if (value is IEquatable<TSource> vEquatable)
                     return SpanHelpers.IndexOfEqualValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
@@ -179,7 +178,7 @@ namespace DrNet
                     typeof(TSource) == typeof(char) && typeof(TValue) == typeof(char))
                 {
                     return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.IndexOf(span, 
-                        CSUnsafe.As<TValue, TSource>(ref value));
+                        Unsafe.As<TValue, TSource>(ref value));
                 }
                 if (value is IEquatable<TSource> vEquatable)
                     return SpanHelpers.IndexOfEqualValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
@@ -213,7 +212,7 @@ namespace DrNet
                     typeof(TSource) == typeof(char) && typeof(TValue) == typeof(char))
                 {
                     return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.IndexOf(span, 
-                        CSUnsafe.As<TValue, TSource>(ref value));
+                        Unsafe.As<TValue, TSource>(ref value));
                 }
                 if (value is IEquatable<TSource> vEquatable)
                     return SpanHelpers.IndexOfEqualValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
@@ -295,7 +294,7 @@ namespace DrNet
                     typeof(TSource) == typeof(char) && typeof(TValue) == typeof(char))
                 {
                     return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.LastIndexOf(span, 
-                        CSUnsafe.As<TValue, TSource>(ref value));
+                        Unsafe.As<TValue, TSource>(ref value));
                 }
                 if (value is IEquatable<TSource> vEquatable)
                     return SpanHelpers.LastIndexOfEqualValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
@@ -329,7 +328,7 @@ namespace DrNet
                     typeof(TSource) == typeof(char) && typeof(TValue) == typeof(char))
                 {
                     return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.LastIndexOf(span, 
-                        CSUnsafe.As<TValue, TSource>(ref value));
+                        Unsafe.As<TValue, TSource>(ref value));
                 }
                 if (value is IEquatable<TSource> vEquatable)
                     return SpanHelpers.LastIndexOfEqualValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
@@ -363,7 +362,7 @@ namespace DrNet
                     typeof(TSource) == typeof(char) && typeof(TValue) == typeof(char))
                 {
                     return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.LastIndexOf(span, 
-                        CSUnsafe.As<TValue, TSource>(ref value));
+                        Unsafe.As<TValue, TSource>(ref value));
                 }
                 if (value is IEquatable<TSource> vEquatable)
                     return SpanHelpers.LastIndexOfEqualValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
@@ -397,7 +396,7 @@ namespace DrNet
                     typeof(TSource) == typeof(char) && typeof(TValue) == typeof(char))
                 {
                     return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.LastIndexOf(span, 
-                        CSUnsafe.As<TValue, TSource>(ref value));
+                        Unsafe.As<TValue, TSource>(ref value));
                 }
                 if (value is IEquatable<TSource> vEquatable)
                     return SpanHelpers.LastIndexOfEqualValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
@@ -405,9 +404,8 @@ namespace DrNet
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
                     return SpanHelpers.LastIndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
                         value, (sValue, vValue) => ((IEquatable<TValue>)sValue).Equals(vValue));
-                else
-                    return SpanHelpers.LastIndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
-                        value, (sValue, vValue) => sValue.Equals(vValue));
+                return SpanHelpers.LastIndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
+                    value, (sValue, vValue) => sValue.Equals(vValue));
             }
 
             return SpanHelpers.LastIndexOfEqualValueComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
@@ -465,125 +463,165 @@ namespace DrNet
         /// <summary>
         /// Searches for the first index of any of the specified values similar to calling IndexOf several times with 
         /// the logical OR operator. If not found, returns -1. 
-        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
-        /// TValue.Equals(TSource).
+        /// Elements are compared using the specified equality comparer or use IEquatable{TSource}.Equals(TSource) or
+        /// IEquatable{TValue}.Equals(TValue) or TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        public static int IndexOfEqualAny<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> values)
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        public static int IndexOfEqualAny<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> values, 
+            Func<TSource, TValue, bool> equalityComparer = null)
         {
-            if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+            if (equalityComparer == null)
             {
-                //if (typeof(TValue) == typeof(TSource))
-                //{
-                //    ReadOnlySpan<TSource> tValues;
-                //    unsafe
-                //    {
-                //        tValues = new ReadOnlySpan<TSource>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(values)), values.Length);
-                //    }
-                //    return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.IndexOfAny(span, tValues);
-                //}
-                return SpanHelpers.IndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
-                    ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) => 
-                        vValue is IEquatable<TSource> equatable ? equatable.Equals(sValue) : vValue.Equals(sValue));
-            }
-            else if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
+                if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte))
+                {
+                    ReadOnlySpan<TSource> tValues;
+                    unsafe
+                    {
+                        tValues = new ReadOnlySpan<TSource>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(values)), 
+                            values.Length);
+                    }
+                    return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.IndexOfAny(span, tValues);
+                }
+
+                if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+                    return SpanHelpers.IndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                        ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) => 
+                            ((IEquatable<TSource>)vValue).Equals(sValue));
+                if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
+                    return SpanHelpers.IndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                        ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => 
+                            ((IEquatable<TValue>)sValue).Equals(vValue));
                 return SpanHelpers.IndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
-                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => 
-                        sValue is IEquatable<TValue> equatable ? equatable.Equals(vValue) : sValue.Equals(vValue));
-            else
-                return SpanHelpers.IndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
-                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => vValue.Equals(sValue));
+                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => sValue.Equals(vValue));
+            }
+
+            return SpanHelpers.IndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                ref MemoryMarshal.GetReference(values), values.Length, equalityComparer);
         }
 
         /// <summary>
         /// Searches for the first index of any of the specified values similar to calling IndexOf several times with 
         /// the logical OR operator. If not found, returns -1. 
-        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
-        /// TValue.Equals(TSource).
+        /// Elements are compared using the specified equality comparer or use IEquatable{TSource}.Equals(TSource) or
+        /// IEquatable{TValue}.Equals(TValue) or TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        public static int IndexOfEqualAny<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> values)
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        public static int IndexOfEqualAny<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> values, 
+            Func<TSource, TValue, bool> equalityComparer = null)
         {
-            if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+            if (equalityComparer == null)
             {
-                //if (typeof(TValue) == typeof(TSource))
-                //{
-                //    ReadOnlySpan<TSource> tValues;
-                //    unsafe
-                //    {
-                //        tValues = new ReadOnlySpan<TSource>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(values)), values.Length);
-                //    }
-                //    return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.IndexOfAny(span, tValues);
-                //}
-                return SpanHelpers.IndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
-                    ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) => 
-                        vValue is IEquatable<TSource> equatable ? equatable.Equals(sValue) : vValue.Equals(sValue));
-            }
-            else if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
+                if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte))
+                {
+                    ReadOnlySpan<TSource> tValues;
+                    unsafe
+                    {
+                        tValues = new ReadOnlySpan<TSource>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(values)),
+                            values.Length);
+                    }
+                    return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.IndexOfAny(span, tValues);
+                }
+
+                if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+                    return SpanHelpers.IndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                        ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) => 
+                            ((IEquatable<TSource>)vValue).Equals(sValue));
+                if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
+                    return SpanHelpers.IndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                        ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => 
+                            ((IEquatable<TValue>)sValue).Equals(vValue));
                 return SpanHelpers.IndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
-                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => 
-                        sValue is IEquatable<TValue> equatable ? equatable.Equals(vValue) : sValue.Equals(vValue));
-            else
-                return SpanHelpers.IndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
-                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => vValue.Equals(sValue));
+                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => sValue.Equals(vValue));
+            }
+
+            return SpanHelpers.IndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                ref MemoryMarshal.GetReference(values), values.Length, equalityComparer);
         }
 
         /// <summary>
-        /// Searches for the first index of any of the specified values similar to calling IndexOf several times with
+        /// Searches for the first index of any of the specified values similar to calling IndexOf several times with 
         /// the logical OR operator. If not found, returns -1. 
+        /// Elements are compared using the specified equality comparer or use IEquatable{TSource}.Equals(TSource) or
+        /// IEquatable{TValue}.Equals(TValue) or TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
-        public static int IndexOfEqualAnySourceComparer<TSource, TValue>(this Span<TSource> span, 
-            ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer)
+        public static int IndexOfEqualAnyFrom<TSource, TValue>(this Span<TSource> span, 
+            ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer = null)
         {
-            return SpanHelpers.IndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length, 
-                equalityComparer);
+            if (equalityComparer == null)
+            {
+                if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte))
+                {
+                    ReadOnlySpan<TSource> tValues;
+                    unsafe
+                    {
+                        tValues = new ReadOnlySpan<TSource>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(values)),
+                            values.Length);
+                    }
+                    return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.IndexOfAny(span, tValues);
+                }
+
+                if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+                    return SpanHelpers.IndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                        ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) => 
+                            ((IEquatable<TSource>)vValue).Equals(sValue));
+                if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
+                    return SpanHelpers.IndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                        ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => 
+                            ((IEquatable<TValue>)sValue).Equals(vValue));
+                return SpanHelpers.IndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => sValue.Equals(vValue));
+            }
+
+            return SpanHelpers.IndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                ref MemoryMarshal.GetReference(values), values.Length, equalityComparer);
         }
 
         /// <summary>
-        /// Searches for the first index of any of the specified values similar to calling IndexOf several times with
+        /// Searches for the first index of any of the specified values similar to calling IndexOf several times with 
         /// the logical OR operator. If not found, returns -1. 
+        /// Elements are compared using the specified equality comparer or use IEquatable{TSource}.Equals(TSource) or
+        /// IEquatable{TValue}.Equals(TValue) or TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
-        public static int IndexOfEqualAnySourceComparer<TSource, TValue>(this ReadOnlySpan<TSource> span, 
-            ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer)
+        public static int IndexOfEqualAnyFrom<TSource, TValue>(this ReadOnlySpan<TSource> span, 
+            ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer = null)
         {
-            return SpanHelpers.IndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length, 
-                equalityComparer);
-        }
+            if (equalityComparer == null)
+            {
+                if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte))
+                {
+                    ReadOnlySpan<TSource> tValues;
+                    unsafe
+                    {
+                        tValues = new ReadOnlySpan<TSource>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(values)),
+                            values.Length);
+                    }
+                    return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.IndexOfAny(span, tValues);
+                }
 
-        /// <summary>
-        /// Searches for the first index of any of the specified values similar to calling IndexOf several times with
-        /// the logical OR operator. If not found, returns -1. 
-        /// </summary>
-        /// <param name="span">The span to search.</param>
-        /// <param name="values">The set of values to search for.</param>
-        /// <param name="equalityComparer">The function to test each element for a equality.</param>
-        public static int IndexOfEqualAnyValueComparer<TSource, TValue>(this Span<TSource> span, 
-            ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer)
-        {
-            return SpanHelpers.IndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length, 
-                equalityComparer);
-        }
+                if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+                    return SpanHelpers.IndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                        ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) => 
+                            ((IEquatable<TSource>)vValue).Equals(sValue));
+                if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
+                    return SpanHelpers.IndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                        ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => 
+                            ((IEquatable<TValue>)sValue).Equals(vValue));
+                return SpanHelpers.IndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => sValue.Equals(vValue));
+            }
 
-        /// <summary>
-        /// Searches for the first index of any of the specified values similar to calling IndexOf several times with
-        /// the logical OR operator. If not found, returns -1. 
-        /// </summary>
-        /// <param name="span">The span to search.</param>
-        /// <param name="values">The set of values to search for.</param>
-        /// <param name="equalityComparer">The function to test each element for a equality.</param>
-        public static int IndexOfEqualAnyValueComparer<TSource, TValue>(this ReadOnlySpan<TSource> span, 
-            ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer)
-        {
-            return SpanHelpers.IndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length, 
-                equalityComparer);
+            return SpanHelpers.IndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                ref MemoryMarshal.GetReference(values), values.Length, equalityComparer);
         }
 
         #endregion
@@ -591,128 +629,167 @@ namespace DrNet
         #region LastIndexOfAnyEqual
 
         /// <summary>
-        /// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with 
+        /// Searches for the first index of any of the specified values similar to calling IndexOf several times with 
         /// the logical OR operator. If not found, returns -1. 
-        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
-        /// TValue.Equals(TSource).
+        /// Elements are compared using the specified equality comparer or use IEquatable{TSource}.Equals(TSource) or
+        /// IEquatable{TValue}.Equals(TValue) or TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        public static int LastIndexOfEqualAny<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> values)
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        public static int LastIndexOfEqualAny<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> values,
+            Func<TSource, TValue, bool> equalityComparer = null)
         {
-            if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+            if (equalityComparer == null)
             {
-                //if (typeof(TValue) == typeof(TSource))
-                //{
-                //    ReadOnlySpan<TSource> tValues;
-                //    unsafe
-                //    {
-                //        tValues = new ReadOnlySpan<TSource>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(values)), values.Length);
-                //    }
-                //    return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.LastIndexOfAny(span, tValues);
-                //}
-                return SpanHelpers.LastIndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
-                    ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) => 
-                        vValue is IEquatable<TSource> equatable ? equatable.Equals(sValue) : vValue.Equals(sValue));
+                if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte))
+                {
+                    ReadOnlySpan<TSource> tValues;
+                    unsafe
+                    {
+                        tValues = new ReadOnlySpan<TSource>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(values)), 
+                            values.Length);
+                    }
+                    return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.LastIndexOfAny(span, tValues);
+                }
+
+                if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+                    return SpanHelpers.LastIndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                        ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) => 
+                            ((IEquatable<TSource>)vValue).Equals(sValue));
+                if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
+                    return SpanHelpers.LastIndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                        ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => 
+                            ((IEquatable<TValue>)sValue).Equals(vValue));
+                return SpanHelpers.LastIndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => sValue.Equals(vValue));
             }
-            else if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
-                return SpanHelpers.LastIndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
-                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => 
-                        sValue is IEquatable<TValue> equatable ? equatable.Equals(vValue) : sValue.Equals(vValue));
-            else
-                return SpanHelpers.LastIndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
-                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => vValue.Equals(sValue));
+
+            return SpanHelpers.LastIndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                ref MemoryMarshal.GetReference(values), values.Length, equalityComparer);
         }
 
         /// <summary>
-        /// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with 
+        /// Searches for the first index of any of the specified values similar to calling IndexOf several times with 
         /// the logical OR operator. If not found, returns -1. 
-        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
-        /// TValue.Equals(TSource).
+        /// Elements are compared using the specified equality comparer or use IEquatable{TSource}.Equals(TSource) or
+        /// IEquatable{TValue}.Equals(TValue) or TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         public static int LastIndexOfEqualAny<TSource, TValue>(this ReadOnlySpan<TSource> span, 
-            ReadOnlySpan<TValue> values)
+            ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer = null)
         {
-            if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+            if (equalityComparer == null)
             {
-                //if (typeof(TValue) == typeof(TSource))
-                //{
-                //    ReadOnlySpan<TSource> tValues;
-                //    unsafe
-                //    {
-                //        tValues = new ReadOnlySpan<TSource>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(values)), values.Length);
-                //    }
-                //    return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.LastIndexOfAny(span, tValues);
-                //}
-                return SpanHelpers.LastIndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
-                    ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) => 
-                        vValue is IEquatable<TSource> equatable ? equatable.Equals(sValue) : vValue.Equals(sValue));
+                if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte))
+                {
+                    ReadOnlySpan<TSource> tValues;
+                    unsafe
+                    {
+                        tValues = new ReadOnlySpan<TSource>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(values)), 
+                            values.Length);
+                    }
+                    return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.LastIndexOfAny(span, tValues);
+                }
+
+                if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+                    return SpanHelpers.LastIndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                        ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) => 
+                            ((IEquatable<TSource>)vValue).Equals(sValue));
+                if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
+                    return SpanHelpers.LastIndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                        ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => 
+                            ((IEquatable<TValue>)sValue).Equals(vValue));
+                return SpanHelpers.LastIndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => sValue.Equals(vValue));
             }
-            else if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
-                return SpanHelpers.LastIndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
-                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => 
-                        sValue is IEquatable<TValue> equatable ? equatable.Equals(vValue) : sValue.Equals(vValue));
-            else
-                return SpanHelpers.LastIndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
-                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => vValue.Equals(sValue));
+
+            return SpanHelpers.LastIndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                ref MemoryMarshal.GetReference(values), values.Length, equalityComparer);
         }
 
         /// <summary>
-        /// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with
+        /// Searches for the first index of any of the specified values similar to calling IndexOf several times with 
         /// the logical OR operator. If not found, returns -1. 
+        /// Elements are compared using the specified equality comparer or use IEquatable{TSource}.Equals(TSource) or
+        /// IEquatable{TValue}.Equals(TValue) or TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
-        public static int LastIndexOfEqualAnySourceComparer<TSource, TValue>(this Span<TSource> span, 
-            ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer)
+        public static int LastIndexOfEqualAnyFrom<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> values,
+            Func<TValue, TSource, bool> equalityComparer = null)
         {
-            return SpanHelpers.LastIndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length,
-                equalityComparer);
+            if (equalityComparer == null)
+            {
+                if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte))
+                {
+                    ReadOnlySpan<TSource> tValues;
+                    unsafe
+                    {
+                        tValues = new ReadOnlySpan<TSource>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(values)), 
+                            values.Length);
+                    }
+                    return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.LastIndexOfAny(span, tValues);
+                }
+
+                if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+                    return SpanHelpers.LastIndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                        ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) => 
+                            ((IEquatable<TSource>)vValue).Equals(sValue));
+                if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
+                    return SpanHelpers.LastIndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                        ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => 
+                            ((IEquatable<TValue>)sValue).Equals(vValue));
+                return SpanHelpers.LastIndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => sValue.Equals(vValue));
+            }
+
+            return SpanHelpers.LastIndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                ref MemoryMarshal.GetReference(values), values.Length, equalityComparer);
         }
 
         /// <summary>
-        /// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with
+        /// Searches for the first index of any of the specified values similar to calling IndexOf several times with 
         /// the logical OR operator. If not found, returns -1. 
+        /// Elements are compared using the specified equality comparer or use IEquatable{TSource}.Equals(TSource) or
+        /// IEquatable{TValue}.Equals(TValue) or TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
-        public static int LastIndexOfEqualAnySourceComparer<TSource, TValue>(this ReadOnlySpan<TSource> span, 
-            ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer)
+        public static int LastIndexOfEqualAnyFrom<TSource, TValue>(this ReadOnlySpan<TSource> span, 
+            ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer = null)
         {
-            return SpanHelpers.LastIndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length,
-                equalityComparer);
-        }
+            if (equalityComparer == null)
+            {
+                if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte))
+                {
+                    ReadOnlySpan<TSource> tValues;
+                    unsafe
+                    {
+                        tValues = new ReadOnlySpan<TSource>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(values)), 
+                            values.Length);
+                    }
+                    return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.LastIndexOfAny(span, tValues);
+                }
 
-        /// <summary>
-        /// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with
-        /// the logical OR operator. If not found, returns -1. 
-        /// </summary>
-        /// <param name="span">The span to search.</param>
-        /// <param name="values">The set of values to search for.</param>
-        /// <param name="equalityComparer">The function to test each element for a equality.</param>
-        public static int LastIndexOfEqualAnyValueComparer<TSource, TValue>(this Span<TSource> span, 
-            ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer)
-        {
-            return SpanHelpers.LastIndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length,
-                equalityComparer);
-        }
+                if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+                    return SpanHelpers.LastIndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                        ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) => 
+                            ((IEquatable<TSource>)vValue).Equals(sValue));
+                if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
+                    return SpanHelpers.LastIndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                        ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => 
+                            ((IEquatable<TValue>)sValue).Equals(vValue));
+                return SpanHelpers.LastIndexOfEqualAnySourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => sValue.Equals(vValue));
+            }
 
-        /// <summary>
-        /// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with
-        /// the logical OR operator. If not found, returns -1. 
-        /// </summary>
-        /// <param name="span">The span to search.</param>
-        /// <param name="values">The set of values to search for.</param>
-        /// <param name="equalityComparer">The function to test each element for a equality.</param>
-        public static int LastIndexOfEqualAnyValueComparer<TSource, TValue>(this ReadOnlySpan<TSource> span, 
-            ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer)
-        {
-            return SpanHelpers.LastIndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(values), values.Length,
-                equalityComparer);
+            return SpanHelpers.LastIndexOfEqualAnyValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
+                ref MemoryMarshal.GetReference(values), values.Length, equalityComparer);
         }
 
         #endregion
@@ -1537,7 +1614,7 @@ namespace DrNet
             int valueLength = value.Length;
             int spanStart = span.Length - valueLength;
             return spanStart >= 0 && SpanHelpers.EqualToSeq(
-                ref CSUnsafe.Add(ref MemoryMarshal.GetReference(span), spanStart),
+                ref Unsafe.Add(ref MemoryMarshal.GetReference(span), spanStart),
                 ref MemoryMarshal.GetReference(value), valueLength, equalityComparer);
         }
 
@@ -1554,7 +1631,7 @@ namespace DrNet
             int valueLength = value.Length;
             int spanStart = span.Length - valueLength;
             return spanStart >= 0 && SpanHelpers.EqualToSeq(
-                ref CSUnsafe.Add(ref MemoryMarshal.GetReference(span), spanStart),
+                ref Unsafe.Add(ref MemoryMarshal.GetReference(span), spanStart),
                 ref MemoryMarshal.GetReference(value), valueLength, equalityComparer);
         }
 
@@ -1571,7 +1648,7 @@ namespace DrNet
             int valueLength = value.Length;
             int spanStart = span.Length - valueLength;
             return spanStart >= 0 && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(value), 
-                ref CSUnsafe.Add(ref MemoryMarshal.GetReference(span), spanStart), valueLength, equalityComparer);
+                ref Unsafe.Add(ref MemoryMarshal.GetReference(span), spanStart), valueLength, equalityComparer);
         }
 
         /// <summary>
@@ -1587,7 +1664,7 @@ namespace DrNet
             int valueLength = value.Length;
             int spanStart = span.Length - valueLength;
             return spanStart >= 0 && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(value), 
-                ref CSUnsafe.Add(ref MemoryMarshal.GetReference(span), spanStart), valueLength, equalityComparer);
+                ref Unsafe.Add(ref MemoryMarshal.GetReference(span), spanStart), valueLength, equalityComparer);
         }
 
         #endregion
