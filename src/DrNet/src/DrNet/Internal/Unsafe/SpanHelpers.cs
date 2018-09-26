@@ -490,8 +490,8 @@ namespace DrNet.Internal.Unsafe
         {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
-            //Debug.Assert(searchSpaceLength >= valueLength);
             Debug.Assert(equalityComparer != null);
+            //Debug.Assert(searchSpaceLength >= valueLength);
 
             if (valueLength == 0)
                 return 0;  // A zero-length sequence is always treated as "found" at the start of the search space.
@@ -519,7 +519,7 @@ namespace DrNet.Internal.Unsafe
                 index += relativeIndex;
 
                 // Found the first element of "value". See if the tail matches.
-                if (EqualToSeq(ref CSUnsafe.Add(ref searchSpace, index + 1), ref valueTail, valueTailLength, 
+                if (EqualsToSeq(ref CSUnsafe.Add(ref searchSpace, index + 1), ref valueTail, valueTailLength, 
                     equalityComparer))
                     return index;  // The tail matched. Return a successful find.
 
@@ -534,8 +534,8 @@ namespace DrNet.Internal.Unsafe
         {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
-            //Debug.Assert(searchSpaceLength >= valueLength);
             Debug.Assert(equalityComparer != null);
+            //Debug.Assert(searchSpaceLength >= valueLength);
 
             if (valueLength == 0)
                 return 0;  // A zero-length sequence is always treated as "found" at the start of the search space.
@@ -563,7 +563,7 @@ namespace DrNet.Internal.Unsafe
                 index += relativeIndex;
 
                 // Found the first element of "value". See if the tail matches.
-                if (EqualToSeq(ref valueTail, ref CSUnsafe.Add(ref searchSpace, index + 1), valueTailLength, 
+                if (EqualsToSeq(ref valueTail, ref CSUnsafe.Add(ref searchSpace, index + 1), valueTailLength, 
                     equalityComparer))
                     return index;  // The tail matched. Return a successful find.
 
@@ -576,9 +576,13 @@ namespace DrNet.Internal.Unsafe
         public static int LastIndexOfSeq<TFirst, TSecond>(ref TFirst searchSpace, int searchSpaceLength,
             ref TSecond value, int valueLength, Func<TFirst, TSecond, bool> equalityComparer)
         {
-            Debug.Assert(valueLength > 0);
-            Debug.Assert(searchSpaceLength >= valueLength);
+            Debug.Assert(searchSpaceLength >= 0);
+            Debug.Assert(valueLength >= 0);
             Debug.Assert(equalityComparer != null);
+            //Debug.Assert(searchSpaceLength >= valueLength);
+
+            if (valueLength == 0)
+                return 0;  // A zero-length sequence is always treated as "found" at the start of the search space.
 
             TSecond valueHead = value;
             ref TSecond valueTail = ref CSUnsafe.Add(ref value, 1);
@@ -601,7 +605,7 @@ namespace DrNet.Internal.Unsafe
                     break;
 
                 // Found the first element of "value". See if the tail matches.
-                if (EqualToSeq(ref CSUnsafe.Add(ref searchSpace, relativeIndex + 1), ref valueTail, valueTailLength, 
+                if (EqualsToSeq(ref CSUnsafe.Add(ref searchSpace, relativeIndex + 1), ref valueTail, valueTailLength, 
                     equalityComparer))
                     return relativeIndex;  // The tail matched. Return a successful find.
 
@@ -614,9 +618,13 @@ namespace DrNet.Internal.Unsafe
         public static int LastIndexOfSeqFrom<TFirst, TSecond>(ref TFirst searchSpace, int searchSpaceLength,
             ref TSecond value, int valueLength, Func<TSecond, TFirst, bool> equalityComparer)
         {
-            Debug.Assert(valueLength > 0);
-            Debug.Assert(searchSpaceLength >= valueLength);
+            Debug.Assert(searchSpaceLength >= 0);
+            Debug.Assert(valueLength >= 0);
             Debug.Assert(equalityComparer != null);
+            //Debug.Assert(searchSpaceLength >= valueLength);
+
+            if (valueLength == 0)
+                return 0;  // A zero-length sequence is always treated as "found" at the start of the search space.
 
             TSecond valueHead = value;
             ref TSecond valueTail = ref CSUnsafe.Add(ref value, 1);
@@ -639,7 +647,7 @@ namespace DrNet.Internal.Unsafe
                     break;
 
                 // Found the first element of "value". See if the tail matches.
-                if (EqualToSeq(ref valueTail, ref CSUnsafe.Add(ref searchSpace, relativeIndex + 1), valueTailLength, 
+                if (EqualsToSeq(ref valueTail, ref CSUnsafe.Add(ref searchSpace, relativeIndex + 1), valueTailLength, 
                     equalityComparer))
                     return relativeIndex;  // The tail matched. Return a successful find.
 
@@ -649,14 +657,11 @@ namespace DrNet.Internal.Unsafe
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool EqualToSeq<TFirst, TSecond>(ref TFirst first, ref TSecond second, int length,
+        public static bool EqualsToSeq<TFirst, TSecond>(ref TFirst first, ref TSecond second, int length,
             Func<TFirst, TSecond, bool> equalityComparer)
         {
             Debug.Assert(length >= 0);
             Debug.Assert(equalityComparer != null);
-
-            if (CSUnsafe.AreSame(ref first, ref CSUnsafe.As<TSecond, TFirst>(ref second)))
-                goto Equal;
 
             IntPtr index = (IntPtr)0; // Use IntPtr for arithmetic to avoid unnecessary 64->32->64 truncations
             while (length >= 8)
@@ -707,7 +712,7 @@ namespace DrNet.Internal.Unsafe
                 length--;
             }
 
-        Equal:
+        //Equal:
             return true;
 
         NotEqual: // Workaround for https://github.com/dotnet/coreclr/issues/13549

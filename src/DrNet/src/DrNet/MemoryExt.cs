@@ -1413,138 +1413,104 @@ namespace DrNet
 
         /// <summary>
         /// Determines whether two sequences are equal.
-        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TOther}.Equals(TOther) or 
-        /// TOther.Equals(TSource).
+        /// Elements are compared using the specified equality comparer or use IEquatable{TSource}.Equals(TSource) or
+        /// IEquatable{TValue}.Equals(TValue) or TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to compare.</param>
         /// <param name="other">The sequence to compare with.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool EqualsToSeq<TSource, TOther>(this Span<TSource> span, ReadOnlySpan<TOther> other)
+        public static bool EqualsToSeq<TSource, TOther>(this Span<TSource> span, ReadOnlySpan<TOther> other,
+            Func<TSource, TOther, bool> equalityComparer = null)
         {
             int length = span.Length;
             if (length != other.Length)
                 return false;
-            if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TOther)))
+
+            if (equalityComparer == null)
             {
-                //if (typeof(TOther) == typeof(T))
-                //{
+                if (typeof(TOther) == typeof(TSource))
+                {
+                    if (default(TSource) != null && TypeExt.IsTypeComparableAsBytes<TSource>())
+                    {
+                        ReadOnlySpan<TSource> tValues;
+                        unsafe
+                        {
+                            tValues = new ReadOnlySpan<TSource>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(other)),
+                                other.Length);
+                        }
+                        return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.SequenceEqual(span, tValues);
+                    }
+                    if (Unsafe.AreSame(ref MemoryMarshal.GetReference(span), ref Unsafe.As<TOther, TSource>(
+                        ref MemoryMarshal.GetReference(other))))
+                        return true;
+                }
 
-                //    ReadOnlySpan<T> tOther;
-                //    unsafe
-                //    {
-                //        tOther = new ReadOnlySpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(other)), length);
-                //    }
-                //    return MemoryExtensionsEquatablePatternMatching<T>.Instance.SequenceEqual(span, tOther);
-
-                //}
-                return SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(other), 
-                    ref MemoryMarshal.GetReference(span), length, (oValue, sValue) => 
-                        oValue is IEquatable<TSource> oEquatable ? oEquatable.Equals(sValue) : oValue.Equals(sValue));
+                if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TOther)))
+                    return SpanHelpers.EqualsToSeq(ref MemoryMarshal.GetReference(other), 
+                        ref MemoryMarshal.GetReference(span), length, (oValue, sValue) =>
+                            ((IEquatable<TSource>)oValue).Equals(sValue));
+                if (typeof(IEquatable<TOther>).IsAssignableFrom(typeof(TSource)))
+                    return SpanHelpers.EqualsToSeq(ref MemoryMarshal.GetReference(span), 
+                        ref MemoryMarshal.GetReference(other), length, (sValue, oValue) =>
+                            ((IEquatable<TOther>)sValue).Equals(oValue));
+                return SpanHelpers.EqualsToSeq(ref MemoryMarshal.GetReference(span), 
+                    ref MemoryMarshal.GetReference(other), length, (sValue, oValue) => sValue.Equals(oValue));
             }
-            if (typeof(IEquatable<TOther>).IsAssignableFrom(typeof(TSource)))
-                return SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(span), 
-                    ref MemoryMarshal.GetReference(other), length, (sValue, oValue) => 
-                        sValue is IEquatable<TOther> sEquatable ? sEquatable.Equals(oValue) : sValue.Equals(oValue));
-            return SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(other), 
-                ref MemoryMarshal.GetReference(span), length, (oValue, sValue) => oValue.Equals(sValue));
+
+            return SpanHelpers.EqualsToSeq(ref MemoryMarshal.GetReference(span), ref MemoryMarshal.GetReference(other),
+                length, equalityComparer);
         }
 
         /// <summary>
         /// Determines whether two sequences are equal.
-        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TOther}.Equals(TOther) or 
-        /// TOther.Equals(TSource).
-        /// </summary>
-        /// <param name="span">The span to compare.</param>
-        /// <param name="other">The sequence to compare with.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool EqualsToSeq<TSource, TOther>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TOther> other)
-        {
-            int length = span.Length;
-            if (length != other.Length)
-                return false;
-            if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TOther)))
-            {
-                //if (typeof(TOther) == typeof(T))
-                //{
-
-                //    ReadOnlySpan<T> tOther;
-                //    unsafe
-                //    {
-                //        tOther = new ReadOnlySpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(other)), length);
-                //    }
-                //    return MemoryExtensionsEquatablePatternMatching<T>.Instance.SequenceEqual(span, tOther);
-
-                //}
-                return SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(other), 
-                    ref MemoryMarshal.GetReference(span), length, (oValue, sValue) => 
-                        oValue is IEquatable<TSource> oEquatable ? oEquatable.Equals(sValue) : oValue.Equals(sValue));
-            }
-            if (typeof(IEquatable<TOther>).IsAssignableFrom(typeof(TSource)))
-                return SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(span), 
-                    ref MemoryMarshal.GetReference(other), length, (sValue, oValue) => 
-                        sValue is IEquatable<TOther> sEquatable ? sEquatable.Equals(oValue) : sValue.Equals(oValue));
-            return SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(other), 
-                ref MemoryMarshal.GetReference(span), length, (oValue, sValue) => oValue.Equals(sValue));
-        }
-
-        /// <summary>
-        /// Determines whether two sequences are equal by comparing the elements using the equality comparer.
-        /// </summary>
-        /// <param name="span">The span to compare.</param>
-        /// <param name="other">The second span to compare.</param>
-        /// <param name="equalityComparer">The function to test each element for a equality.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool EqualsToSeq<TSource, TOther>(this Span<TSource> span, ReadOnlySpan<TOther> other,
-            Func<TSource, TOther, bool> equalityComparer)
-        {
-            int length = span.Length;
-            return length == other.Length && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(span),
-                ref MemoryMarshal.GetReference(other), length, equalityComparer);
-        }
-
-        /// <summary>
-        /// Determines whether two sequences are equal by comparing the elements using the equality comparer.
+        /// Elements are compared using the specified equality comparer or use IEquatable{TSource}.Equals(TSource) or
+        /// IEquatable{TValue}.Equals(TValue) or TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to compare.</param>
         /// <param name="other">The sequence to compare with.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EqualsToSeq<TSource, TOther>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TOther> other,
-            Func<TSource, TOther, bool> equalityComparer)
+            Func<TSource, TOther, bool> equalityComparer = null)
         {
             int length = span.Length;
-            return length == other.Length && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(span),
-                ref MemoryMarshal.GetReference(other), length, equalityComparer);
-        }
+            if (length != other.Length)
+                return false;
 
-        /// <summary>
-        /// Determines whether two sequences are equal by comparing the elements using the equality comparer.
-        /// </summary>
-        /// <param name="span">The span to compare.</param>
-        /// <param name="other">The sequence to compare with.</param>
-        /// <param name="equalityComparer">The function to test each element for a equality.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool EqualsFromSeq<TSource, TOther>(this Span<TSource> span, ReadOnlySpan<TOther> other,
-            Func<TOther, TSource, bool> equalityComparer)
-        {
-            int length = span.Length;
-            return length == other.Length && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(other), 
-                ref MemoryMarshal.GetReference(span), length, equalityComparer);
-        }
+            if (equalityComparer == null)
+            {
+                if (typeof(TOther) == typeof(TSource))
+                {
+                    if (default(TSource) != null && TypeExt.IsTypeComparableAsBytes<TSource>())
+                    {
+                        ReadOnlySpan<TSource> tValues;
+                        unsafe
+                        {
+                            tValues = new ReadOnlySpan<TSource>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(other)),
+                                other.Length);
+                        }
+                        return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.SequenceEqual(span, tValues);
+                    }
+                    if (Unsafe.AreSame(ref MemoryMarshal.GetReference(span), ref Unsafe.As<TOther, TSource>(
+                        ref MemoryMarshal.GetReference(other))))
+                        return true;
+                }
 
-        /// <summary>
-        /// Determines whether two sequences are equal by comparing the elements using the equality comparer.
-        /// </summary>
-        /// <param name="span">The span to compare.</param>
-        /// <param name="other">The sequence to compare with.</param>
-        /// <param name="equalityComparer">The function to test each element for a equality.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool EqualsFromSeq<TSource, TOther>(this ReadOnlySpan<TSource> span, 
-            ReadOnlySpan<TOther> other, Func<TOther, TSource, bool> equalityComparer)
-        {
-            int length = span.Length;
-            return length == other.Length && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(other),
-                ref MemoryMarshal.GetReference(span), length, equalityComparer);
+                if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TOther)))
+                    return SpanHelpers.EqualsToSeq(ref MemoryMarshal.GetReference(other),
+                        ref MemoryMarshal.GetReference(span), length, (oValue, sValue) =>
+                            ((IEquatable<TSource>)oValue).Equals(sValue));
+                if (typeof(IEquatable<TOther>).IsAssignableFrom(typeof(TSource)))
+                    return SpanHelpers.EqualsToSeq(ref MemoryMarshal.GetReference(span),
+                        ref MemoryMarshal.GetReference(other), length, (sValue, oValue) =>
+                            ((IEquatable<TOther>)sValue).Equals(oValue));
+                return SpanHelpers.EqualsToSeq(ref MemoryMarshal.GetReference(span),
+                    ref MemoryMarshal.GetReference(other), length, (sValue, oValue) => sValue.Equals(oValue));
+            }
+
+            return SpanHelpers.EqualsToSeq(ref MemoryMarshal.GetReference(span), ref MemoryMarshal.GetReference(other),
+                length, equalityComparer);
         }
 
         #endregion
@@ -1591,7 +1557,7 @@ namespace DrNet
             ReadOnlySpan<TValue> value, Func<TSource, TValue, bool> equalityComparer)
         {
             int valueLength = value.Length;
-            return valueLength <= span.Length && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(span), 
+            return valueLength <= span.Length && SpanHelpers.EqualsToSeq(ref MemoryMarshal.GetReference(span), 
                 ref MemoryMarshal.GetReference(value), valueLength, equalityComparer);
         }
 
@@ -1607,7 +1573,7 @@ namespace DrNet
             ReadOnlySpan<TValue> value, Func<TSource, TValue, bool> equalityComparer)
         {
             int valueLength = value.Length;
-            return valueLength <= span.Length && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(span),
+            return valueLength <= span.Length && SpanHelpers.EqualsToSeq(ref MemoryMarshal.GetReference(span),
                 ref MemoryMarshal.GetReference(value), valueLength, equalityComparer);
         }
 
@@ -1623,7 +1589,7 @@ namespace DrNet
             ReadOnlySpan<TValue> value, Func<TValue, TSource, bool> equalityComparer)
         {
             int valueLength = value.Length;
-            return valueLength <= span.Length && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(value),
+            return valueLength <= span.Length && SpanHelpers.EqualsToSeq(ref MemoryMarshal.GetReference(value),
                 ref MemoryMarshal.GetReference(span), valueLength, equalityComparer);
         }
 
@@ -1639,7 +1605,7 @@ namespace DrNet
             ReadOnlySpan<TValue> value, Func<TValue, TSource, bool> equalityComparer)
         {
             int valueLength = value.Length;
-            return valueLength <= span.Length && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(value),
+            return valueLength <= span.Length && SpanHelpers.EqualsToSeq(ref MemoryMarshal.GetReference(value),
                 ref MemoryMarshal.GetReference(span), valueLength, equalityComparer);
         }
 
@@ -1690,7 +1656,7 @@ namespace DrNet
         {
             int valueLength = value.Length;
             int spanStart = span.Length - valueLength;
-            return spanStart >= 0 && SpanHelpers.EqualToSeq(
+            return spanStart >= 0 && SpanHelpers.EqualsToSeq(
                 ref Unsafe.Add(ref MemoryMarshal.GetReference(span), spanStart),
                 ref MemoryMarshal.GetReference(value), valueLength, equalityComparer);
         }
@@ -1708,7 +1674,7 @@ namespace DrNet
         {
             int valueLength = value.Length;
             int spanStart = span.Length - valueLength;
-            return spanStart >= 0 && SpanHelpers.EqualToSeq(
+            return spanStart >= 0 && SpanHelpers.EqualsToSeq(
                 ref Unsafe.Add(ref MemoryMarshal.GetReference(span), spanStart),
                 ref MemoryMarshal.GetReference(value), valueLength, equalityComparer);
         }
@@ -1726,7 +1692,7 @@ namespace DrNet
         {
             int valueLength = value.Length;
             int spanStart = span.Length - valueLength;
-            return spanStart >= 0 && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(value), 
+            return spanStart >= 0 && SpanHelpers.EqualsToSeq(ref MemoryMarshal.GetReference(value), 
                 ref Unsafe.Add(ref MemoryMarshal.GetReference(span), spanStart), valueLength, equalityComparer);
         }
 
@@ -1743,7 +1709,7 @@ namespace DrNet
         {
             int valueLength = value.Length;
             int spanStart = span.Length - valueLength;
-            return spanStart >= 0 && SpanHelpers.EqualToSeq(ref MemoryMarshal.GetReference(value), 
+            return spanStart >= 0 && SpanHelpers.EqualsToSeq(ref MemoryMarshal.GetReference(value), 
                 ref Unsafe.Add(ref MemoryMarshal.GetReference(span), spanStart), valueLength, equalityComparer);
         }
 
