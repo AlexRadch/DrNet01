@@ -25,21 +25,21 @@ namespace DrNet.Tests.Span
             var sp = new Span<T>(Array.Empty<T>());
 
             var values = new ReadOnlySpan<T>(new T[] { default, default, default, default });
-            int idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(sp, values, EqualityComparer);
+            int idx = MemoryExt.LastIndexOfNotEqualAll(sp, values, EqualityComparer);
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(sp, values, EqualityComparer);
+            idx = MemoryExt.LastIndexOfNotEqualAllFrom(sp, values, EqualityComparer);
             Assert.Equal(-1, idx);
 
             values = new ReadOnlySpan<T>(new T[] { });
-            idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(sp, values, EqualityComparer);
+            idx = MemoryExt.LastIndexOfNotEqualAll(sp, values, EqualityComparer);
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(sp, values, EqualityComparer);
+            idx = MemoryExt.LastIndexOfNotEqualAllFrom(sp, values, EqualityComparer);
             Assert.Equal(-1, idx);
 
             sp = new Span<T>(new T[] { default, default, default, default });
-            idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(sp, values, EqualityComparer);
+            idx = MemoryExt.LastIndexOfNotEqualAll(sp, values, EqualityComparer);
             Assert.Equal(3, idx);
-            idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(sp, values, EqualityComparer);
+            idx = MemoryExt.LastIndexOfNotEqualAllFrom(sp, values, EqualityComparer);
             Assert.Equal(3, idx);
         }
 
@@ -62,15 +62,15 @@ namespace DrNet.Tests.Span
                 var span = new Span<T>(a);
 
                 var values = new ReadOnlySpan<T>(new T[] { NewT(99), NewT(98), NewT(0), default });
-                int idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                int idx = MemoryExt.LastIndexOfNotEqualAll(span, values, EqualityComparer);
                 Assert.Equal(-1, idx);
-                idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                idx = MemoryExt.LastIndexOfNotEqualAllFrom(span, values, EqualityComparer);
                 Assert.Equal(-1, idx);
 
                 values = new ReadOnlySpan<T>(new T[] { NewT(99), NewT(98) });
-                idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                idx = MemoryExt.LastIndexOfNotEqualAll(span, values, EqualityComparer);
                 Assert.Equal(length - 1, idx);
-                idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                idx = MemoryExt.LastIndexOfNotEqualAllFrom(span, values, EqualityComparer);
                 Assert.Equal(length - 1, idx);
             }
         }
@@ -95,9 +95,9 @@ namespace DrNet.Tests.Span
                     T temp = v[length - targetIndex - 1];
                     v[length - targetIndex - 1] = NewT(0);
 
-                    int idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                    int idx = MemoryExt.LastIndexOfNotEqualAll(span, values, EqualityComparer);
                     Assert.Equal(targetIndex, idx);
-                    idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                    idx = MemoryExt.LastIndexOfNotEqualAllFrom(span, values, EqualityComparer);
                     Assert.Equal(targetIndex, idx);
 
                     v[length - targetIndex - 1] = temp;
@@ -115,9 +115,9 @@ namespace DrNet.Tests.Span
                     v[length - targetIndex + 1] = NewT(0);
                     v[length - targetIndex + 2] = NewT(0);
 
-                    int idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                    int idx = MemoryExt.LastIndexOfNotEqualAll(span, values, EqualityComparer);
                     Assert.Equal(targetIndex, idx);
-                    idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                    idx = MemoryExt.LastIndexOfNotEqualAllFrom(span, values, EqualityComparer);
                     Assert.Equal(targetIndex, idx);
 
                     v[length - targetIndex - 1] = temp1;
@@ -155,9 +155,9 @@ namespace DrNet.Tests.Span
                 var span = new Span<T>(a);
                 var values = new ReadOnlySpan<T>(targets);
 
-                int idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                int idx = MemoryExt.LastIndexOfNotEqualAll(span, values, EqualityComparer);
                 Assert.Equal(expectedIndex, idx);
-                idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                idx = MemoryExt.LastIndexOfNotEqualAllFrom(span, values, EqualityComparer);
                 Assert.Equal(expectedIndex, idx);
             }
         }
@@ -178,9 +178,9 @@ namespace DrNet.Tests.Span
                 var span = new Span<T>(a);
                 var values = new ReadOnlySpan<T>(targets);
 
-                int idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                int idx = MemoryExt.LastIndexOfNotEqualAll(span, values, EqualityComparer);
                 Assert.Equal(-1, idx);
-                idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                idx = MemoryExt.LastIndexOfNotEqualAllFrom(span, values, EqualityComparer);
                 Assert.Equal(-1, idx);
             }
         }
@@ -204,9 +204,9 @@ namespace DrNet.Tests.Span
                 var span = new Span<T>(a);
                 var values = new ReadOnlySpan<T>(targets);
 
-                int idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                int idx = MemoryExt.LastIndexOfNotEqualAll(span, values, EqualityComparer);
                 Assert.Equal(-1, idx);
-                idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                idx = MemoryExt.LastIndexOfNotEqualAllFrom(span, values, EqualityComparer);
                 Assert.Equal(-1, idx);
             }
         }
@@ -233,9 +233,9 @@ namespace DrNet.Tests.Span
 
                 var span = new Span<T>(a);
                 var values = new ReadOnlySpan<T>(targets);
-                int idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                int idx = MemoryExt.LastIndexOfNotEqualAll(span, values, EqualityComparer);
                 Assert.Equal(4, idx);
-                idx = MemoryExt.LastIndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                idx = MemoryExt.LastIndexOfNotEqualAllFrom(span, values, EqualityComparer);
                 Assert.Equal(4, idx);
             }
         }
@@ -296,9 +296,9 @@ namespace DrNet.Tests.Span
                 a[1] = NewT(99);
                 var span = new Span<T>(a, 2, length);
                 var values = new ReadOnlySpan<T>(new T[] { NewT(0), NewT(0), NewT(0), NewT(0), NewT(0), NewT(0) });
-                int index = MemoryExt.LastIndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                int index = MemoryExt.LastIndexOfNotEqualAll(span, values, EqualityComparer);
                 Assert.Equal(-1, index);
-                index = MemoryExt.LastIndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                index = MemoryExt.LastIndexOfNotEqualAllFrom(span, values, EqualityComparer);
                 Assert.Equal(-1, index);
             }
 
@@ -311,9 +311,9 @@ namespace DrNet.Tests.Span
                 a[length + 1] = NewT(99);
                 var span = new Span<T>(a, 0, length);
                 var values = new ReadOnlySpan<T>(new T[] { NewT(0), NewT(0), NewT(0), NewT(0), NewT(0), NewT(0) });
-                int index = MemoryExt.LastIndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                int index = MemoryExt.LastIndexOfNotEqualAll(span, values, EqualityComparer);
                 Assert.Equal(-1, index);
-                index = MemoryExt.LastIndexOfNotEqualAllSourceComparer(span, values, EqualityComparer);
+                index = MemoryExt.LastIndexOfNotEqualAllFrom(span, values, EqualityComparer);
                 Assert.Equal(-1, index);
             }
         }
