@@ -488,9 +488,13 @@ namespace DrNet.Internal.Unsafe
         public static int IndexOfSeq<TFirst, TSecond>(ref TFirst searchSpace, int searchSpaceLength,
             ref TSecond value, int valueLength, Func<TFirst, TSecond, bool> equalityComparer)
         {
-            Debug.Assert(valueLength > 0);
-            Debug.Assert(searchSpaceLength >= valueLength);
+            Debug.Assert(searchSpaceLength >= 0);
+            Debug.Assert(valueLength >= 0);
+            //Debug.Assert(searchSpaceLength >= valueLength);
             Debug.Assert(equalityComparer != null);
+
+            if (valueLength == 0)
+                return 0;  // A zero-length sequence is always treated as "found" at the start of the search space.
 
             TSecond valueHead = value;
             ref TSecond valueTail = ref CSUnsafe.Add(ref value, 1);
@@ -528,9 +532,13 @@ namespace DrNet.Internal.Unsafe
         public static int IndexOfSeqFrom<TFirst, TSecond>(ref TFirst searchSpace, int searchSpaceLength,
             ref TSecond value, int valueLength, Func<TSecond, TFirst, bool> equalityComparer)
         {
-            Debug.Assert(valueLength > 0);
-            Debug.Assert(searchSpaceLength >= valueLength);
+            Debug.Assert(searchSpaceLength >= 0);
+            Debug.Assert(valueLength >= 0);
+            //Debug.Assert(searchSpaceLength >= valueLength);
             Debug.Assert(equalityComparer != null);
+
+            if (valueLength == 0)
+                return 0;  // A zero-length sequence is always treated as "found" at the start of the search space.
 
             TSecond valueHead = value;
             ref TSecond valueTail = ref CSUnsafe.Add(ref value, 1);
