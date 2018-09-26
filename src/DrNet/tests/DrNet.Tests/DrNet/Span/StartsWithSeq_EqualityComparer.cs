@@ -33,9 +33,9 @@ namespace DrNet.Tests.Span
             Span<T> first = new Span<T>(a, 1, 0);
             ReadOnlySpan<T> second = new ReadOnlySpan<T>(a, 2, 0);
 
-            bool b = MemoryExt.StartsWithSeqSourceComparer(first, second, EqualityComparer);
+            bool b = MemoryExt.StartsWithSeq(first, second, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.StartsWithSeqValueComparer(first, second, EqualityComparer);
+            b = MemoryExt.StartsWithSeqFrom(first, second, EqualityComparer);
             Assert.True(b);
         }
 
@@ -45,9 +45,9 @@ namespace DrNet.Tests.Span
             T[] a = { NewT(4), NewT(5), NewT(6) };
             Span<T> span = new Span<T>(a);
 
-            bool b = MemoryExt.StartsWithSeqSourceComparer<T, T>(span, span, EqualityComparer);
+            bool b = MemoryExt.StartsWithSeq<T, T>(span, span, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.StartsWithSeqValueComparer<T, T>(span, span, EqualityComparer);
+            b = MemoryExt.StartsWithSeqFrom<T, T>(span, span, EqualityComparer);
             Assert.True(b);
         }
 
@@ -58,9 +58,9 @@ namespace DrNet.Tests.Span
             Span<T> first = new Span<T>(a, 0, 2);
             ReadOnlySpan<T> second = new ReadOnlySpan<T>(a, 0, 3);
 
-            bool b = MemoryExt.StartsWithSeqSourceComparer(first, second, EqualityComparer);
+            bool b = MemoryExt.StartsWithSeq(first, second, EqualityComparer);
             Assert.False(b);
-            b = MemoryExt.StartsWithSeqValueComparer(first, second, EqualityComparer);
+            b = MemoryExt.StartsWithSeqFrom(first, second, EqualityComparer);
             Assert.False(b);
         }
 
@@ -72,9 +72,9 @@ namespace DrNet.Tests.Span
             Span<T> span = new Span<T>(a, 0, 3);
             ReadOnlySpan<T> slice = new ReadOnlySpan<T>(a, 0, 2);
 
-            bool b = MemoryExt.StartsWithSeqSourceComparer(span, slice, EqualityComparer);
+            bool b = MemoryExt.StartsWithSeq(span, slice, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.StartsWithSeqValueComparer(span, slice, EqualityComparer);
+            b = MemoryExt.StartsWithSeqFrom(span, slice, EqualityComparer);
             Assert.True(b);
         }
 
@@ -87,9 +87,9 @@ namespace DrNet.Tests.Span
             Span<T> span = new Span<T>(a, 0, 3);
             ReadOnlySpan<T> slice = new ReadOnlySpan<T>(b, 0, 3);
 
-            bool c = MemoryExt.StartsWithSeqSourceComparer(span, slice, EqualityComparer);
+            bool c = MemoryExt.StartsWithSeq(span, slice, EqualityComparer);
             Assert.True(c);
-            c = MemoryExt.StartsWithSeqValueComparer(span, slice, EqualityComparer);
+            c = MemoryExt.StartsWithSeqFrom(span, slice, EqualityComparer);
             Assert.True(c);
         }
 
@@ -110,7 +110,7 @@ namespace DrNet.Tests.Span
                 Span<TEquatable<T>> firstSpan = new Span<TEquatable<T>>(first);
                 ReadOnlySpan<TEquatable<T>> secondSpan = new ReadOnlySpan<TEquatable<T>>(second);
 
-                bool b = MemoryExt.StartsWithSeqSourceComparer(firstSpan, secondSpan, EqualityComparer);
+                bool b = MemoryExt.StartsWithSeq(firstSpan, secondSpan, EqualityComparer);
                 Assert.True(b);
 
                 // Make sure each element of the array was compared once. (Strictly speaking, it would not be illegal for 
@@ -124,7 +124,7 @@ namespace DrNet.Tests.Span
                 }
 
                 log.Clear();
-                b = MemoryExt.StartsWithSeqValueComparer(firstSpan, secondSpan, EqualityComparer);
+                b = MemoryExt.StartsWithSeqFrom(firstSpan, secondSpan, EqualityComparer);
                 Assert.True(b);
 
                 // Make sure each element of the array was compared once. (Strictly speaking, it would not be illegal for 
@@ -160,13 +160,13 @@ namespace DrNet.Tests.Span
                     Span<TEquatable<T>> firstSpan = new Span<TEquatable<T>>(first);
                     ReadOnlySpan<TEquatable<T>> secondSpan = new ReadOnlySpan<TEquatable<T>>(second);
 
-                    bool b = MemoryExt.StartsWithSeqSourceComparer(firstSpan, secondSpan, EqualityComparer);
+                    bool b = MemoryExt.StartsWithSeq(firstSpan, secondSpan, EqualityComparer);
                     Assert.False(b);
                     Assert.Equal(1, log.CountCompares(first[mismatchIndex].Value, second[mismatchIndex].Value));
 
 
                     log.Clear();
-                    b = MemoryExt.StartsWithSeqValueComparer(firstSpan, secondSpan, EqualityComparer);
+                    b = MemoryExt.StartsWithSeqFrom(firstSpan, secondSpan, EqualityComparer);
                     Assert.False(b);
                     Assert.Equal(1, log.CountCompares(first[mismatchIndex].Value, second[mismatchIndex].Value));
                 }
@@ -204,10 +204,10 @@ namespace DrNet.Tests.Span
                 Span<TEquatable<T>> firstSpan = new Span<TEquatable<T>>(first, GuardLength, length);
                 ReadOnlySpan<TEquatable<T>> secondSpan = new ReadOnlySpan<TEquatable<T>>(second, GuardLength, length);
 
-                bool b = MemoryExt.StartsWithSeqSourceComparer(firstSpan, secondSpan, EqualityComparer);
+                bool b = MemoryExt.StartsWithSeq(firstSpan, secondSpan, EqualityComparer);
                 Assert.True(b);
 
-                b = MemoryExt.StartsWithSeqValueComparer(firstSpan, secondSpan, EqualityComparer);
+                b = MemoryExt.StartsWithSeqFrom(firstSpan, secondSpan, EqualityComparer);
                 Assert.True(b);
             }
         }
