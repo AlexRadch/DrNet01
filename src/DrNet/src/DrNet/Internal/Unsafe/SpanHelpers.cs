@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-
+using System.Runtime.CompilerServices;
 using CSUnsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DrNet.Internal.Unsafe
@@ -9,6 +9,7 @@ namespace DrNet.Internal.Unsafe
     {
         #region IndexOfEqual LastIndexOfEqual
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOfEqualSourceComparer<TSource, TValue>(ref TSource searchSpace, int length, 
             TValue value, Func<TSource, TValue, bool> equalityComparer)
         {
@@ -83,6 +84,7 @@ namespace DrNet.Internal.Unsafe
             return (int)(byte*)(index + 7);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOfEqualValueComparer<TSource, TValue>(ref TSource searchSpace, int length, 
             TValue value, Func<TValue, TSource, bool> equalityComparer)
         {
@@ -157,6 +159,7 @@ namespace DrNet.Internal.Unsafe
             return (int)(byte*)(index + 7);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOfEqualSourceComparer<TSource, TValue>(ref TSource searchSpace, int length, 
             TValue value, Func<TSource, TValue, bool> equalityComparer)
         {
@@ -227,6 +230,7 @@ namespace DrNet.Internal.Unsafe
 
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOfEqualValueComparer<TSource, TValue>(ref TSource searchSpace, int length, 
             TValue value, Func<TValue, TSource, bool> equalityComparer)
         {
@@ -301,6 +305,7 @@ namespace DrNet.Internal.Unsafe
 
         #region IndexOfEqualAny LastIndexOfEqualAny
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfEqualAnySourceComparer<TSource, TValue>(ref TSource searchSpace, int searchSpaceLength,
             ref TValue value, int valueLength, Func<TSource, TValue, bool> equalityComparer)
         {
@@ -326,6 +331,7 @@ namespace DrNet.Internal.Unsafe
             return index;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfEqualAnyValueComparer<TSource, TValue>(ref TSource searchSpace, int searchSpaceLength,
             ref TValue value, int valueLength, Func<TValue, TSource, bool> equalityComparer)
         {
@@ -350,6 +356,7 @@ namespace DrNet.Internal.Unsafe
             return index;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfEqualAnySourceComparer<TSource, TValue>(ref TSource searchSpace, 
             int searchSpaceLength, ref TValue value, int valueLength, Func<TSource, TValue, bool> equalityComparer)
         {
@@ -377,6 +384,7 @@ namespace DrNet.Internal.Unsafe
             return index;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfEqualAnyValueComparer<TSource, TValue>(ref TSource searchSpace, 
             int searchSpaceLength, ref TValue value, int valueLength, Func<TValue, TSource, bool> equalityComparer)
         {
@@ -408,6 +416,7 @@ namespace DrNet.Internal.Unsafe
 
         #region IndexOfNotEqualAll LastIndexOfNotEqualAll
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfNotEqualAllSourceComparer<TSource, TValue>(ref TSource searchSpace, 
             int searchSpaceLength, ref TValue value, int valueLength, Func<TSource, TValue, bool> equalityComparer)
         {
@@ -423,6 +432,7 @@ namespace DrNet.Internal.Unsafe
             return -1;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfNotEqualAllValueComparer<TSource, TValue>(ref TSource searchSpace, 
             int searchSpaceLength, ref TValue value, int valueLength, Func<TValue, TSource, bool> equalityComparer)
         {
@@ -438,6 +448,7 @@ namespace DrNet.Internal.Unsafe
             return -1;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfNotEqualAllSourceComparer<TSource, TValue>(ref TSource searchSpace, 
             int searchSpaceLength, ref TValue value, int valueLength, Func<TSource, TValue, bool> equalityComparer)
         {
@@ -453,6 +464,7 @@ namespace DrNet.Internal.Unsafe
             return -1;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfNotEqualAllValueComparer<TSource, TValue>(ref TSource searchSpace,
             int searchSpaceLength, ref TValue value, int valueLength, Func<TValue, TSource, bool> equalityComparer)
         {
@@ -472,6 +484,7 @@ namespace DrNet.Internal.Unsafe
 
         #region Sequence
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfSeq<TFirst, TSecond>(ref TFirst searchSpace, int searchSpaceLength,
             ref TSecond value, int valueLength, Func<TFirst, TSecond, bool> equalityComparer)
         {
@@ -511,6 +524,7 @@ namespace DrNet.Internal.Unsafe
             return -1;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfSeqFrom<TFirst, TSecond>(ref TFirst searchSpace, int searchSpaceLength,
             ref TSecond value, int valueLength, Func<TSecond, TFirst, bool> equalityComparer)
         {
@@ -550,6 +564,7 @@ namespace DrNet.Internal.Unsafe
             return -1;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfSeq<TFirst, TSecond>(ref TFirst searchSpace, int searchSpaceLength,
             ref TSecond value, int valueLength, Func<TFirst, TSecond, bool> equalityComparer)
         {
@@ -587,6 +602,7 @@ namespace DrNet.Internal.Unsafe
             return -1;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfSeqFrom<TFirst, TSecond>(ref TFirst searchSpace, int searchSpaceLength,
             ref TSecond value, int valueLength, Func<TSecond, TFirst, bool> equalityComparer)
         {
@@ -624,6 +640,7 @@ namespace DrNet.Internal.Unsafe
             return -1;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EqualToSeq<TFirst, TSecond>(ref TFirst first, ref TSecond second, int length,
             Func<TFirst, TSecond, bool> equalityComparer)
         {

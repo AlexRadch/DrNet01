@@ -50,13 +50,22 @@ namespace DrNet.Tests.Span
             var rnd = new Random(42);
             T target = NewT(rnd.Next());
 
-            Span<TSource> sp = new Span<TSource>(Array.Empty<TSource>());
+            Span<TSource> span = new Span<TSource>(Array.Empty<TSource>());
 
-            int idx = MemoryExt.LastIndexOfEqual(sp, NewTValue(target));
+            int idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target));
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqual(sp, NewTValue(target), EqualityCompare);
+            idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target), EqualityCompare);
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqualFrom(sp, NewTValue(target), EqualityCompareFrom);
+            idx = MemoryExt.LastIndexOfEqualFrom(span, NewTValue(target), EqualityCompareFrom);
+            Assert.Equal(-1, idx);
+
+            ReadOnlySpan<TSource> rspan = new Span<TSource>(Array.Empty<TSource>());
+
+            idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target));
+            Assert.Equal(-1, idx);
+            idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target), EqualityCompare);
+            Assert.Equal(-1, idx);
+            idx = MemoryExt.LastIndexOfEqualFrom(rspan, NewTValue(target), EqualityCompareFrom);
             Assert.Equal(-1, idx);
         }
 
@@ -87,6 +96,15 @@ namespace DrNet.Tests.Span
             Assert.Equal(length - 1, idx);
             idx = MemoryExt.LastIndexOfEqualFrom(span, default(TValue), EqualityCompareFrom);
             Assert.Equal(length - 1, idx);
+
+            ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
+
+            idx = MemoryExt.LastIndexOfEqual(rspan, default(TValue));
+            Assert.Equal(length - 1, idx);
+            idx = MemoryExt.LastIndexOfEqual(rspan, default(TValue), EqualityCompare);
+            Assert.Equal(length - 1, idx);
+            idx = MemoryExt.LastIndexOfEqualFrom(rspan, default(TValue), EqualityCompareFrom);
+            Assert.Equal(length - 1, idx);
         }
 
         [Theory]
@@ -110,6 +128,7 @@ namespace DrNet.Tests.Span
                 s[i] = NewTSource(item);
             }
             Span<TSource> span = new Span<TSource>(s);
+            ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
 
             for (int targetIndex = 0; targetIndex < length; targetIndex++)
             {
@@ -121,6 +140,13 @@ namespace DrNet.Tests.Span
                 idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target), EqualityCompare);
                 Assert.Equal(targetIndex, idx);
                 idx = MemoryExt.LastIndexOfEqualFrom(span, NewTValue(target), EqualityCompareFrom);
+                Assert.Equal(targetIndex, idx);
+
+                idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target));
+                Assert.Equal(targetIndex, idx);
+                idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target), EqualityCompare);
+                Assert.Equal(targetIndex, idx);
+                idx = MemoryExt.LastIndexOfEqualFrom(rspan, NewTValue(target), EqualityCompareFrom);
                 Assert.Equal(targetIndex, idx);
 
                 s[targetIndex] = temp;
@@ -156,6 +182,15 @@ namespace DrNet.Tests.Span
             Assert.Equal(-1, idx);
             idx = MemoryExt.LastIndexOfEqualFrom(span, NewTValue(target), EqualityCompareFrom);
             Assert.Equal(-1, idx);
+
+            ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
+
+            idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target));
+            Assert.Equal(-1, idx);
+            idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target), EqualityCompare);
+            Assert.Equal(-1, idx);
+            idx = MemoryExt.LastIndexOfEqualFrom(rspan, NewTValue(target), EqualityCompareFrom);
+            Assert.Equal(-1, idx);
         }
 
         [Theory]
@@ -180,6 +215,7 @@ namespace DrNet.Tests.Span
                 s[i] = NewTSource(item);
             }
             Span<TSource> span = new Span<TSource>(s);
+            ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
 
             for (int targetIndex = 1; targetIndex < length; targetIndex++)
             {
@@ -192,6 +228,13 @@ namespace DrNet.Tests.Span
                 idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target), EqualityCompare);
                 Assert.Equal(targetIndex, idx);
                 idx = MemoryExt.LastIndexOfEqualFrom(span, NewTValue(target), EqualityCompareFrom);
+                Assert.Equal(targetIndex, idx);
+
+                idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target));
+                Assert.Equal(targetIndex, idx);
+                idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target), EqualityCompare);
+                Assert.Equal(targetIndex, idx);
+                idx = MemoryExt.LastIndexOfEqualFrom(rspan, NewTValue(target), EqualityCompareFrom);
                 Assert.Equal(targetIndex, idx);
 
                 s[targetIndex - 0] = temp0;
@@ -218,13 +261,28 @@ namespace DrNet.Tests.Span
                 do
                 {
                     item = NewT(rnd.Next());
-                } while (EqualityCompareT(item, target) || EqualityCompareT(target, item) || 
+                } while (EqualityCompareT(item, target) || EqualityCompareT(target, item) ||
                     Array.IndexOf(t, item, 0, i) >= 0);
 
                 t[i] = item;
                 s[i] = NewTSource(item, log.Add);
             }
+
+            // Since we asked for a non-existent value, make sure each element of the array was compared once.
+            // (Strictly speaking, it would not be illegal for LastIndexOfEqual to compare an element more than once but
+            // that would be a non-optimal implementation and a red flag. So we'll stick with the stricter test.)
+            void CheckCompares()
+            {
+                Assert.Equal(s.Length, log.Count);
+                foreach (T item in t)
+                {
+                    int numCompares = log.CountCompares(item, target);
+                    Assert.True(numCompares == 1, $"Expected {numCompares} == 1 for element {item}.");
+                }
+            }
+
             Span<TSource> span = new Span<TSource>(s);
+            ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
 
             {
                 T temp = NewT(rnd.Next());
@@ -243,48 +301,36 @@ namespace DrNet.Tests.Span
             int idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target, log.Add));
             Assert.Equal(-1, idx);
             if (logSupported)
-            {
-                // Since we asked for a non-existent value, make sure each element of the array was compared once.
-                // (Strictly speaking, it would not be illegal for LastIndexOfEqual to compare an element more than once but
-                // that would be a non-optimal implementation and a red flag. So we'll stick with the stricter test.)
-                Assert.Equal(s.Length, log.Count);
-                foreach (T item in t)
-                {
-                    int numCompares = log.CountCompares(item, target);
-                    Assert.True(numCompares == 1, $"Expected {numCompares} == 1 for element {item}.");
-                }
-            }
+                CheckCompares();
 
             log.Clear();
+            idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target, log.Add));
+            Assert.Equal(-1, idx);
+            if (logSupported)
+                CheckCompares();
+
             if (!logSupported)
                 onCompare = log.Add;
 
+            log.Clear();
             idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target, log.Add), EqualityCompare);
             Assert.Equal(-1, idx);
-
-            // Since we asked for a non-existent value, make sure each element of the array was compared once.
-            // (Strictly speaking, it would not be illegal for LastIndexOfEqual to compare an element more than once but
-            // that would be a non-optimal implementation and a red flag. So we'll stick with the stricter test.)
-            Assert.Equal(s.Length, log.Count);
-            foreach (T item in t)
-            {
-                int numCompares = log.CountCompares(item, target);
-                Assert.True(numCompares == 1, $"Expected {numCompares} == 1 for element {item}.");
-            }
+            CheckCompares();
 
             log.Clear();
             idx = MemoryExt.LastIndexOfEqualFrom(span, NewTValue(target, log.Add), EqualityCompareFrom);
             Assert.Equal(-1, idx);
+            CheckCompares();
 
-            // Since we asked for a non-existent value, make sure each element of the array was compared once.
-            // (Strictly speaking, it would not be illegal for LastIndexOfEqual to compare an element more than once but
-            // that would be a non-optimal implementation and a red flag. So we'll stick with the stricter test.)
-            Assert.Equal(s.Length, log.Count);
-            foreach (T item in t)
-            {
-                int numCompares = log.CountCompares(item, target);
-                Assert.True(numCompares == 1, $"Expected {numCompares} == 1 for element {item}.");
-            }
+            log.Clear();
+            idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target, log.Add), EqualityCompare);
+            Assert.Equal(-1, idx);
+            CheckCompares();
+
+            log.Clear();
+            idx = MemoryExt.LastIndexOfEqualFrom(rspan, NewTValue(target, log.Add), EqualityCompareFrom);
+            Assert.Equal(-1, idx);
+            CheckCompares();
         }
 
         [Theory]
@@ -320,14 +366,24 @@ namespace DrNet.Tests.Span
                 s[i + guardLength] = NewTSource(item, checkForOutOfRangeAccess);
             }
             Span<TSource> span = new Span<TSource>(s, guardLength, length);
+            ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s, guardLength, length);
 
             int idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target, checkForOutOfRangeAccess));
             Assert.Equal(-1, idx);
 
+            idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target, checkForOutOfRangeAccess));
+            Assert.Equal(-1, idx);
+
             onCompare = checkForOutOfRangeAccess;
+
             idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target, checkForOutOfRangeAccess), EqualityCompare);
             Assert.Equal(-1, idx);
             idx = MemoryExt.LastIndexOfEqualFrom(span, NewTValue(target, checkForOutOfRangeAccess), EqualityCompareFrom);
+            Assert.Equal(-1, idx);
+
+            idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target, checkForOutOfRangeAccess), EqualityCompare);
+            Assert.Equal(-1, idx);
+            idx = MemoryExt.LastIndexOfEqualFrom(rspan, NewTValue(target, checkForOutOfRangeAccess), EqualityCompareFrom);
             Assert.Equal(-1, idx);
         }
     }
@@ -346,19 +402,26 @@ namespace DrNet.Tests.Span
         protected override char NewTValue(char value, Action<char, char> onCompare) => value;
     }
 
+    public class LastIndexOfEqual_int : LastIndexOfEqual<int, int, int>
+    {
+        protected override int NewT(int value) => value;
+        protected override int NewTSource(int value, Action<int, int> onCompare) => value;
+        protected override int NewTValue(int value, Action<int, int> onCompare) => value;
+    }
+
     public class LastIndexOfEqual_intEE : LastIndexOfEqual<int, TEquatable<int>, TEquatable<int>>
     {
         protected override int NewT(int value) => value;
-        protected override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) => 
+        protected override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) =>
             new TEquatable<int>(value, onCompare);
-        protected override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) => 
+        protected override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) =>
             new TEquatable<int>(value, onCompare);
     }
 
     public class LastIndexOfEqual_intEO : LastIndexOfEqual<int, TEquatable<int>, TObject<int>>
     {
         protected override int NewT(int value) => value;
-        protected override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) => 
+        protected override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) =>
             new TEquatable<int>(value, onCompare);
         protected override TObject<int> NewTValue(int value, Action<int, int> onCompare)
         {
@@ -384,25 +447,25 @@ namespace DrNet.Tests.Span
     public class LastIndexOfEqual_intOO : LastIndexOfEqual<int, TObject<int>, TObject<int>>
     {
         protected override int NewT(int value) => value;
-        protected override TObject<int> NewTSource(int value, Action<int, int> onCompare) => 
+        protected override TObject<int> NewTSource(int value, Action<int, int> onCompare) =>
             new TObject<int>(value, onCompare);
-        protected override TObject<int> NewTValue(int value, Action<int, int> onCompare) => 
+        protected override TObject<int> NewTValue(int value, Action<int, int> onCompare) =>
             new TObject<int>(value, onCompare);
     }
 
     public class LastIndexOfEqual_stringEE : LastIndexOfEqual<string, TEquatable<string>, TEquatable<string>>
     {
         protected override string NewT(int value) => value.ToString();
-        protected override TEquatable<string> NewTSource(string value, Action<string, string> onCompare) => 
+        protected override TEquatable<string> NewTSource(string value, Action<string, string> onCompare) =>
             new TEquatable<string>(value, onCompare);
-        protected override TEquatable<string> NewTValue(string value, Action<string, string> onCompare) => 
+        protected override TEquatable<string> NewTValue(string value, Action<string, string> onCompare) =>
             new TEquatable<string>(value, onCompare);
     }
 
     public class LastIndexOfEqual_stringEO : LastIndexOfEqual<string, TEquatable<string>, TObject<string>>
     {
         protected override string NewT(int value) => value.ToString();
-        protected override TEquatable<string> NewTSource(string value, Action<string, string> onCompare) => 
+        protected override TEquatable<string> NewTSource(string value, Action<string, string> onCompare) =>
             new TEquatable<string>(value, onCompare);
         protected override TObject<string> NewTValue(string value, Action<string, string> onCompare)
         {
@@ -421,16 +484,16 @@ namespace DrNet.Tests.Span
             result.OnCompare += (x, y) => { throw new Exception("Detected Object.Equals comparition call"); };
             return result;
         }
-        protected override TEquatable<string> NewTValue(string value, Action<string, string> onCompare) => 
+        protected override TEquatable<string> NewTValue(string value, Action<string, string> onCompare) =>
             new TEquatable<string>(value, onCompare);
     }
 
     public class LastIndexOfEqual_stringOO : LastIndexOfEqual<string, TObject<string>, TObject<string>>
     {
         protected override string NewT(int value) => value.ToString();
-        protected override TObject<string> NewTSource(string value, Action<string, string> onCompare) => 
+        protected override TObject<string> NewTSource(string value, Action<string, string> onCompare) =>
             new TObject<string>(value, onCompare);
-        protected override TObject<string> NewTValue(string value, Action<string, string> onCompare) => 
+        protected override TObject<string> NewTValue(string value, Action<string, string> onCompare) =>
             new TObject<string>(value, onCompare);
     }
 }

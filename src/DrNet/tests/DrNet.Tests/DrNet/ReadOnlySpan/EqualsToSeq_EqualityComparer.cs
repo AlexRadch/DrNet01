@@ -3,7 +3,7 @@ using Xunit;
 
 namespace DrNet.Tests.ReadOnlySpan
 {
-    public abstract class EqualToFromSeq_EqualityComparer<T>
+    public abstract class EqualsToSeq_EqualityComparer<T>
     {
         public abstract T NewT(int value);
 
@@ -27,13 +27,13 @@ namespace DrNet.Tests.ReadOnlySpan
             ReadOnlySpan<T> first = new ReadOnlySpan<T>(a, 1, 0);
             ReadOnlySpan<T> second = new ReadOnlySpan<T>(a, 2, 0);
 
-            bool b = MemoryExt.EqualToSeq<T, T>(first, second, EqualityComparer);
+            bool b = MemoryExt.EqualsToSeq<T, T>(first, second, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.EqualToSeq<T, T>(second, first, EqualityComparer);
+            b = MemoryExt.EqualsToSeq<T, T>(second, first, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.EqualFromSeq<T, T>(first, second, EqualityComparer);
+            b = MemoryExt.EqualsFromSeq<T, T>(first, second, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.EqualFromSeq<T, T>(second, first, EqualityComparer);
+            b = MemoryExt.EqualsFromSeq<T, T>(second, first, EqualityComparer);
             Assert.True(b);
         }
 
@@ -42,9 +42,9 @@ namespace DrNet.Tests.ReadOnlySpan
         {
             T[] a = { NewT(4), NewT(5), NewT(6) };
             ReadOnlySpan<T> span = new ReadOnlySpan<T>(a);
-            bool b = MemoryExt.EqualToSeq<T, T>(span, span, EqualityComparer);
+            bool b = MemoryExt.EqualsToSeq<T, T>(span, span, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.EqualFromSeq<T, T>(span, span, EqualityComparer);
+            b = MemoryExt.EqualsFromSeq<T, T>(span, span, EqualityComparer);
             Assert.True(b);
         }
 
@@ -53,13 +53,13 @@ namespace DrNet.Tests.ReadOnlySpan
         {
             T[] a = { NewT(4), NewT(5), NewT(6) };
             ReadOnlySpan<T> first = new ReadOnlySpan<T>(a, 0, 3);
-            bool b = MemoryExt.EqualToSeq<T, T>(first, a, EqualityComparer);
+            bool b = MemoryExt.EqualsToSeq<T, T>(first, a, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.EqualToSeq<T, T>(a, first, EqualityComparer);
+            b = MemoryExt.EqualsToSeq<T, T>(a, first, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.EqualFromSeq<T, T>(first, a, EqualityComparer);
+            b = MemoryExt.EqualsFromSeq<T, T>(first, a, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.EqualFromSeq<T, T>(a, first, EqualityComparer);
+            b = MemoryExt.EqualsFromSeq<T, T>(a, first, EqualityComparer);
             Assert.True(b);
         }
 
@@ -72,13 +72,13 @@ namespace DrNet.Tests.ReadOnlySpan
 
             ReadOnlySpan<T> first = new ReadOnlySpan<T>(src, 0, 3);
 
-            bool b = MemoryExt.EqualToSeq<T, T>(first, segment, EqualityComparer);
+            bool b = MemoryExt.EqualsToSeq<T, T>(first, segment, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.EqualToSeq<T, T>(segment, first, EqualityComparer);
+            b = MemoryExt.EqualsToSeq<T, T>(segment, first, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.EqualFromSeq<T, T>(first, segment, EqualityComparer);
+            b = MemoryExt.EqualsFromSeq<T, T>(first, segment, EqualityComparer);
             Assert.True(b);
-            b = MemoryExt.EqualFromSeq<T, T>(segment, first, EqualityComparer);
+            b = MemoryExt.EqualsFromSeq<T, T>(segment, first, EqualityComparer);
             Assert.True(b);
         }
 
@@ -88,13 +88,13 @@ namespace DrNet.Tests.ReadOnlySpan
             T[] a = { NewT(4), NewT(5), NewT(6) };
             ReadOnlySpan<T> first = new ReadOnlySpan<T>(a, 0, 3);
             ReadOnlySpan<T> second = new ReadOnlySpan<T>(a, 0, 2);
-            bool b = MemoryExt.EqualToSeq<T, T>(first, second, EqualityComparer);
+            bool b = MemoryExt.EqualsToSeq<T, T>(first, second, EqualityComparer);
             Assert.False(b);
-            b = MemoryExt.EqualToSeq<T, T>(second, first, EqualityComparer);
+            b = MemoryExt.EqualsToSeq<T, T>(second, first, EqualityComparer);
             Assert.False(b);
-            b = MemoryExt.EqualFromSeq<T, T>(first, second, EqualityComparer);
+            b = MemoryExt.EqualsFromSeq<T, T>(first, second, EqualityComparer);
             Assert.False(b);
-            b = MemoryExt.EqualFromSeq<T, T>(second, first, EqualityComparer);
+            b = MemoryExt.EqualsFromSeq<T, T>(second, first, EqualityComparer);
             Assert.False(b);
         }
 
@@ -116,7 +116,7 @@ namespace DrNet.Tests.ReadOnlySpan
                 ReadOnlySpan<T> firstSpan = new ReadOnlySpan<T>(first);
                 ReadOnlySpan<T> secondSpan = new ReadOnlySpan<T>(second);
 
-                bool b = MemoryExt.EqualToSeq<T, T>(firstSpan, secondSpan, EqualityComparer);
+                bool b = MemoryExt.EqualsToSeq<T, T>(firstSpan, secondSpan, EqualityComparer);
                 Assert.True(b);
 
                 // Make sure each element of the array was compared once. (Strictly speaking, it would not be illegal for 
@@ -130,7 +130,7 @@ namespace DrNet.Tests.ReadOnlySpan
                 }
 
                 log.Clear();
-                b = MemoryExt.EqualFromSeq<T, T>(firstSpan, secondSpan, EqualityComparer);
+                b = MemoryExt.EqualsFromSeq<T, T>(firstSpan, secondSpan, EqualityComparer);
                 Assert.True(b);
 
                 // Make sure each element of the array was compared once. (Strictly speaking, it would not be illegal for 
@@ -167,22 +167,22 @@ namespace DrNet.Tests.ReadOnlySpan
                     ReadOnlySpan<T> firstSpan = new ReadOnlySpan<T>(first);
                     ReadOnlySpan<T> secondSpan = new ReadOnlySpan<T>(second);
 
-                    bool b = MemoryExt.EqualToSeq<T, T>(firstSpan, secondSpan, EqualityComparer);
+                    bool b = MemoryExt.EqualsToSeq<T, T>(firstSpan, secondSpan, EqualityComparer);
                     Assert.False(b);
                     Assert.Equal(1, log.CountCompares(first[mismatchIndex], second[mismatchIndex]));
 
                     log.Clear();
-                    b = MemoryExt.EqualToSeq<T, T>(secondSpan, firstSpan, EqualityComparer);
+                    b = MemoryExt.EqualsToSeq<T, T>(secondSpan, firstSpan, EqualityComparer);
                     Assert.False(b);
                     Assert.Equal(1, log.CountCompares(first[mismatchIndex], second[mismatchIndex]));
 
                     log.Clear();
-                    b = MemoryExt.EqualFromSeq<T, T>(firstSpan, secondSpan, EqualityComparer);
+                    b = MemoryExt.EqualsFromSeq<T, T>(firstSpan, secondSpan, EqualityComparer);
                     Assert.False(b);
                     Assert.Equal(1, log.CountCompares(first[mismatchIndex], second[mismatchIndex]));
 
                     log.Clear();
-                    b = MemoryExt.EqualFromSeq<T, T>(secondSpan, firstSpan, EqualityComparer);
+                    b = MemoryExt.EqualsFromSeq<T, T>(secondSpan, firstSpan, EqualityComparer);
                     Assert.False(b);
                     Assert.Equal(1, log.CountCompares(first[mismatchIndex], second[mismatchIndex]));
                 }
@@ -219,20 +219,20 @@ namespace DrNet.Tests.ReadOnlySpan
                 ReadOnlySpan<TEquatable<T>> firstSpan = new ReadOnlySpan<TEquatable<T>>(first, GuardLength, length);
                 ReadOnlySpan<TEquatable<T>> secondSpan = new ReadOnlySpan<TEquatable<T>>(second, GuardLength, length);
 
-                bool b = MemoryExt.EqualToSeq<TEquatable<T>, TEquatable<T>>(firstSpan, secondSpan, EqualityComparer);
+                bool b = MemoryExt.EqualsToSeq<TEquatable<T>, TEquatable<T>>(firstSpan, secondSpan, EqualityComparer);
                 Assert.True(b);
-                b = MemoryExt.EqualFromSeq<TEquatable<T>, TEquatable<T>>(firstSpan, secondSpan, EqualityComparer);
+                b = MemoryExt.EqualsFromSeq<TEquatable<T>, TEquatable<T>>(firstSpan, secondSpan, EqualityComparer);
                 Assert.True(b);
             }
         }
     }
 
-    public class EqualToFromSeq_EqualityComparer_int : EqualToFromSeq_EqualityComparer<int>
+    public class EqualsToSeq_EqualityComparer_int : EqualsToSeq_EqualityComparer<int>
     {
         public override int NewT(int value) => value;
     }
 
-    public class EqualToFromSeq_EqualityComparer_string : EqualToFromSeq_EqualityComparer<string>
+    public class EqualsToSeq_EqualityComparer_string : EqualsToSeq_EqualityComparer<string>
     {
         public override string NewT(int value) => value.ToString();
     }

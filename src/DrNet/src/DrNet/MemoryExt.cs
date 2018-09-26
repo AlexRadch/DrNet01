@@ -12,7 +12,7 @@ namespace DrNet
         #region AsReadOnlyMemory
 
         public static ReadOnlyMemory<T> AsReadOnlyMemory<T>(this T[] array) => new ReadOnlyMemory<T>(array);
-        
+
         public static ReadOnlyMemory<T> AsReadOnlyMemory<T>(this T[] array, int start)
         {
             if (array == null)
@@ -52,8 +52,10 @@ namespace DrNet
 
         #region AsReadOnlySpan
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlySpan<T> AsReadOnlySpan<T>(this T[] array) => new ReadOnlySpan<T>(array);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlySpan<T> AsReadOnlySpan<T>(this T[] array, int start)
         {
             if (array == null)
@@ -65,12 +67,15 @@ namespace DrNet
             return new ReadOnlySpan<T>(array, start, array.Length - start);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlySpan<T> AsReadOnlySpan<T>(this T[] array, int start, int length) =>
             new ReadOnlySpan<T>(array, start, length);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ArraySegment<T> segment) =>
             new ReadOnlySpan<T>(segment.Array, segment.Offset, segment.Count);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ArraySegment<T> segment, int start)
         {
             if (((uint)start) > segment.Count)
@@ -78,7 +83,8 @@ namespace DrNet
 
             return new ReadOnlySpan<T>(segment.Array, segment.Offset + start, segment.Count - start);
         }
-        
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ArraySegment<T> segment, int start, int length)
         {
             if (((uint)start) > segment.Count)
@@ -101,6 +107,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfEqual<TSource, TValue>(this Span<TSource> span, TValue value, 
             Func<TSource, TValue, bool> equalityComparer = null)
         {
@@ -118,9 +125,8 @@ namespace DrNet
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
                     return SpanHelpers.IndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
                         (sValue, vValue) => ((IEquatable<TValue>)sValue).Equals(vValue));
-                else
-                    return SpanHelpers.IndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
-                        (sValue, vValue) => sValue.Equals(vValue));
+                return SpanHelpers.IndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
+                    (sValue, vValue) => sValue.Equals(vValue));
             }
 
             return SpanHelpers.IndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
@@ -135,6 +141,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfEqual<TSource, TValue>(this ReadOnlySpan<TSource> span, TValue value, 
             Func<TSource, TValue, bool> equalityComparer = null)
         {
@@ -152,9 +159,8 @@ namespace DrNet
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
                     return SpanHelpers.IndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
                         (sValue, vValue) => ((IEquatable<TValue>)sValue).Equals(vValue));
-                else
-                    return SpanHelpers.IndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
-                        (sValue, vValue) => sValue.Equals(vValue));
+                return SpanHelpers.IndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
+                    (sValue, vValue) => sValue.Equals(vValue));
             }
 
             return SpanHelpers.IndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
@@ -169,6 +175,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfEqualFrom<TSource, TValue>(this Span<TSource> span, TValue value, 
             Func<TValue, TSource, bool> equalityComparer = null)
         {
@@ -186,9 +193,8 @@ namespace DrNet
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
                     return SpanHelpers.IndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
                         (sValue, vValue) => ((IEquatable<TValue>)sValue).Equals(vValue));
-                else
-                    return SpanHelpers.IndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
-                        (sValue, vValue) => sValue.Equals(vValue));
+                return SpanHelpers.IndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
+                    (sValue, vValue) => sValue.Equals(vValue));
             }
 
             return SpanHelpers.IndexOfEqualValueComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
@@ -203,6 +209,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfEqualFrom<TSource, TValue>(this ReadOnlySpan<TSource> span, TValue value, 
             Func<TValue, TSource, bool> equalityComparer)
         {
@@ -218,11 +225,10 @@ namespace DrNet
                     return SpanHelpers.IndexOfEqualValueComparer(ref MemoryMarshal.GetReference(span), span.Length, 
                         vEquatable, (eValue, sValue) => eValue.Equals(sValue));
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
-                    return SpanHelpers.IndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
-                        (sValue, vValue) => ((IEquatable<TValue>)sValue).Equals(vValue));
-                else
-                    return SpanHelpers.IndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
-                        (sValue, vValue) => sValue.Equals(vValue));
+                    return SpanHelpers.IndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
+                        value, (sValue, vValue) => ((IEquatable<TValue>)sValue).Equals(vValue));
+                return SpanHelpers.IndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
+                    (sValue, vValue) => sValue.Equals(vValue));
             }
 
             return SpanHelpers.IndexOfEqualValueComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
@@ -237,11 +243,12 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value to search for not equal value</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfNotEqual<TSource, TValue>(this Span<TSource> span, TValue value)
         {
             if (value is IEquatable<TSource> vEquatable)
-                return SpanHelpers.IndexOfEqualValueComparer(ref MemoryMarshal.GetReference(span), span.Length, vEquatable,
-                    (eValue, sValue) => !eValue.Equals(sValue));
+                return SpanHelpers.IndexOfEqualValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
+                    vEquatable, (eValue, sValue) => !eValue.Equals(sValue));
 
             if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
                 return SpanHelpers.IndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
@@ -259,6 +266,7 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value to search for not equal value</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfNotEqual<TSource, TValue>(this ReadOnlySpan<TSource> span, TValue value)
         {
             if (value is IEquatable<TSource> vEquatable)
@@ -285,6 +293,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfEqual<TSource, TValue>(this Span<TSource> span, TValue value,
             Func<TSource, TValue, bool> equalityComparer = null)
         {
@@ -302,9 +311,8 @@ namespace DrNet
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
                     return SpanHelpers.LastIndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
                         value, (sValue, vValue) => ((IEquatable<TValue>)sValue).Equals(vValue));
-                else
-                    return SpanHelpers.LastIndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
-                        value, (sValue, vValue) => sValue.Equals(vValue));
+                return SpanHelpers.LastIndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
+                    value, (sValue, vValue) => sValue.Equals(vValue));
             }
 
             return SpanHelpers.LastIndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
@@ -319,6 +327,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfEqual<TSource, TValue>(this ReadOnlySpan<TSource> span, TValue value,
             Func<TSource, TValue, bool> equalityComparer = null)
         {
@@ -336,9 +345,8 @@ namespace DrNet
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
                     return SpanHelpers.LastIndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
                         value, (sValue, vValue) => ((IEquatable<TValue>)sValue).Equals(vValue));
-                else
-                    return SpanHelpers.LastIndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
-                        value, (sValue, vValue) => sValue.Equals(vValue));
+                return SpanHelpers.LastIndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
+                    value, (sValue, vValue) => sValue.Equals(vValue));
             }
 
             return SpanHelpers.LastIndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
@@ -353,6 +361,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfEqualFrom<TSource, TValue>(this Span<TSource> span, TValue value,
             Func<TValue, TSource, bool> equalityComparer)
         {
@@ -370,9 +379,8 @@ namespace DrNet
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
                     return SpanHelpers.LastIndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length, 
                         value, (sValue, vValue) => ((IEquatable<TValue>)sValue).Equals(vValue));
-                else
-                    return SpanHelpers.LastIndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
-                        value, (sValue, vValue) => sValue.Equals(vValue));
+                return SpanHelpers.LastIndexOfEqualSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
+                    value, (sValue, vValue) => sValue.Equals(vValue));
             }
 
             return SpanHelpers.LastIndexOfEqualValueComparer(ref MemoryMarshal.GetReference(span), span.Length, value, 
@@ -387,6 +395,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfEqualFrom<TSource, TValue>(this ReadOnlySpan<TSource> span, TValue value,
             Func<TValue, TSource, bool> equalityComparer)
         {
@@ -420,6 +429,7 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value to search for not equal value</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfNotEqual<TSource, TValue>(this Span<TSource> span, TValue value)
         {
             if (value is IEquatable<TSource> vEquatable)
@@ -442,6 +452,7 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value to search for not equal value</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfNotEqual<TSource, TValue>(this ReadOnlySpan<TSource> span, TValue value)
         {
             if (value is IEquatable<TSource> vEquatable)
@@ -469,6 +480,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfEqualAny<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> values, 
             Func<TSource, TValue, bool> equalityComparer = null)
         {
@@ -510,6 +522,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfEqualAny<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> values, 
             Func<TSource, TValue, bool> equalityComparer = null)
         {
@@ -551,6 +564,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfEqualAnyFrom<TSource, TValue>(this Span<TSource> span, 
             ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer = null)
         {
@@ -592,6 +606,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfEqualAnyFrom<TSource, TValue>(this ReadOnlySpan<TSource> span, 
             ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer = null)
         {
@@ -637,6 +652,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfEqualAny<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> values,
             Func<TSource, TValue, bool> equalityComparer = null)
         {
@@ -678,6 +694,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfEqualAny<TSource, TValue>(this ReadOnlySpan<TSource> span, 
             ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer = null)
         {
@@ -719,6 +736,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfEqualAnyFrom<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> values,
             Func<TValue, TSource, bool> equalityComparer = null)
         {
@@ -760,6 +778,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfEqualAnyFrom<TSource, TValue>(this ReadOnlySpan<TSource> span, 
             ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer = null)
         {
@@ -805,6 +824,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfNotEqualAll<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> values,
             Func<TSource, TValue, bool> equalityComparer = null)
         {
@@ -813,14 +833,13 @@ namespace DrNet
                 if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
                     return SpanHelpers.IndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span),
                         span.Length, ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) =>
-                            vValue is IEquatable<TSource> equatable ? equatable.Equals(sValue) : vValue.Equals(sValue));
+                            ((IEquatable<TSource>)vValue).Equals(sValue));
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
                     return SpanHelpers.IndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span),
                         span.Length, ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
-                            sValue is IEquatable<TValue> equatable ? equatable.Equals(vValue) : sValue.Equals(vValue));
-                return SpanHelpers.IndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
-                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
-                        vValue.Equals(sValue));
+                            ((IEquatable<TValue>)sValue).Equals(vValue));
+                return SpanHelpers.IndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
+                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => sValue.Equals(vValue));
             }
 
             return SpanHelpers.IndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
@@ -836,6 +855,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfNotEqualAll<TSource, TValue>(this ReadOnlySpan<TSource> span,
             ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer = null)
         {
@@ -844,14 +864,13 @@ namespace DrNet
                 if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
                     return SpanHelpers.IndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span),
                         span.Length, ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) =>
-                            vValue is IEquatable<TSource> equatable ? equatable.Equals(sValue) : vValue.Equals(sValue));
+                            ((IEquatable<TSource>)vValue).Equals(sValue));
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
                     return SpanHelpers.IndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span),
                         span.Length, ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
-                            sValue is IEquatable<TValue> equatable ? equatable.Equals(vValue) : sValue.Equals(vValue));
-                return SpanHelpers.IndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
-                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
-                        vValue.Equals(sValue));
+                            ((IEquatable<TValue>)sValue).Equals(vValue));
+                return SpanHelpers.IndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
+                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => sValue.Equals(vValue));
             }
 
             return SpanHelpers.IndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
@@ -867,6 +886,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfNotEqualAllFrom<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> values,
             Func<TValue, TSource, bool> equalityComparer = null)
         {
@@ -875,14 +895,13 @@ namespace DrNet
                 if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
                     return SpanHelpers.IndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span),
                         span.Length, ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) =>
-                            vValue is IEquatable<TSource> equatable ? equatable.Equals(sValue) : vValue.Equals(sValue));
+                            ((IEquatable<TSource>)vValue).Equals(sValue));
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
                     return SpanHelpers.IndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span),
                         span.Length, ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
-                            sValue is IEquatable<TValue> equatable ? equatable.Equals(vValue) : sValue.Equals(vValue));
-                return SpanHelpers.IndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
-                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
-                        vValue.Equals(sValue));
+                            ((IEquatable<TValue>)sValue).Equals(vValue));
+                return SpanHelpers.IndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
+                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => sValue.Equals(vValue));
             }
 
             return SpanHelpers.IndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
@@ -898,6 +917,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfNotEqualAllFrom<TSource, TValue>(this ReadOnlySpan<TSource> span,
             ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer = null)
         {
@@ -906,14 +926,13 @@ namespace DrNet
                 if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
                     return SpanHelpers.IndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span),
                         span.Length, ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) =>
-                            vValue is IEquatable<TSource> equatable ? equatable.Equals(sValue) : vValue.Equals(sValue));
+                            ((IEquatable<TSource>)vValue).Equals(sValue));
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
                     return SpanHelpers.IndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span),
                         span.Length, ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
-                            sValue is IEquatable<TValue> equatable ? equatable.Equals(vValue) : sValue.Equals(vValue));
-                return SpanHelpers.IndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
-                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
-                        vValue.Equals(sValue));
+                            ((IEquatable<TValue>)sValue).Equals(vValue));
+                return SpanHelpers.IndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
+                    ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) => sValue.Equals(vValue));
             }
 
             return SpanHelpers.IndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
@@ -933,6 +952,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfNotEqualAll<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> values,
             Func<TSource, TValue, bool> equalityComparer = null)
         {
@@ -941,14 +961,14 @@ namespace DrNet
                 if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
                     return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span),
                         span.Length, ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) =>
-                            vValue is IEquatable<TSource> equatable ? equatable.Equals(sValue) : vValue.Equals(sValue));
+                            ((IEquatable<TSource>)vValue).Equals(sValue));
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
                     return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span),
                         span.Length, ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
-                            sValue is IEquatable<TValue> equatable ? equatable.Equals(vValue) : sValue.Equals(vValue));
-                return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span),
+                            ((IEquatable<TValue>)sValue).Equals(vValue));
+                return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span),
                     span.Length, ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
-                        vValue.Equals(sValue));
+                        sValue.Equals(vValue));
             }
 
             return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
@@ -964,6 +984,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfNotEqualAll<TSource, TValue>(this ReadOnlySpan<TSource> span,
             ReadOnlySpan<TValue> values, Func<TSource, TValue, bool> equalityComparer = null)
         {
@@ -972,14 +993,14 @@ namespace DrNet
                 if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
                     return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span),
                         span.Length, ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) =>
-                            vValue is IEquatable<TSource> equatable ? equatable.Equals(sValue) : vValue.Equals(sValue));
+                            ((IEquatable<TSource>)vValue).Equals(sValue));
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
                     return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span),
                         span.Length, ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
-                            sValue is IEquatable<TValue> equatable ? equatable.Equals(vValue) : sValue.Equals(vValue));
-                return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span),
+                            ((IEquatable<TValue>)sValue).Equals(vValue));
+                return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span),
                     span.Length, ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
-                        vValue.Equals(sValue));
+                        sValue.Equals(vValue));
             }
 
             return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span), span.Length,
@@ -995,22 +1016,23 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
-        public static int LastIndexOfNotEqualAllFrom<TSource, TValue>(this Span<TSource> span,
-            ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer = null)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int LastIndexOfNotEqualAllFrom<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> values,
+            Func<TValue, TSource, bool> equalityComparer = null)
         {
             if (equalityComparer == null)
             {
                 if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
                     return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span),
                         span.Length, ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) =>
-                            vValue is IEquatable<TSource> equatable ? equatable.Equals(sValue) : vValue.Equals(sValue));
+                            ((IEquatable<TSource>)vValue).Equals(sValue));
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
                     return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span),
                         span.Length, ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
-                            sValue is IEquatable<TValue> equatable ? equatable.Equals(vValue) : sValue.Equals(vValue));
-                return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span),
+                            ((IEquatable<TValue>)sValue).Equals(vValue));
+                return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span),
                     span.Length, ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
-                        vValue.Equals(sValue));
+                        sValue.Equals(vValue));
             }
 
             return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
@@ -1026,6 +1048,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfNotEqualAllFrom<TSource, TValue>(this ReadOnlySpan<TSource> span,
             ReadOnlySpan<TValue> values, Func<TValue, TSource, bool> equalityComparer = null)
         {
@@ -1034,14 +1057,14 @@ namespace DrNet
                 if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
                     return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span),
                         span.Length, ref MemoryMarshal.GetReference(values), values.Length, (vValue, sValue) =>
-                            vValue is IEquatable<TSource> equatable ? equatable.Equals(sValue) : vValue.Equals(sValue));
+                            ((IEquatable<TSource>)vValue).Equals(sValue));
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
                     return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span),
                         span.Length, ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
-                            sValue is IEquatable<TValue> equatable ? equatable.Equals(vValue) : sValue.Equals(vValue));
-                return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span),
+                            ((IEquatable<TValue>)sValue).Equals(vValue));
+                return SpanHelpers.LastIndexOfNotEqualAllSourceComparer(ref MemoryMarshal.GetReference(span),
                     span.Length, ref MemoryMarshal.GetReference(values), values.Length, (sValue, vValue) =>
-                        vValue.Equals(sValue));
+                        sValue.Equals(vValue));
             }
 
             return SpanHelpers.LastIndexOfNotEqualAllValueComparer(ref MemoryMarshal.GetReference(span), span.Length,
@@ -1054,95 +1077,59 @@ namespace DrNet
 
         /// <summary>
         /// Searches for the specified sequence and returns the index of its first occurrence. If not found, returns -1.
-        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
-        /// TValue.Equals(TSource).
-        /// </summary>
-        /// <param name="span">The span to search.</param>
-        /// <param name="value">The sequence to search for.</param>
-        public static int IndexOfSeq<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> value)
-        {
-            int spanLength = span.Length;
-            int valueLength = value.Length;
-            if (valueLength > spanLength)
-                return -1;
-            if (value.Length == 0)
-                return 0;
-
-            if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
-            {
-                //if (typeof(TOther) == typeof(T))
-                //{
-
-                //    ReadOnlySpan<T> tOther;
-                //    unsafe
-                //    {
-                //        tOther = new ReadOnlySpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(other)), length);
-                //    }
-                //    return MemoryExtensionsEquatablePatternMatching<T>.Instance.SequenceEqual(span, tOther);
-
-                //}
-                return SpanHelpers.IndexOfSeq(ref MemoryMarshal.GetReference(span), spanLength,
-                    ref MemoryMarshal.GetReference(value), valueLength, (sValue, vValue) => 
-                        sValue is IEquatable<TSource> sEquatable ? sEquatable.Equals(vValue) : sValue.Equals(vValue));
-            }
-            if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
-                return SpanHelpers.IndexOfSeqFrom(ref MemoryMarshal.GetReference(span), spanLength,
-                    ref MemoryMarshal.GetReference(value), valueLength, (vValue, sValue) => 
-                        vValue is IEquatable<TSource> vEquatable ? vEquatable.Equals(sValue) : vValue.Equals(sValue));
-            return SpanHelpers.IndexOfSeq(ref MemoryMarshal.GetReference(span), spanLength,
-                ref MemoryMarshal.GetReference(value), valueLength, (sValue, vValue) => sValue.Equals(vValue));
-        }
-
-        /// <summary>
-        /// Searches for the specified sequence and returns the index of its first occurrence. If not found, returns -1.
-        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
-        /// TValue.Equals(TSource).
-        /// </summary>
-        /// <param name="span">The span to search.</param>
-        /// <param name="value">The sequence to search for.</param>
-        public static int IndexOfSeq<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> value)
-        {
-            int spanLength = span.Length;
-            int valueLength = value.Length;
-            if (valueLength > spanLength)
-                return -1;
-            if (value.Length == 0)
-                return 0;
-
-            if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
-            {
-                //if (typeof(TOther) == typeof(T))
-                //{
-
-                //    ReadOnlySpan<T> tOther;
-                //    unsafe
-                //    {
-                //        tOther = new ReadOnlySpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(other)), length);
-                //    }
-                //    return MemoryExtensionsEquatablePatternMatching<T>.Instance.SequenceEqual(span, tOther);
-
-                //}
-                return SpanHelpers.IndexOfSeq(ref MemoryMarshal.GetReference(span), spanLength,
-                    ref MemoryMarshal.GetReference(value), valueLength, (sValue, vValue) => 
-                        sValue is IEquatable<TSource> sEquatable ? sEquatable.Equals(vValue) : sValue.Equals(vValue));
-            }
-            if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
-                return SpanHelpers.IndexOfSeqFrom(ref MemoryMarshal.GetReference(span), spanLength,
-                    ref MemoryMarshal.GetReference(value), valueLength, (vValue, sValue) => 
-                        vValue is IEquatable<TSource> vEquatable ? vEquatable.Equals(sValue) : vValue.Equals(sValue));
-            return SpanHelpers.IndexOfSeq(ref MemoryMarshal.GetReference(span), spanLength,
-                ref MemoryMarshal.GetReference(value), valueLength, (sValue, vValue) => sValue.Equals(vValue));
-        }
-
-        /// <summary>
-        /// Searches for the specified sequence and returns the index of its first occurrence. If not found, returns -1.
-        /// Elements are compared using the equality comparer.
+        /// Elements are compared using the specified equality comparer or use IEquatable{TSource}.Equals(TSource) or
+        /// IEquatable{TValue}.Equals(TValue) or TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfSeq<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> value, 
-            Func<TSource, TValue, bool> equalityComparer)
+            Func<TSource, TValue, bool> equalityComparer = null)
+        {
+            int valueLength = value.Length;
+            if (value.Length == 0)
+                return 0;
+            int spanLength = span.Length;
+            if (valueLength > spanLength)
+                return -1;
+
+            if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+            {
+                //if (typeof(TOther) == typeof(T))
+                //{
+
+                //    ReadOnlySpan<T> tOther;
+                //    unsafe
+                //    {
+                //        tOther = new ReadOnlySpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(other)), length);
+                //    }
+                //    return MemoryExtensionsEquatablePatternMatching<T>.Instance.SequenceEqual(span, tOther);
+
+                //}
+                return SpanHelpers.IndexOfSeq(ref MemoryMarshal.GetReference(span), spanLength,
+                    ref MemoryMarshal.GetReference(value), valueLength, (sValue, vValue) => 
+                        sValue is IEquatable<TSource> sEquatable ? sEquatable.Equals(vValue) : sValue.Equals(vValue));
+            }
+            if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+                return SpanHelpers.IndexOfSeqFrom(ref MemoryMarshal.GetReference(span), spanLength,
+                    ref MemoryMarshal.GetReference(value), valueLength, (vValue, sValue) => 
+                        vValue is IEquatable<TSource> vEquatable ? vEquatable.Equals(sValue) : vValue.Equals(sValue));
+            return SpanHelpers.IndexOfSeq(ref MemoryMarshal.GetReference(span), spanLength,
+                ref MemoryMarshal.GetReference(value), valueLength, (sValue, vValue) => sValue.Equals(vValue));
+        }
+
+        /// <summary>
+        /// Searches for the specified sequence and returns the index of its first occurrence. If not found, returns -1.
+        /// Elements are compared using the specified equality comparer or use IEquatable{TSource}.Equals(TSource) or
+        /// IEquatable{TValue}.Equals(TValue) or TValue.Equals(TSource).
+        /// </summary>
+        /// <param name="span">The span to search.</param>
+        /// <param name="value">The sequence to search for.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int IndexOfSeq<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> value,
+            Func<TSource, TValue, bool> equalityComparer = null)
         {
             int spanLength = span.Length;
             int valueLength = value.Length;
@@ -1151,40 +1138,42 @@ namespace DrNet
             if (value.Length == 0)
                 return 0;
 
+            if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+            {
+                //if (typeof(TOther) == typeof(T))
+                //{
+
+                //    ReadOnlySpan<T> tOther;
+                //    unsafe
+                //    {
+                //        tOther = new ReadOnlySpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(other)), length);
+                //    }
+                //    return MemoryExtensionsEquatablePatternMatching<T>.Instance.SequenceEqual(span, tOther);
+
+                //}
+                return SpanHelpers.IndexOfSeq(ref MemoryMarshal.GetReference(span), spanLength,
+                    ref MemoryMarshal.GetReference(value), valueLength, (sValue, vValue) => 
+                        sValue is IEquatable<TSource> sEquatable ? sEquatable.Equals(vValue) : sValue.Equals(vValue));
+            }
+            if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
+                return SpanHelpers.IndexOfSeqFrom(ref MemoryMarshal.GetReference(span), spanLength,
+                    ref MemoryMarshal.GetReference(value), valueLength, (vValue, sValue) => 
+                        vValue is IEquatable<TSource> vEquatable ? vEquatable.Equals(sValue) : vValue.Equals(sValue));
             return SpanHelpers.IndexOfSeq(ref MemoryMarshal.GetReference(span), spanLength,
-                ref MemoryMarshal.GetReference(value), valueLength, equalityComparer);
+                ref MemoryMarshal.GetReference(value), valueLength, (sValue, vValue) => sValue.Equals(vValue));
         }
 
         /// <summary>
         /// Searches for the specified sequence and returns the index of its first occurrence. If not found, returns -1.
-        /// Elements are compared using the equality comparer.
+        /// Elements are compared using the specified equality comparer or use IEquatable{TSource}.Equals(TSource) or
+        /// IEquatable{TValue}.Equals(TValue) or TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
-        public static int IndexOfSeq<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> value, 
-            Func<TSource, TValue, bool> equalityComparer)
-        {
-            int spanLength = span.Length;
-            int valueLength = value.Length;
-            if (valueLength > spanLength)
-                return -1;
-            if (value.Length == 0)
-                return 0;
-
-            return SpanHelpers.IndexOfSeq(ref MemoryMarshal.GetReference(span), spanLength,
-                ref MemoryMarshal.GetReference(value), valueLength, equalityComparer);
-        }
-
-        /// <summary>
-        /// Searches for the specified sequence and returns the index of its first occurrence. If not found, returns -1.
-        /// Elements are compared using the equality comparer.
-        /// </summary>
-        /// <param name="span">The span to search.</param>
-        /// <param name="value">The sequence to search for.</param>
-        /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfSeqFrom<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> value, 
-            Func<TValue, TSource, bool> equalityComparer)
+            Func<TValue, TSource, bool> equalityComparer = null)
         {
             int spanLength = span.Length;
             int valueLength = value.Length;
@@ -1199,13 +1188,15 @@ namespace DrNet
 
         /// <summary>
         /// Searches for the specified sequence and returns the index of its first occurrence. If not found, returns -1.
-        /// Elements are compared using the equality comparer.
+        /// Elements are compared using the specified equality comparer or use IEquatable{TSource}.Equals(TSource) or
+        /// IEquatable{TValue}.Equals(TValue) or TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfSeqFrom<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> value, 
-            Func<TValue, TSource, bool> equalityComparer)
+            Func<TValue, TSource, bool> equalityComparer = null)
         {
             int spanLength = span.Length;
             int valueLength = value.Length;
@@ -1229,6 +1220,7 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search for.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfSeq<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> value)
         {
             int spanLength = span.Length;
@@ -1270,6 +1262,7 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search for.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfSeq<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> value)
         {
             int spanLength = span.Length;
@@ -1311,6 +1304,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfSeq<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> value, 
             Func<TSource, TValue, bool> equalityComparer)
         {
@@ -1332,6 +1326,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfSeq<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> value, 
             Func<TSource, TValue, bool> equalityComparer)
         {
@@ -1353,6 +1348,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfSeqFrom<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> value, 
             Func<TValue, TSource, bool> equalityComparer)
         {
@@ -1374,6 +1370,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search for.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfSeqFrom<TSource, TValue>(this ReadOnlySpan<TSource> span, 
             ReadOnlySpan<TValue> value, Func<TValue, TSource, bool> equalityComparer)
         {
@@ -1390,7 +1387,7 @@ namespace DrNet
 
         #endregion
 
-        #region EqualToSeq
+        #region EqualsToSeq
 
         /// <summary>
         /// Determines whether two sequences are equal.
@@ -1399,7 +1396,8 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to compare.</param>
         /// <param name="other">The sequence to compare with.</param>
-        public static bool EqualToSeq<TSource, TOther>(this Span<TSource> span, ReadOnlySpan<TOther> other)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool EqualsToSeq<TSource, TOther>(this Span<TSource> span, ReadOnlySpan<TOther> other)
         {
             int length = span.Length;
             if (length != other.Length)
@@ -1436,7 +1434,8 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to compare.</param>
         /// <param name="other">The sequence to compare with.</param>
-        public static bool EqualToSeq<TSource, TOther>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TOther> other)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool EqualsToSeq<TSource, TOther>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TOther> other)
         {
             int length = span.Length;
             if (length != other.Length)
@@ -1472,7 +1471,8 @@ namespace DrNet
         /// <param name="span">The span to compare.</param>
         /// <param name="other">The second span to compare.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
-        public static bool EqualToSeq<TSource, TOther>(this Span<TSource> span, ReadOnlySpan<TOther> other,
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool EqualsToSeq<TSource, TOther>(this Span<TSource> span, ReadOnlySpan<TOther> other,
             Func<TSource, TOther, bool> equalityComparer)
         {
             int length = span.Length;
@@ -1486,7 +1486,8 @@ namespace DrNet
         /// <param name="span">The span to compare.</param>
         /// <param name="other">The sequence to compare with.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
-        public static bool EqualToSeq<TSource, TOther>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TOther> other,
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool EqualsToSeq<TSource, TOther>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TOther> other,
             Func<TSource, TOther, bool> equalityComparer)
         {
             int length = span.Length;
@@ -1500,7 +1501,8 @@ namespace DrNet
         /// <param name="span">The span to compare.</param>
         /// <param name="other">The sequence to compare with.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
-        public static bool EqualFromSeq<TSource, TOther>(this Span<TSource> span, ReadOnlySpan<TOther> other,
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool EqualsFromSeq<TSource, TOther>(this Span<TSource> span, ReadOnlySpan<TOther> other,
             Func<TOther, TSource, bool> equalityComparer)
         {
             int length = span.Length;
@@ -1514,7 +1516,8 @@ namespace DrNet
         /// <param name="span">The span to compare.</param>
         /// <param name="other">The sequence to compare with.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
-        public static bool EqualFromSeq<TSource, TOther>(this ReadOnlySpan<TSource> span, 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool EqualsFromSeq<TSource, TOther>(this ReadOnlySpan<TSource> span, 
             ReadOnlySpan<TOther> other, Func<TOther, TSource, bool> equalityComparer)
         {
             int length = span.Length;
@@ -1533,10 +1536,11 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search at the start of the span.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool StartsWithSeq<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> value)
         {
             int valueLength = value.Length;
-            return valueLength <= span.Length && EqualToSeq(span.Slice(0, valueLength), value);
+            return valueLength <= span.Length && EqualsToSeq(span.Slice(0, valueLength), value);
         }
 
         /// <summary>
@@ -1546,10 +1550,11 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search at the start of the span.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool StartsWithSeq<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> value)
         {
             int valueLength = value.Length;
-            return valueLength <= span.Length && EqualToSeq(span.Slice(0, valueLength), value);
+            return valueLength <= span.Length && EqualsToSeq(span.Slice(0, valueLength), value);
         }
 
         /// <summary>
@@ -1559,6 +1564,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search at the start of the span.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool StartsWithSeqSourceComparer<TSource, TValue>(this Span<TSource> span, 
             ReadOnlySpan<TValue> value, Func<TSource, TValue, bool> equalityComparer)
         {
@@ -1574,6 +1580,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search at the start of the span.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool StartsWithSeqSourceComparer<TSource, TValue>(this ReadOnlySpan<TSource> span,
             ReadOnlySpan<TValue> value, Func<TSource, TValue, bool> equalityComparer)
         {
@@ -1589,6 +1596,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search at the start of the span.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool StartsWithSeqValueComparer<TSource, TValue>(this Span<TSource> span,
             ReadOnlySpan<TValue> value, Func<TValue, TSource, bool> equalityComparer)
         {
@@ -1604,6 +1612,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search at the start of the span.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool StartsWithSeqValueComparer<TSource, TValue>(this ReadOnlySpan<TSource> span,
             ReadOnlySpan<TValue> value, Func<TValue, TSource, bool> equalityComparer)
         {
@@ -1623,11 +1632,12 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search at the end of the span.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EndsWithSeq<TSource, TValue>(this Span<TSource> span, ReadOnlySpan<TValue> value)
         {
             int valueLength = value.Length;
             int spanStart = span.Length - valueLength;
-            return spanStart >=0 && EqualToSeq(span.Slice(spanStart, valueLength), value);
+            return spanStart >=0 && EqualsToSeq(span.Slice(spanStart, valueLength), value);
         }
 
         /// <summary>
@@ -1637,11 +1647,12 @@ namespace DrNet
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search at the end of the span.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EndsWithSeq<TSource, TValue>(this ReadOnlySpan<TSource> span, ReadOnlySpan<TValue> value)
         {
             int valueLength = value.Length;
             int spanStart = span.Length - valueLength;
-            return spanStart >=0 && EqualToSeq(span.Slice(spanStart, valueLength), value);
+            return spanStart >=0 && EqualsToSeq(span.Slice(spanStart, valueLength), value);
         }
 
         /// <summary>
@@ -1651,6 +1662,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search at the end of the span.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EndsWithSeqSourceComparer<TSource, TValue>(this Span<TSource> span, 
             ReadOnlySpan<TValue> value, Func<TSource, TValue, bool> equalityComparer)
         {
@@ -1668,6 +1680,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search at the end of the span.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EndsWithSeqSourceComparer<TSource, TValue>(this ReadOnlySpan<TSource> span,
             ReadOnlySpan<TValue> value, Func<TSource, TValue, bool> equalityComparer)
         {
@@ -1685,6 +1698,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search at the end of the span.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EndsWithSeqValueComparer<TSource, TValue>(this Span<TSource> span,
             ReadOnlySpan<TValue> value, Func<TValue, TSource, bool> equalityComparer)
         {
@@ -1701,6 +1715,7 @@ namespace DrNet
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search at the end of the span.</param>
         /// <param name="equalityComparer">The function to test each element for a equality.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EndsWithSeqValueComparer<TSource, TValue>(this ReadOnlySpan<TSource> span,
             ReadOnlySpan<TValue> value, Func<TValue, TSource, bool> equalityComparer)
         {
