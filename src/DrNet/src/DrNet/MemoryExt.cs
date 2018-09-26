@@ -488,6 +488,10 @@ namespace DrNet
             {
                 if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte))
                 {
+                    // Work around https://github.com/dotnet/corefx/issues/32334 issue
+                    if (values.Length == 0)
+                        return -1;
+
                     ReadOnlySpan<TSource> tValues;
                     unsafe
                     {
@@ -530,6 +534,10 @@ namespace DrNet
             {
                 if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte))
                 {
+                    // Work around https://github.com/dotnet/corefx/issues/32334 issue
+                    if (values.Length == 0)
+                        return -1;
+
                     ReadOnlySpan<TSource> tValues;
                     unsafe
                     {
@@ -572,6 +580,10 @@ namespace DrNet
             {
                 if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte))
                 {
+                    // Work around https://github.com/dotnet/corefx/issues/32334 issue
+                    if (values.Length == 0)
+                        return -1;
+
                     ReadOnlySpan<TSource> tValues;
                     unsafe
                     {
@@ -614,6 +626,10 @@ namespace DrNet
             {
                 if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte))
                 {
+                    // Work around https://github.com/dotnet/corefx/issues/32334 issue
+                    if (values.Length == 0)
+                        return -1;
+
                     ReadOnlySpan<TSource> tValues;
                     unsafe
                     {
@@ -660,6 +676,10 @@ namespace DrNet
             {
                 if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte))
                 {
+                    // Work around https://github.com/dotnet/corefx/issues/32334 issue
+                    if (values.Length == 0)
+                        return -1;
+
                     ReadOnlySpan<TSource> tValues;
                     unsafe
                     {
@@ -702,6 +722,10 @@ namespace DrNet
             {
                 if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte))
                 {
+                    // Work around https://github.com/dotnet/corefx/issues/32334 issue
+                    if (values.Length == 0)
+                        return -1;
+
                     ReadOnlySpan<TSource> tValues;
                     unsafe
                     {
@@ -744,6 +768,10 @@ namespace DrNet
             {
                 if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte))
                 {
+                    // Work around https://github.com/dotnet/corefx/issues/32334 issue
+                    if (values.Length == 0)
+                        return -1;
+
                     ReadOnlySpan<TSource> tValues;
                     unsafe
                     {
@@ -786,6 +814,10 @@ namespace DrNet
             {
                 if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte))
                 {
+                    // Work around https://github.com/dotnet/corefx/issues/32334 issue
+                    if (values.Length == 0)
+                        return -1;
+
                     ReadOnlySpan<TSource> tValues;
                     unsafe
                     {
