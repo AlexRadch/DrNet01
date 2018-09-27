@@ -48,25 +48,38 @@ namespace DrNet.Tests.Span
         [Fact]
         public void ZeroLength()
         {
-            var rnd = new Random(41);
-            T target = NewT(rnd.Next());
+            var rnd = new Random(40);
+            TValue NextTValue() => NewTValue(NewT(rnd.Next(1, int.MaxValue)));
 
             Span<TSource> span = new Span<TSource>(Array.Empty<TSource>());
-
-            int idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target));
-            Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target), EqualityCompare);
-            Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqualFrom(span, NewTValue(target), EqualityCompareFrom);
-            Assert.Equal(-1, idx);
-
             ReadOnlySpan<TSource> rspan = new Span<TSource>(Array.Empty<TSource>());
 
-            idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target));
+            int idx = MemoryExt.LastIndexOfEqual(span, default(TValue));
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target), EqualityCompare);
+            idx = MemoryExt.LastIndexOfEqual(span, default(TValue), EqualityCompare);
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqualFrom(rspan, NewTValue(target), EqualityCompareFrom);
+            idx = MemoryExt.LastIndexOfEqualFrom(span, default(TValue), EqualityCompareFrom);
+            Assert.Equal(-1, idx);
+
+            idx = MemoryExt.LastIndexOfEqual(rspan, default(TValue));
+            Assert.Equal(-1, idx);
+            idx = MemoryExt.LastIndexOfEqual(rspan, default(TValue), EqualityCompare);
+            Assert.Equal(-1, idx);
+            idx = MemoryExt.LastIndexOfEqualFrom(rspan, default(TValue), EqualityCompareFrom);
+            Assert.Equal(-1, idx);
+
+            idx = MemoryExt.LastIndexOfEqual(span, NextTValue());
+            Assert.Equal(-1, idx);
+            idx = MemoryExt.LastIndexOfEqual(span, NextTValue(), EqualityCompare);
+            Assert.Equal(-1, idx);
+            idx = MemoryExt.LastIndexOfEqualFrom(span, NextTValue(), EqualityCompareFrom);
+            Assert.Equal(-1, idx);
+
+            idx = MemoryExt.LastIndexOfEqual(rspan, NextTValue());
+            Assert.Equal(-1, idx);
+            idx = MemoryExt.LastIndexOfEqual(rspan, NextTValue(), EqualityCompare);
+            Assert.Equal(-1, idx);
+            idx = MemoryExt.LastIndexOfEqualFrom(rspan, NextTValue(), EqualityCompareFrom);
             Assert.Equal(-1, idx);
         }
 
@@ -88,6 +101,9 @@ namespace DrNet.Tests.Span
                 return;
             }
 
+            var rnd = new Random(41);
+            TValue NextTValue() => NewTValue(NewT(rnd.Next(1, int.MaxValue)));
+
             TSource[] s = new TSource[length];
             Span<TSource> span = new Span<TSource>(s);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
@@ -99,13 +115,6 @@ namespace DrNet.Tests.Span
             idx = MemoryExt.LastIndexOfEqualFrom(span, default(TValue), EqualityCompareFrom);
             Assert.Equal(length - 1, idx);
 
-            idx = MemoryExt.LastIndexOfEqual(span, NewTValue(NewT(1)));
-            Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqual(span, NewTValue(NewT(1)), EqualityCompare);
-            Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqualFrom(span, NewTValue(NewT(1)), EqualityCompareFrom);
-            Assert.Equal(-1, idx);
-
             idx = MemoryExt.LastIndexOfEqual(rspan, default(TValue));
             Assert.Equal(length - 1, idx);
             idx = MemoryExt.LastIndexOfEqual(rspan, default(TValue), EqualityCompare);
@@ -113,11 +122,18 @@ namespace DrNet.Tests.Span
             idx = MemoryExt.LastIndexOfEqualFrom(rspan, default(TValue), EqualityCompareFrom);
             Assert.Equal(length - 1, idx);
 
-            idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(NewT(1)));
+            idx = MemoryExt.LastIndexOfEqual(span, NextTValue());
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(NewT(1)), EqualityCompare);
+            idx = MemoryExt.LastIndexOfEqual(span, NextTValue(), EqualityCompare);
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqualFrom(rspan, NewTValue(NewT(1)), EqualityCompareFrom);
+            idx = MemoryExt.LastIndexOfEqualFrom(span, NextTValue(), EqualityCompareFrom);
+            Assert.Equal(-1, idx);
+
+            idx = MemoryExt.LastIndexOfEqual(rspan, NextTValue());
+            Assert.Equal(-1, idx);
+            idx = MemoryExt.LastIndexOfEqual(rspan, NextTValue(), EqualityCompare);
+            Assert.Equal(-1, idx);
+            idx = MemoryExt.LastIndexOfEqualFrom(rspan, NextTValue(), EqualityCompareFrom);
             Assert.Equal(-1, idx);
         }
 
