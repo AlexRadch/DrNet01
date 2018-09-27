@@ -90,6 +90,7 @@ namespace DrNet.Tests.Span
 
             TSource[] s = new TSource[length];
             Span<TSource> span = new Span<TSource>(s);
+            ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
 
             int idx = MemoryExt.IndexOfEqual(span, default(TValue));
             Assert.Equal(0, idx);
@@ -104,8 +105,6 @@ namespace DrNet.Tests.Span
             Assert.Equal(-1, idx);
             idx = MemoryExt.IndexOfEqualFrom(span, NewTValue(NewT(1)), EqualityCompareFrom);
             Assert.Equal(-1, idx);
-
-            ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
 
             idx = MemoryExt.IndexOfEqual(rspan, default(TValue));
             Assert.Equal(0, idx);
