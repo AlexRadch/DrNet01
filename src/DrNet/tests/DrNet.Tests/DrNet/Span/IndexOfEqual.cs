@@ -51,8 +51,10 @@ namespace DrNet.Tests.Span
             var rnd = new Random(40);
             TValue NextTValue() => NewTValue(NewT(rnd.Next(1, int.MaxValue)));
 
-            Span < TSource > span = new Span<TSource>(Array.Empty<TSource>());
-            ReadOnlySpan<TSource> rspan = new Span<TSource>(Array.Empty<TSource>());
+            Span<TSource> span = new TSource[] { NewTSource(NewT(rnd.Next())), NewTSource(NewT(rnd.Next())),
+                NewTSource(NewT(rnd.Next())) }.AsSpan(1, 0);
+            ReadOnlySpan<TSource> rspan = new TSource[] { NewTSource(NewT(rnd.Next())), NewTSource(NewT(rnd.Next())),
+                NewTSource(NewT(rnd.Next())) }.AsReadOnlySpan(2, 0);
 
             int idx = MemoryExt.IndexOfEqual(span, default(TValue));
             Assert.Equal(-1, idx);

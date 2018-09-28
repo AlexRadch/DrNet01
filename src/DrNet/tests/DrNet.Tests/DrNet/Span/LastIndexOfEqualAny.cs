@@ -51,10 +51,13 @@ namespace DrNet.Tests.Span
             var rnd = new Random(40);
             TValue NextTValue() => NewTValue(NewT(rnd.Next(1, int.MaxValue)));
 
-            Span<TSource> span = new Span<TSource>(Array.Empty<TSource>());
-            ReadOnlySpan<TSource> rspan = new Span<TSource>(Array.Empty<TSource>());
+            Span<TSource> span = new TSource[] { NewTSource(NewT(rnd.Next())), NewTSource(NewT(rnd.Next())),
+                NewTSource(NewT(rnd.Next())) }.AsSpan(1, 0);
+            ReadOnlySpan<TSource> rspan = new TSource[] { NewTSource(NewT(rnd.Next())), NewTSource(NewT(rnd.Next())),
+                NewTSource(NewT(rnd.Next())) }.AsReadOnlySpan(2, 0);
 
-            ReadOnlySpan<TValue> values = default;
+            ReadOnlySpan<TValue> values = new TValue[] { NewTValue(NewT(rnd.Next())), NewTValue(NewT(rnd.Next())),
+                NewTValue(NewT(rnd.Next())) }.AsReadOnlySpan(3, 0);
             int idx = MemoryExt.LastIndexOfEqualAny(span, values);
             Assert.Equal(-1, idx);
             idx = MemoryExt.LastIndexOfEqualAny(span, values, EqualityCompare);
@@ -125,7 +128,8 @@ namespace DrNet.Tests.Span
             Span<TSource> span = new Span<TSource>(s);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
 
-            ReadOnlySpan<TValue> values = default;
+            ReadOnlySpan<TValue> values = new TValue[] { NewTValue(NewT(rnd.Next())), NewTValue(NewT(rnd.Next())),
+                NewTValue(NewT(rnd.Next())) }.AsReadOnlySpan(3, 0);
             int idx = MemoryExt.LastIndexOfEqualAny(span, values);
             Assert.Equal(-1, idx);
             idx = MemoryExt.LastIndexOfEqualAny(span, values, EqualityCompare);
@@ -317,8 +321,8 @@ namespace DrNet.Tests.Span
             idx = MemoryExt.LastIndexOfEqualAnyFrom(rspan, values, EqualityCompareFrom);
             Assert.Equal(-1, idx);
 
-            values = default;
-
+            values = new TValue[] { NewTValue(NewT(rnd.Next())), NewTValue(NewT(rnd.Next())),
+                NewTValue(NewT(rnd.Next())) }.AsReadOnlySpan(3, 0);
             idx = MemoryExt.LastIndexOfEqualAny(span, values);
             Assert.Equal(-1, idx);
             idx = MemoryExt.LastIndexOfEqualAny(span, values, EqualityCompare);
