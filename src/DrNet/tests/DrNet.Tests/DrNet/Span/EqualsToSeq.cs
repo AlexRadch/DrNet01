@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+
 using Xunit;
 
 namespace DrNet.Tests.Span
@@ -17,6 +18,13 @@ namespace DrNet.Tests.Span
         private bool EqualityCompareT(T v1, T v2)
         {
             if (v1 is IEquatable<T> equatable)
+                return equatable.Equals(v2);
+            return v1.Equals(v2);
+        }
+
+        private bool EqualityCompareS(TSource v1, TSource v2)
+        {
+            if (v1 is IEquatable<TSource> equatable)
                 return equatable.Equals(v2);
             return v1.Equals(v2);
         }
@@ -68,18 +76,399 @@ namespace DrNet.Tests.Span
             Assert.True(c);
         }
 
-        //[Theory]
-        //[InlineData(0)]
-        //[InlineData(1)]
-        //[InlineData(10)]
-        //[InlineData(100)]
-        //public void SameSpan(int length)
-        //{
-        //    TSource[] a = { NewTSource(4), NewTSource(5), NewTSource(6) };
-        //    Span<TSource> span = new Span<TSource>(a);
-        //    bool b = MemoryExt.EqualsToSeq<TSource, TSource>(span, span);
-        //    Assert.True(b);
-        //}
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(10)]
+        [InlineData(100)]
+        public void SameSpan(int length)
+        {
+            var rnd = new Random(41 * (length + 1));
+
+            TSource[] s = new TSource[length];
+            for (int i = 0; i < length; i++)
+            {
+                s[i] = NewTSource(NewT(rnd.Next()));
+            }
+            Span<TSource> span = new Span<TSource>(s);
+            ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
+            ReadOnlySpan<TSource> values = new ReadOnlySpan<TSource>(s);
+
+            bool b = MemoryExt.EqualsToSeq(span, values);
+            Assert.True(b);
+            //b = MemoryExt.EqualsToSeq(span, values, EqualityCompareS);
+            //Assert.True(b);
+
+            b = MemoryExt.EqualsToSeq(rspan, values);
+            Assert.True(b);
+            //b = MemoryExt.EqualsToSeq(rspan, values, EqualityCompareS);
+            //Assert.True(b);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(10)]
+        [InlineData(100)]
+        public void ArrayImplicit(int length)
+        {
+            var rnd = new Random(42 * (length + 1));
+
+            TSource[] s = new TSource[length];
+            TValue[] v = new TValue[length];
+            for (int i = 0; i < length; i++)
+            {
+                T item = NewT(rnd.Next());
+                s[i] = NewTSource(item);
+                v[i] = NewTValue(item);
+            }
+
+            Span<TSource> span = new Span<TSource>(s, 0, length);
+            ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s, 0, length);
+
+            bool b = MemoryExt.EqualsToSeq<TSource, TValue>(span, v);
+            Assert.True(b);
+            b = MemoryExt.EqualsToSeq<TSource, TValue>(span, v, EqualityCompare);
+            Assert.True(b);
+
+            b = MemoryExt.EqualsToSeq<TSource, TValue>(rspan, v);
+            Assert.True(b);
+            b = MemoryExt.EqualsToSeq<TSource, TValue>(rspan, v, EqualityCompare);
+            Assert.True(b);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(10)]
+        [InlineData(100)]
+        public void ArraySegmentImplicit(int length)
+        {
+            var rnd = new Random(43 * (length + 1));
+
+            TSource[] s = new TSource[length];
+            TValue[] v = new TValue[length + 1];
+            v[0] = NewTValue(NewT(rnd.Next()));
+            for (int i = 0; i < length; i++)
+            {
+                T item = NewT(rnd.Next());
+                s[i] = NewTSource(item);
+                v[i + 1] = NewTValue(item);
+            }
+
+            Span<TSource> span = new Span<TSource>(s, 0, length);
+            ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s, 0, length);
+            var segment = new ArraySegment<TValue>(v, 1, length);
+
+            bool b = MemoryExt.EqualsToSeq<TSource, TValue>(span, segment);
+            Assert.True(b);
+            b = MemoryExt.EqualsToSeq<TSource, TValue>(span, segment, EqualityCompare);
+            Assert.True(b);
+
+            b = MemoryExt.EqualsToSeq<TSource, TValue>(rspan, segment);
+            Assert.True(b);
+            b = MemoryExt.EqualsToSeq<TSource, TValue>(rspan, segment, EqualityCompare);
+            Assert.True(b);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(10)]
+        [InlineData(100)]
+        public void LengthMismatch(int length)
+        {
+            var rnd = new Random(44 * (length + 1));
+
+            TSource[] s = new TSource[length + 1];
+            TValue[] v = new TValue[length + 1];
+            for (int i = 0; i < length + 1; i++)
+            {
+                T item = NewT(rnd.Next());
+                s[i] = NewTSource(item);
+                v[i] = NewTValue(item);
+            }
+
+            Span<TSource> span = new Span<TSource>(s, 0, length);
+            ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s, 0, length);
+            ReadOnlySpan<TValue> values = new ReadOnlySpan<TValue>(v, 0, length + 1);
+
+            bool c = MemoryExt.EqualsToSeq(span, values);
+            Assert.False(c);
+            c = MemoryExt.EqualsToSeq(span, values, EqualityCompare);
+            Assert.False(c);
+
+            c = MemoryExt.EqualsToSeq(rspan, values);
+            Assert.False(c);
+            c = MemoryExt.EqualsToSeq(rspan, values, EqualityCompare);
+            Assert.False(c);
+
+            span = new Span<TSource>(s, 0, length + 1);
+            rspan = new ReadOnlySpan<TSource>(s, 0, length + 1);
+            values = new ReadOnlySpan<TValue>(v, 0, length);
+
+            c = MemoryExt.EqualsToSeq(span, values);
+            Assert.False(c);
+            c = MemoryExt.EqualsToSeq(span, values, EqualityCompare);
+            Assert.False(c);
+
+            c = MemoryExt.EqualsToSeq(rspan, values);
+            Assert.False(c);
+            c = MemoryExt.EqualsToSeq(rspan, values, EqualityCompare);
+            Assert.False(c);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(10)]
+        [InlineData(100)]
+        public void OnEqualSpansMakeSureEveryElementIsCompared(int length)
+        {
+            var rnd = new Random(45 * (length + 1));
+            TLog<T> log = new TLog<T>();
+
+            T[] t = new T[length];
+            TSource[] s = new TSource[length];
+            TValue[] v = new TValue[length];
+            for (int i = 0; i < length; i++)
+            {
+                t[i] = NewT(rnd.Next());
+                s[i] = NewTSource(t[i], log.Add);
+                v[i] = NewTValue(t[i], log.Add);
+            }
+
+            // Make sure each element of the array was compared once. (Strictly speaking, it would not be illegal for 
+            // EqualToSeq to compare an element more than once but that would be a non-optimal implementation and 
+            // a red flag. So we'll stick with the stricter test.)
+            void CheckCompares()
+            {
+                Assert.Equal(length, log.Count);
+                foreach (T item in t)
+                {
+                    int itemCount = t.Where(x => EqualityCompareT(item, x) || EqualityCompareT(x, item)).Count();
+                    int numCompares = log.CountCompares(item, item);
+                    Assert.True(itemCount == 1, $"Expected {itemCount} == {numCompares} for element {item}.");
+                }
+            }
+
+            Span<TSource> span = new Span<TSource>(s);
+            ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
+            ReadOnlySpan<TValue> values = new ReadOnlySpan<TValue>(v);
+
+            {
+                EqualityCompare(NewTSource(NewT(1), log.Add), NewTValue(NewT(1), log.Add));
+                EqualityCompareFrom(NewTValue(NewT(1), log.Add), NewTSource(NewT(1), log.Add));
+            }
+            bool logSupported = log.Count == 2;
+            if (!logSupported)
+            {
+                bool sourceWithLog = typeof(TSource) == typeof(TObject<T>) && typeof(TSource) == typeof(TEquatable<T>);
+                bool valueWithLog = typeof(TValue) == typeof(TObject<T>) && typeof(TValue) == typeof(TEquatable<T>);
+                Assert.False(sourceWithLog && valueWithLog);
+            }
+
+            log.Clear();
+            bool b = MemoryExt.EqualsToSeq(span, values);
+            Assert.True(b);
+            if (logSupported)
+                CheckCompares();
+
+            log.Clear();
+            b = MemoryExt.EqualsToSeq(rspan, values);
+            Assert.True(b);
+            if (logSupported)
+                CheckCompares();
+
+            if (!logSupported)
+                onCompare = log.Add;
+
+            log.Clear();
+            b = MemoryExt.EqualsToSeq(span, values, EqualityCompare);
+            Assert.True(b);
+            if (logSupported)
+                CheckCompares();
+
+            log.Clear();
+            b = MemoryExt.EqualsToSeq(rspan, values, EqualityCompare);
+            Assert.True(b);
+            if (logSupported)
+                CheckCompares();
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(10)]
+        [InlineData(100)]
+        public void TestNoMatch(int length)
+        {
+            var rnd = new Random(46 * (length + 1));
+            T target = NewT(rnd.Next());
+            TLog<T> log = new TLog<T>();
+
+            TSource[] s = new TSource[length];
+            TValue[] v = new TValue[length];
+            for (int i = 0; i < length; i++)
+            {
+                T item;
+                do
+                {
+                    item = NewT(rnd.Next());
+                } while (EqualityCompareT(item, target) || EqualityCompareT(target, item));
+
+                s[i] = NewTSource(item, log.Add);
+                v[i] = NewTValue(item, log.Add);
+            }
+
+            Span<TSource> span = new Span<TSource>(s);
+            ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
+            ReadOnlySpan<TValue> values = new ReadOnlySpan<TValue>(v);
+
+            {
+                EqualityCompare(NewTSource(NewT(1), log.Add), NewTValue(NewT(1), log.Add));
+                EqualityCompareFrom(NewTValue(NewT(1), log.Add), NewTSource(NewT(1), log.Add));
+            }
+            bool logSupported = log.Count == 2;
+            if (!logSupported)
+            {
+                bool sourceWithLog = typeof(TSource) == typeof(TObject<T>) && typeof(TSource) == typeof(TEquatable<T>);
+                bool valueWithLog = typeof(TValue) == typeof(TObject<T>) && typeof(TValue) == typeof(TEquatable<T>);
+                Assert.False(sourceWithLog && valueWithLog);
+            }
+
+            for (int targetIndex = 0; targetIndex < length; targetIndex++)
+            {
+                TSource tempS = s[targetIndex];
+                s[targetIndex] = NewTSource(target, log.Add);
+
+                log.Clear();
+                bool b = MemoryExt.EqualsToSeq(span, values);
+                Assert.False(b);
+                if (logSupported)
+                    Assert.Equal(targetIndex + 1, log.Count);
+
+                log.Clear();
+                b = MemoryExt.EqualsToSeq(rspan, values);
+                Assert.False(b);
+                if (logSupported)
+                    Assert.Equal(targetIndex + 1, log.Count);
+
+                s[targetIndex] = tempS;
+                TValue tempV = v[targetIndex];
+                v[targetIndex] = NewTValue(target, log.Add);
+
+                log.Clear();
+                b = MemoryExt.EqualsToSeq(span, values);
+                Assert.False(b);
+                if (logSupported)
+                    Assert.Equal(targetIndex + 1, log.Count);
+
+                log.Clear();
+                b = MemoryExt.EqualsToSeq(rspan, values);
+                Assert.False(b);
+                if (logSupported)
+                    Assert.Equal(targetIndex + 1, log.Count);
+
+                v[targetIndex] = tempV;
+            }
+
+            if (!logSupported)
+                onCompare = log.Add;
+
+            for (int targetIndex = 0; targetIndex < length; targetIndex++)
+            {
+                TSource tempS = s[targetIndex];
+                s[targetIndex] = NewTSource(target, log.Add);
+
+                log.Clear();
+                bool b = MemoryExt.EqualsToSeq(span, values, EqualityCompare);
+                Assert.False(b);
+                Assert.Equal(targetIndex + 1, log.Count);
+
+                log.Clear();
+                b = MemoryExt.EqualsToSeq(rspan, values, EqualityCompare);
+                Assert.False(b);
+                Assert.Equal(targetIndex + 1, log.Count);
+
+                s[targetIndex] = tempS;
+                TValue tempV = v[targetIndex];
+                v[targetIndex] = NewTValue(target, log.Add);
+
+                log.Clear();
+                b = MemoryExt.EqualsToSeq(span, values, EqualityCompare);
+                Assert.False(b);
+                Assert.Equal(targetIndex + 1, log.Count);
+
+                log.Clear();
+                b = MemoryExt.EqualsToSeq(rspan, values, EqualityCompare);
+                Assert.False(b);
+                Assert.Equal(targetIndex + 1, log.Count);
+
+                v[targetIndex] = tempV;
+            }
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(10)]
+        [InlineData(100)]
+        public void MakeSureNoChecksGoOutOfRange(int length)
+        {
+            var rnd = new Random(47 * (length + 1));
+            T target = NewT(rnd.Next());
+            const int guardLength = 50;
+
+            T guard;
+            do
+            {
+                guard = NewT(rnd.Next());
+            } while (EqualityCompareT(guard, target) || EqualityCompareT(target, guard));
+
+            void checkForOutOfRangeAccess(T x, T y)
+            {
+                if (EqualityCompareT(x, guard) || EqualityCompareT(guard, x) ||
+                    EqualityCompareT(y, guard) || EqualityCompareT(guard, y))
+                    throw new Exception("Detected out of range access in EqualsToSeq()");
+            }
+
+            TSource[] s = new TSource[guardLength + length + guardLength];
+            TValue[] v = new TValue[guardLength + length + guardLength];
+            for (int i = 0; i < s.Length; i++)
+            {
+                s[i] = NewTSource(guard, checkForOutOfRangeAccess);
+                v[i] = NewTValue(guard, checkForOutOfRangeAccess);
+            }
+
+            for (int i = 0; i < length; i++)
+            {
+                T item;
+                do
+                {
+                    item = NewT(rnd.Next());
+                } while (EqualityCompareT(item, target) || EqualityCompareT(target, item) ||
+                    EqualityCompareT(item, guard) || EqualityCompareT(guard, item));
+
+                s[guardLength + i] = NewTSource(item, checkForOutOfRangeAccess);
+                v[guardLength + i] = NewTValue(item, checkForOutOfRangeAccess);
+            }
+
+            Span<TSource> span = new Span<TSource>(s, guardLength, length);
+            ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s, guardLength, length);
+            ReadOnlySpan<TValue> values = new ReadOnlySpan<TValue>(v, guardLength, length);
+
+            onCompare = checkForOutOfRangeAccess;
+
+            bool b = MemoryExt.EqualsToSeq(span, values);
+            Assert.True(b);
+            b = MemoryExt.EqualsToSeq(span, values, EqualityCompare);
+            Assert.True(b);
+
+            b = MemoryExt.EqualsToSeq(rspan, values);
+            Assert.True(b);
+            b = MemoryExt.EqualsToSeq(rspan, values, EqualityCompare);
+            Assert.True(b);
+        }
     }
 
     public class EqualsToSeq_byte : EqualsToSeq<byte, byte, byte>

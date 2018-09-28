@@ -1467,8 +1467,8 @@ namespace DrNet
                         }
                         return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.SequenceEqual(span, tOther);
                     }
-                    if (Unsafe.AreSame(ref MemoryMarshal.GetReference(span), ref Unsafe.As<TOther, TSource>(
-                        ref MemoryMarshal.GetReference(other))))
+                    if (Unsafe.AreSame(ref MemoryMarshal.GetReference(span), 
+                        ref Unsafe.As<TOther, TSource>(ref MemoryMarshal.GetReference(other))))
                         return true;
                 }
 
@@ -1518,8 +1518,8 @@ namespace DrNet
                         }
                         return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.SequenceEqual(span, tOther);
                     }
-                    if (Unsafe.AreSame(ref MemoryMarshal.GetReference(span), ref Unsafe.As<TOther, TSource>(
-                        ref MemoryMarshal.GetReference(other))))
+                    if (Unsafe.AreSame(ref MemoryMarshal.GetReference(span),
+                        ref Unsafe.As<TOther, TSource>(ref MemoryMarshal.GetReference(other))))
                         return true;
                 }
 
