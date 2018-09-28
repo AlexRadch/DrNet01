@@ -282,7 +282,7 @@ namespace DrNet.Tests.Span
                 Assert.Equal(s.Length, log.Count);
                 int itemCount = length;
                 int numCompares = log.CountCompares(target, target);
-                Assert.True(numCompares == itemCount, $"Expected {numCompares} == {itemCount} for element {target}.");
+                Assert.True(numCompares == itemCount, $"Expected {itemCount} == {numCompares} for element {target}.");
             }
 
             Span<TSource> span = new Span<TSource>(s);

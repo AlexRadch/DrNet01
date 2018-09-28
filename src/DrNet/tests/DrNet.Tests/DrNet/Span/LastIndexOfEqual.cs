@@ -306,7 +306,7 @@ namespace DrNet.Tests.Span
                 {
                     int itemCount = t.Where(x => EqualityCompareT(item, x) || EqualityCompareT(x, item)).Count();
                     int numCompares = log.CountCompares(item, target);
-                    Assert.True(numCompares == itemCount, $"Expected {numCompares} == {itemCount} for element {item}.");
+                    Assert.True(numCompares == itemCount, $"Expected {itemCount} == {numCompares} for element {item}.");
                 }
             }
 

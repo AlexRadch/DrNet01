@@ -467,8 +467,8 @@ namespace DrNet.Tests.Span
 
                         int count = itemCount * targetCount;
                         int numCompares = log.CountCompares(item, target);
-                        Assert.True(numCompares == itemCount, 
-                            $"Expected {numCompares} == {itemCount} for element {item}.");
+                        Assert.True(numCompares == count, 
+                            $"Expected {count} == {numCompares} for element ({item}, {target}).");
                     }
                 }
             }

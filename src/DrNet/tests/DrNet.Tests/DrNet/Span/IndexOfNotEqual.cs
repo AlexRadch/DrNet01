@@ -75,7 +75,6 @@ namespace DrNet.Tests.Span
             //idx = MemoryExt.IndexOfNotEqualFrom(span, NextTValue(), EqualityCompareFrom);
             //Assert.Equal(-1, idx);
 
-
             idx = MemoryExt.IndexOfNotEqual(rspan, NextTValue());
             Assert.Equal(-1, idx);
             //idx = MemoryExt.IndexOfNotEqual(rspan, NextTValue(), EqualityCompare);
@@ -205,7 +204,6 @@ namespace DrNet.Tests.Span
             //idx = MemoryExt.IndexOfNotEqualFrom(span, NewTValue(target), EqualityCompareFrom);
             //Assert.Equal(-1, idx);
 
-
             idx = MemoryExt.IndexOfNotEqual(rspan, NewTValue(target));
             Assert.Equal(-1, idx);
             //idx = MemoryExt.IndexOfNotEqual(rspan, NewTValue(target), EqualityCompare);
@@ -282,7 +280,7 @@ namespace DrNet.Tests.Span
                 Assert.Equal(s.Length, log.Count);
                 int itemCount = length;
                 int numCompares = log.CountCompares(target, target);
-                Assert.True(numCompares == itemCount, $"Expected {numCompares} == {itemCount} for element {target}.");
+                Assert.True(numCompares == itemCount, $"Expected {itemCount} == {numCompares} for element {target}.");
             }
 
             Span<TSource> span = new Span<TSource>(s);
