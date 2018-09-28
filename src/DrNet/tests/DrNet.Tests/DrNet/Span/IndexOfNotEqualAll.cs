@@ -2,8 +2,6 @@
 using System.Linq;
 using Xunit;
 
-using DrNet.Linq;
-
 namespace DrNet.Tests.Span
 {
     public abstract class IndexOfNotEqualAll<T, TSource, TValue>
