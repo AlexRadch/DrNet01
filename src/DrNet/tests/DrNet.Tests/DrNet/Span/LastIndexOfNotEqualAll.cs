@@ -12,37 +12,78 @@ namespace DrNet.Tests.Span
 
         protected abstract TValue NewTValue(T value, Action<T, T> onCompare = default);
 
-        private Action<T, T> onCompare;
+        private event Action<T, T> OnCompare;
 
-        private bool EqualityCompareT(T v1, T v2)
+        private bool EqualityCompareT(T t1, T t2)
         {
-            if (v1 is IEquatable<T> equatable)
-                return equatable.Equals(v2);
-            return v1.Equals(v2);
+            if (t1 is IEquatable<T> equatable)
+                return equatable.Equals(t2);
+            return t1.Equals(t2);
         }
 
-        private bool EqualityCompare(TSource sValue, TValue vValue)
+        private bool EqualityCompareS(TSource s1, TSource s2)
         {
-            if (onCompare != null && sValue is T tSource && vValue is T tValue)
-                onCompare(tSource, tValue);
-
-            if (sValue is IEquatable<TValue> sEquatable)
-                return sEquatable.Equals(vValue);
-            if (vValue is IEquatable<TSource> vEquatable)
-                return vEquatable.Equals(sValue);
-            return sValue.Equals(vValue);
+            if (s1 is IEquatable<TSource> equatable)
+                return equatable.Equals(s2);
+            return s1.Equals(s2);
         }
 
-        private bool EqualityCompareFrom(TValue vValue, TSource sValue)
+        private bool EqualityCompare(TSource s, TValue v)
         {
-            if (onCompare != null && vValue is T tValue && sValue is T tSource)
-                onCompare(tValue, tSource);
+            T tS;
+            if (s is T t1)
+                tS = t1;
+            else if (s is TObject<T> o)
+                tS = o.Value;
+            else if (s is TEquatable<T> e)
+                tS = e.Value;
+            else
+                throw new NotImplementedException();
 
-            if (vValue is IEquatable<TSource> vEquatable)
-                return vEquatable.Equals(sValue);
-            if (sValue is IEquatable<TValue> sEquatable)
-                return sEquatable.Equals(vValue);
-            return vValue.Equals(sValue);
+            T tV;
+            if (v is T t2)
+                tV = t2;
+            else if (v is TObject<T> o)
+                tV = o.Value;
+            else if (v is TEquatable<T> e)
+                tV = e.Value;
+            else
+                throw new NotImplementedException();
+
+            OnCompare?.Invoke(tS, tV);
+
+            if (tS is IEquatable<T> equatable)
+                return equatable.Equals(tV);
+            return tS.Equals(tV);
+        }
+
+        private bool EqualityCompareFrom(TValue v, TSource s)
+        {
+            T tV;
+            if (v is T t2)
+                tV = t2;
+            else if (v is TObject<T> o)
+                tV = o.Value;
+            else if (v is TEquatable<T> e)
+                tV = e.Value;
+            else
+                throw new NotImplementedException();
+
+            T tS;
+            if (s is T t1)
+                tS = t1;
+            else if (s is TObject<T> o)
+                tS = o.Value;
+            else if (s is TEquatable<T> e)
+                tS = e.Value;
+            else
+                throw new NotImplementedException();
+
+            OnCompare?.Invoke(tV, tS);
+
+            if (tV is IEquatable<T> equatable)
+                return equatable.Equals(tS);
+            return tV.Equals(tS);
         }
 
         [Fact]
@@ -485,7 +526,7 @@ namespace DrNet.Tests.Span
                 CheckCompares();
 
             if (!logSupported)
-                onCompare = log.Add;
+                OnCompare += log.Add;
 
             log.Clear();
             idx = MemoryExt.LastIndexOfNotEqualAll(span, values, EqualityCompare);
@@ -551,7 +592,7 @@ namespace DrNet.Tests.Span
             idx = MemoryExt.LastIndexOfNotEqualAll(rspan, values);
             Assert.Equal(-1, idx);
 
-            onCompare = checkForOutOfRangeAccess;
+            OnCompare += checkForOutOfRangeAccess;
 
             idx = MemoryExt.LastIndexOfNotEqualAll(span, values, EqualityCompare);
             Assert.Equal(-1, idx);

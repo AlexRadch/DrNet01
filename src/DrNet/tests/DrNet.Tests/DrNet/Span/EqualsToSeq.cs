@@ -13,44 +13,78 @@ namespace DrNet.Tests.Span
 
         protected abstract TValue NewTValue(T value, Action<T, T> onCompare = default);
 
-        private Action<T, T> onCompare;
+        private event Action<T, T> OnCompare;
 
-        private bool EqualityCompareT(T v1, T v2)
+        private bool EqualityCompareT(T t1, T t2)
         {
-            if (v1 is IEquatable<T> equatable)
-                return equatable.Equals(v2);
-            return v1.Equals(v2);
+            if (t1 is IEquatable<T> equatable)
+                return equatable.Equals(t2);
+            return t1.Equals(t2);
         }
 
-        private bool EqualityCompareS(TSource v1, TSource v2)
+        private bool EqualityCompareS(TSource s1, TSource s2)
         {
-            if (v1 is IEquatable<TSource> equatable)
-                return equatable.Equals(v2);
-            return v1.Equals(v2);
+            if (s1 is IEquatable<TSource> equatable)
+                return equatable.Equals(s2);
+            return s1.Equals(s2);
         }
 
-        private bool EqualityCompare(TSource sValue, TValue vValue)
+        private bool EqualityCompare(TSource s, TValue v)
         {
-            if (onCompare != null && sValue is T tSource && vValue is T tValue)
-                onCompare(tSource, tValue);
+            T tS;
+            if (s is T t1)
+                tS = t1;
+            else if (s is TObject<T> o)
+                tS = o.Value;
+            else if (s is TEquatable<T> e)
+                tS = e.Value;
+            else
+                throw new NotImplementedException();
 
-            if (sValue is IEquatable<TValue> sEquatable)
-                return sEquatable.Equals(vValue);
-            if (vValue is IEquatable<TSource> vEquatable)
-                return vEquatable.Equals(sValue);
-            return sValue.Equals(vValue);
+            T tV;
+            if (v is T t2)
+                tV = t2;
+            else if (v is TObject<T> o)
+                tV = o.Value;
+            else if (v is TEquatable<T> e)
+                tV = e.Value;
+            else
+                throw new NotImplementedException();
+
+            OnCompare?.Invoke(tS, tV);
+
+            if (tS is IEquatable<T> equatable)
+                return equatable.Equals(tV);
+            return tS.Equals(tV);
         }
 
-        private bool EqualityCompareFrom(TValue vValue, TSource sValue)
+        private bool EqualityCompareFrom(TValue v, TSource s)
         {
-            if (onCompare != null && vValue is T tValue && sValue is T tSource)
-                onCompare(tValue, tSource);
+            T tV;
+            if (v is T t2)
+                tV = t2;
+            else if (v is TObject<T> o)
+                tV = o.Value;
+            else if (v is TEquatable<T> e)
+                tV = e.Value;
+            else
+                throw new NotImplementedException();
 
-            if (vValue is IEquatable<TSource> vEquatable)
-                return vEquatable.Equals(sValue);
-            if (sValue is IEquatable<TValue> sEquatable)
-                return sEquatable.Equals(vValue);
-            return vValue.Equals(sValue);
+            T tS;
+            if (s is T t1)
+                tS = t1;
+            else if (s is TObject<T> o)
+                tS = o.Value;
+            else if (s is TEquatable<T> e)
+                tS = e.Value;
+            else
+                throw new NotImplementedException();
+
+            OnCompare?.Invoke(tV, tS);
+
+            if (tV is IEquatable<T> equatable)
+                return equatable.Equals(tS);
+            return tV.Equals(tS);
         }
 
         [Fact]
@@ -248,7 +282,7 @@ namespace DrNet.Tests.Span
                 {
                     int itemCount = t.Where(x => EqualityCompareT(item, x) || EqualityCompareT(x, item)).Count();
                     int numCompares = log.CountCompares(item, item);
-                    Assert.True(itemCount == 1, $"Expected {itemCount} == {numCompares} for element {item}.");
+                    Assert.True(itemCount == numCompares, $"Expected {itemCount} == {numCompares} for element {item}.");
                 }
             }
 
@@ -281,19 +315,17 @@ namespace DrNet.Tests.Span
                 CheckCompares();
 
             if (!logSupported)
-                onCompare = log.Add;
+                OnCompare += log.Add;
 
             log.Clear();
             b = MemoryExt.EqualsToSeq(span, values, EqualityCompare);
             Assert.True(b);
-            if (logSupported)
-                CheckCompares();
+            CheckCompares();
 
             log.Clear();
             b = MemoryExt.EqualsToSeq(rspan, values, EqualityCompare);
             Assert.True(b);
-            if (logSupported)
-                CheckCompares();
+            CheckCompares();
         }
 
         [Theory]
@@ -373,7 +405,7 @@ namespace DrNet.Tests.Span
             }
 
             if (!logSupported)
-                onCompare = log.Add;
+                OnCompare += log.Add;
 
             for (int targetIndex = 0; targetIndex < length; targetIndex++)
             {
@@ -457,7 +489,7 @@ namespace DrNet.Tests.Span
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s, guardLength, length);
             ReadOnlySpan<TValue> values = new ReadOnlySpan<TValue>(v, guardLength, length);
 
-            onCompare = checkForOutOfRangeAccess;
+            OnCompare += checkForOutOfRangeAccess;
 
             bool b = MemoryExt.EqualsToSeq(span, values);
             Assert.True(b);
