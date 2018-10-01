@@ -5,15 +5,21 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using DrNet.Internal;
+using DrNet.Internal.Unsafe;
 
 namespace DrNet
 {
     [DebuggerTypeProxy(typeof(SpanDebugView<>))]
     [DebuggerDisplay("{ToString(),raw}")]
-    public readonly unsafe struct UnsafeSpan<T>: IList<T>, IReadOnlyList<T>, ICollection<T>, IReadOnlyCollection<T>, IEnumerable<T>, IEnumerable
+    public readonly unsafe struct UnsafeSpan<T>: IList<T>, IReadOnlyList<T>, ICollection<T>, IReadOnlyCollection<T>,
+        IEnumerable<T>, IEnumerable
     {
+        //[EditorBrowsable(EditorBrowsableState.Never)]
+        //public readonly SpanInternal _spanInternal;
+
         [EditorBrowsable(EditorBrowsableState.Never)]
         public readonly void* _pointer;
+
         [EditorBrowsable(EditorBrowsableState.Never)]
         public readonly int _length;
 
@@ -27,6 +33,8 @@ namespace DrNet
             _length = length;
         }
 
+        public Span<T> AsSpan() => SpanHelpers.AsSpan<T>(_pointer, _length);
+
         public ref T this[int index]
         {
             get
@@ -36,8 +44,6 @@ namespace DrNet
                 return ref Unsafe.Add(ref Unsafe.AsRef<T>(_pointer), index);
             }
         }
-
-        public Span<T> AsSpan() => new Span<T>(_pointer, _length);
 
         public int Length => _length;
 
@@ -50,7 +56,7 @@ namespace DrNet
 #pragma warning disable CS0809 // Obsolete member 'memberA' overrides non-obsolete member 'memberB'.
         [Obsolete("Equals() on UnsafeSpan will always throw an exception. Use == instead.")]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object obj) => AsSpan().Equals(obj);
+        public override bool Equals(object obj) => throw new NotSupportedException();
 #pragma warning restore CS0809 // Obsolete member 'memberA' overrides non-obsolete member 'memberB'.
 
         public void Fill(T value) => AsSpan().Fill(value);
@@ -60,7 +66,7 @@ namespace DrNet
 #pragma warning disable CS0809 // Obsolete member 'memberA' overrides non-obsolete member 'memberB'.
         [Obsolete("GetHashCode() on UnsafeSpan will always throw an exception.")]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => AsSpan().GetHashCode();
+        public override int GetHashCode() => throw new NotSupportedException();
 #pragma warning restore CS0809 // Obsolete member 'memberA' overrides non-obsolete member 'memberB'.
 
         public UnsafeSpan<T> Slice(int start)
@@ -68,7 +74,8 @@ namespace DrNet
             if ((uint)start > (uint)_length)
                 throw new ArgumentOutOfRangeException(nameof(start));
 
-            return new UnsafeSpan<T>(Unsafe.AsPointer(ref Unsafe.Add(ref Unsafe.AsRef<T>(_pointer), start)), _length - start);
+            return new UnsafeSpan<T>(Unsafe.AsPointer(ref Unsafe.Add(ref Unsafe.AsRef<T>(_pointer), start)), 
+                _length - start);
         }
 
         public UnsafeSpan<T> Slice(int start, int length)
@@ -95,11 +102,24 @@ namespace DrNet
 
         public static bool operator !=(UnsafeSpan<T> left, UnsafeSpan<T> right) => !(left == right);
 
-        public static implicit operator UnsafeReadOnlySpan<T>(UnsafeSpan<T> span) => new UnsafeReadOnlySpan<T>(span._pointer, span._length);
+        public static implicit operator UnsafeReadOnlySpan<T>(UnsafeSpan<T> span) => 
+            new UnsafeReadOnlySpan<T>(span._pointer, span._length);
 
         T IList<T>.this[int index] { get => this[index]; set => this[index] = value; }
 
-        public int IndexOf(T item) => MemoryExt.IndexOfEqual(AsSpan(), item);
+        public int IndexOf(T item)
+        {
+            if (typeof(T) == typeof(byte) || typeof(T) == typeof(char))
+            {
+                return MemoryExtensionsEquatablePatternMatching<T>.Instance.IndexOf(new Span<T>(_pointer, _length),
+                    item);
+            }
+            if (item is IEquatable<T> vEquatable)
+                return SpanHelpers.IndexOfEqualValueComparer(ref Unsafe.AsRef<T>(_pointer), _length, vEquatable, 
+                    (eValue, sValue) => eValue.Equals(sValue));
+            return SpanHelpers.IndexOfEqualSourceComparer(ref Unsafe.AsRef<T>(_pointer), _length, item,
+                (sValue, vValue) => sValue.Equals(vValue));
+        }
 
         void IList<T>.Insert(int index, T item) => throw new InvalidOperationException();
 
@@ -115,7 +135,7 @@ namespace DrNet
 
         void ICollection<T>.Clear() => throw new InvalidOperationException();
 
-        public bool Contains(T item) => MemoryExt.IndexOfEqual(AsSpan(), item) >= 0;
+        public bool Contains(T item) => IndexOf(item) >= 0;
 
         public void CopyTo(T[] array, int arrayIndex) => CopyTo(array.AsSpan(arrayIndex));
 
@@ -151,6 +171,7 @@ namespace DrNet
                     return true;
                 }
 
+                _index = _span.Length;
                 return false;
             }
 

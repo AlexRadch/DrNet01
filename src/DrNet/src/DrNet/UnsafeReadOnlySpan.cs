@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using DrNet.Internal;
+using DrNet.Internal.Unsafe;
 
 namespace DrNet
 {
@@ -27,6 +28,8 @@ namespace DrNet
             _length = length;
         }
 
+        public ReadOnlySpan<T> AsSpan() => SpanHelpers.AsReadOnlySpan<T>(_pointer, _length);
+
         public ref readonly T this[int index]
         {
             get
@@ -37,30 +40,28 @@ namespace DrNet
             }
         }
 
-        public Span<T> AsSpan() => new Span<T>(_pointer, _length);
-
         public int Length => _length;
 
         public bool IsEmpty => 0 >= (uint)_length;
 
-        public void Clear() => AsSpan().Clear();
+        //public void Clear() => AsSpan().Clear();
 
         public void CopyTo(Span<T> destination) => AsSpan().CopyTo(destination);
 
 #pragma warning disable CS0809 // Obsolete member 'memberA' overrides non-obsolete member 'memberB'.
         [Obsolete("Equals() on UnsafeReadOnlySpan will always throw an exception. Use == instead.")]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object obj) => AsSpan().Equals(obj);
+        public override bool Equals(object obj) => throw new NotSupportedException();
 #pragma warning restore CS0809 // Obsolete member 'memberA' overrides non-obsolete member 'memberB'.
 
-        public void Fill(T value) => AsSpan().Fill(value);
+        //public void Fill(T value) => AsSpan().Fill(value);
 
         public Enumerator GetEnumerator() => new Enumerator(this);
 
 #pragma warning disable CS0809 // Obsolete member 'memberA' overrides non-obsolete member 'memberB'.
         [Obsolete("GetHashCode() on UnsafeReadOnlySpan will always throw an exception.")]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => AsSpan().GetHashCode();
+        public override int GetHashCode() => throw new NotSupportedException();
 #pragma warning restore CS0809 // Obsolete member 'memberA' overrides non-obsolete member 'memberB'.
 
         public UnsafeSpan<T> Slice(int start)
@@ -68,7 +69,8 @@ namespace DrNet
             if ((uint)start > (uint)_length)
                 throw new ArgumentOutOfRangeException(nameof(start));
 
-            return new UnsafeSpan<T>(Unsafe.AsPointer(ref Unsafe.Add(ref Unsafe.AsRef<T>(_pointer), start)), _length - start);
+            return new UnsafeSpan<T>(Unsafe.AsPointer(ref Unsafe.Add(ref Unsafe.AsRef<T>(_pointer), start)), 
+                _length - start);
         }
 
         public UnsafeSpan<T> Slice(int start, int length)
@@ -95,7 +97,8 @@ namespace DrNet
 
         public static bool operator !=(UnsafeReadOnlySpan<T> left, UnsafeReadOnlySpan<T> right) => !(left == right);
 
-        //public static implicit operator UnsafeReadOnlySpan<T>(UnsafeSpan<T> span) => new UnsafeReadOnlySpan<T>(span._pointer, span._length);
+        public static implicit operator UnsafeReadOnlySpan<T>(UnsafeSpan<T> span) => 
+            new UnsafeReadOnlySpan<T>(span._pointer, span._length);
 
         T IList<T>.this[int index] { get => this[index]; set => throw new InvalidOperationException(); }
 
