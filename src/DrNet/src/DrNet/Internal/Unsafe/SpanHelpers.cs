@@ -7,15 +7,6 @@ namespace DrNet.Internal.Unsafe
 {
     public static class SpanHelpers
     {
-        #region AsSpan AsReadOnlySpan
-
-        public static unsafe Span<T> AsSpan<T>(void* pointer, int length) => new SpanStruct<T>(pointer, length)._span;
-
-        public static unsafe ReadOnlySpan<T> AsReadOnlySpan<T>(void* pointer, int length) => 
-            new ReadOnlySpanStruct<T>(pointer, length)._span;
-
-        #endregion
-
         #region IndexOfEqual LastIndexOfEqual
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -5,88 +5,8 @@ using Xunit;
 
 namespace DrNet.Tests.Span
 {
-    public abstract class EndsWithSeq<T, TSource, TValue>
+    public abstract class EndsWithSeq<T, TSource, TValue> : SpanTest<T, TSource, TValue>
     {
-        protected abstract T NewT(int value);
-
-        protected abstract TSource NewTSource(T value, Action<T, T> onCompare = default);
-
-        protected abstract TValue NewTValue(T value, Action<T, T> onCompare = default);
-
-        private event Action<T, T> OnCompare;
-
-        private bool EqualityCompareT(T t1, T t2)
-        {
-            if (t1 is IEquatable<T> equatable)
-                return equatable.Equals(t2);
-            return t1.Equals(t2);
-        }
-
-        private bool EqualityCompareS(TSource s1, TSource s2)
-        {
-            if (s1 is IEquatable<TSource> equatable)
-                return equatable.Equals(s2);
-            return s1.Equals(s2);
-        }
-
-        private bool EqualityCompare(TSource s, TValue v)
-        {
-            T tS;
-            if (s is T t1)
-                tS = t1;
-            else if (s is TObject<T> o)
-                tS = o.Value;
-            else if (s is TEquatable<T> e)
-                tS = e.Value;
-            else
-                throw new NotImplementedException();
-
-            T tV;
-            if (v is T t2)
-                tV = t2;
-            else if (v is TObject<T> o)
-                tV = o.Value;
-            else if (v is TEquatable<T> e)
-                tV = e.Value;
-            else
-                throw new NotImplementedException();
-
-            OnCompare?.Invoke(tS, tV);
-
-            if (tS is IEquatable<T> equatable)
-                return equatable.Equals(tV);
-            return tS.Equals(tV);
-        }
-
-        private bool EqualityCompareFrom(TValue v, TSource s)
-        {
-            T tV;
-            if (v is T t2)
-                tV = t2;
-            else if (v is TObject<T> o)
-                tV = o.Value;
-            else if (v is TEquatable<T> e)
-                tV = e.Value;
-            else
-                throw new NotImplementedException();
-
-            T tS;
-            if (s is T t1)
-                tS = t1;
-            else if (s is TObject<T> o)
-                tS = o.Value;
-            else if (s is TEquatable<T> e)
-                tS = e.Value;
-            else
-                throw new NotImplementedException();
-
-            OnCompare?.Invoke(tV, tS);
-
-            if (tV is IEquatable<T> equatable)
-                return equatable.Equals(tS);
-            return tV.Equals(tS);
-        }
-
         [Fact]
         public void ZeroLength()
         {
@@ -99,19 +19,107 @@ namespace DrNet.Tests.Span
             ReadOnlySpan<TValue> values = new TValue[] { NewTValue(NewT(rnd.Next())), NewTValue(NewT(rnd.Next())),
                 NewTValue(NewT(rnd.Next())) }.AsReadOnlySpan(3, 0);
 
-            bool c = MemoryExt.EndsWithSeq(span, values);
-            Assert.True(c);
-            c = MemoryExt.EndsWithSeq(span, values, EqualityCompare);
-            Assert.True(c);
-            c = MemoryExt.EndsWithSeqFrom(span, values, EqualityCompareFrom);
-            Assert.True(c);
+            bool b = MemoryExt.EndsWithSeq(span, values);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeq(span, values, EqualityCompareSV);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeqFrom(span, values, EqualityCompareVS);
+            Assert.True(b);
 
-            c = MemoryExt.EndsWithSeq(rspan, values);
-            Assert.True(c);
-            c = MemoryExt.EndsWithSeq(rspan, values, EqualityCompare);
-            Assert.True(c);
-            c = MemoryExt.EndsWithSeqFrom(rspan, values, EqualityCompareFrom);
-            Assert.True(c);
+            b = MemoryExt.EndsWithSeq(rspan, values);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeq(rspan, values, EqualityCompareSV);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeqFrom(rspan, values, EqualityCompareVS);
+            Assert.True(b);
+
+            values = default;
+
+            b = MemoryExt.EndsWithSeq(span, values);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeq(span, values, EqualityCompareSV);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeqFrom(span, values, EqualityCompareVS);
+            Assert.True(b);
+
+            b = MemoryExt.EndsWithSeq(rspan, values);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeq(rspan, values, EqualityCompareSV);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeqFrom(rspan, values, EqualityCompareVS);
+            Assert.True(b);
+
+            span = new TSource[] { NewTSource(NewT(rnd.Next())), NewTSource(NewT(rnd.Next())),
+                NewTSource(NewT(rnd.Next())) }.AsSpan(1, 1);
+            rspan = new TSource[] { NewTSource(NewT(rnd.Next())), NewTSource(NewT(rnd.Next())),
+                NewTSource(NewT(rnd.Next())) }.AsReadOnlySpan(2, 1);
+            values = new TValue[] { NewTValue(NewT(rnd.Next())), NewTValue(NewT(rnd.Next())),
+                NewTValue(NewT(rnd.Next())) }.AsReadOnlySpan(3, 0);
+
+            b = MemoryExt.EndsWithSeq(span, values);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeq(span, values, EqualityCompareSV);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeqFrom(span, values, EqualityCompareVS);
+            Assert.True(b);
+
+            b = MemoryExt.EndsWithSeq(rspan, values);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeq(rspan, values, EqualityCompareSV);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeqFrom(rspan, values, EqualityCompareVS);
+            Assert.True(b);
+
+            values = default;
+
+            b = MemoryExt.EndsWithSeq(span, values);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeq(span, values, EqualityCompareSV);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeqFrom(span, values, EqualityCompareVS);
+            Assert.True(b);
+
+            b = MemoryExt.EndsWithSeq(rspan, values);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeq(rspan, values, EqualityCompareSV);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeqFrom(rspan, values, EqualityCompareVS);
+            Assert.True(b);
+
+            span = default;
+            rspan = default;
+            values = new TValue[] { NewTValue(NewT(rnd.Next())), NewTValue(NewT(rnd.Next())),
+                NewTValue(NewT(rnd.Next())) }.AsReadOnlySpan(3, 0);
+
+            b = MemoryExt.EndsWithSeq(span, values);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeq(span, values, EqualityCompareSV);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeqFrom(span, values, EqualityCompareVS);
+            Assert.True(b);
+
+            b = MemoryExt.EndsWithSeq(rspan, values);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeq(rspan, values, EqualityCompareSV);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeqFrom(rspan, values, EqualityCompareVS);
+            Assert.True(b);
+
+            values = default;
+
+            b = MemoryExt.EndsWithSeq(span, values);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeq(span, values, EqualityCompareSV);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeqFrom(span, values, EqualityCompareVS);
+            Assert.True(b);
+
+            b = MemoryExt.EndsWithSeq(rspan, values);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeq(rspan, values, EqualityCompareSV);
+            Assert.True(b);
+            b = MemoryExt.EndsWithSeqFrom(rspan, values, EqualityCompareVS);
+            Assert.True(b);
         }
 
         [Theory]
@@ -167,16 +175,16 @@ namespace DrNet.Tests.Span
 
             bool c = MemoryExt.EndsWithSeq(span, values);
             Assert.False(c);
-            c = MemoryExt.EndsWithSeq(span, values, EqualityCompare);
+            c = MemoryExt.EndsWithSeq(span, values, EqualityCompareSV);
             Assert.False(c);
-            c = MemoryExt.EndsWithSeqFrom(span, values, EqualityCompareFrom);
+            c = MemoryExt.EndsWithSeqFrom(span, values, EqualityCompareVS);
             Assert.False(c);
 
             c = MemoryExt.EndsWithSeq(rspan, values);
             Assert.False(c);
-            c = MemoryExt.EndsWithSeq(rspan, values, EqualityCompare);
+            c = MemoryExt.EndsWithSeq(rspan, values, EqualityCompareSV);
             Assert.False(c);
-            c = MemoryExt.EndsWithSeqFrom(rspan, values, EqualityCompareFrom);
+            c = MemoryExt.EndsWithSeqFrom(rspan, values, EqualityCompareVS);
             Assert.False(c);
         }
 
@@ -220,8 +228,8 @@ namespace DrNet.Tests.Span
             ReadOnlySpan<TValue> values = new ReadOnlySpan<TValue>(v);
 
             {
-                EqualityCompare(NewTSource(NewT(1), log.Add), NewTValue(NewT(1), log.Add));
-                EqualityCompareFrom(NewTValue(NewT(1), log.Add), NewTSource(NewT(1), log.Add));
+                EqualityCompareSV(NewTSource(NewT(1), log.Add), NewTValue(NewT(1), log.Add));
+                EqualityCompareVS(NewTValue(NewT(1), log.Add), NewTSource(NewT(1), log.Add));
             }
             bool logSupported = log.Count == 2;
             if (!logSupported)
@@ -247,22 +255,22 @@ namespace DrNet.Tests.Span
                 OnCompare += log.Add;
 
             log.Clear();
-            b = MemoryExt.EndsWithSeq(span, values, EqualityCompare);
+            b = MemoryExt.EndsWithSeq(span, values, EqualityCompareSV);
             Assert.True(b);
             CheckCompares();
 
             log.Clear();
-            b = MemoryExt.EndsWithSeq(rspan, values, EqualityCompare);
+            b = MemoryExt.EndsWithSeq(rspan, values, EqualityCompareSV);
             Assert.True(b);
             CheckCompares();
 
             log.Clear();
-            b = MemoryExt.EndsWithSeqFrom(span, values, EqualityCompareFrom);
+            b = MemoryExt.EndsWithSeqFrom(span, values, EqualityCompareVS);
             Assert.True(b);
             CheckCompares();
 
             log.Clear();
-            b = MemoryExt.EndsWithSeqFrom(rspan, values, EqualityCompareFrom);
+            b = MemoryExt.EndsWithSeqFrom(rspan, values, EqualityCompareVS);
             Assert.True(b);
             CheckCompares();
         }
@@ -297,8 +305,8 @@ namespace DrNet.Tests.Span
             ReadOnlySpan<TValue> values = new ReadOnlySpan<TValue>(v);
 
             {
-                EqualityCompare(NewTSource(NewT(1), log.Add), NewTValue(NewT(1), log.Add));
-                EqualityCompareFrom(NewTValue(NewT(1), log.Add), NewTSource(NewT(1), log.Add));
+                EqualityCompareSV(NewTSource(NewT(1), log.Add), NewTValue(NewT(1), log.Add));
+                EqualityCompareVS(NewTValue(NewT(1), log.Add), NewTSource(NewT(1), log.Add));
             }
             bool logSupported = log.Count == 2;
             if (!logSupported)
@@ -353,22 +361,22 @@ namespace DrNet.Tests.Span
                 s[targetIndex + 1] = NewTSource(target, log.Add);
 
                 log.Clear();
-                bool b = MemoryExt.EndsWithSeq(span, values, EqualityCompare);
+                bool b = MemoryExt.EndsWithSeq(span, values, EqualityCompareSV);
                 Assert.False(b);
                 Assert.Equal(targetIndex + 1, log.Count);
 
                 log.Clear();
-                b = MemoryExt.EndsWithSeqFrom(span, values, EqualityCompareFrom);
+                b = MemoryExt.EndsWithSeqFrom(span, values, EqualityCompareVS);
                 Assert.False(b);
                 Assert.Equal(targetIndex + 1, log.Count);
 
                 log.Clear();
-                b = MemoryExt.EndsWithSeq(rspan, values, EqualityCompare);
+                b = MemoryExt.EndsWithSeq(rspan, values, EqualityCompareSV);
                 Assert.False(b);
                 Assert.Equal(targetIndex + 1, log.Count);
 
                 log.Clear();
-                b = MemoryExt.EndsWithSeqFrom(rspan, values, EqualityCompareFrom);
+                b = MemoryExt.EndsWithSeqFrom(rspan, values, EqualityCompareVS);
                 Assert.False(b);
                 Assert.Equal(targetIndex + 1, log.Count);
 
@@ -377,22 +385,22 @@ namespace DrNet.Tests.Span
                 v[targetIndex] = NewTValue(target, log.Add);
 
                 log.Clear();
-                b = MemoryExt.EndsWithSeq(span, values, EqualityCompare);
+                b = MemoryExt.EndsWithSeq(span, values, EqualityCompareSV);
                 Assert.False(b);
                 Assert.Equal(targetIndex + 1, log.Count);
 
                 log.Clear();
-                b = MemoryExt.EndsWithSeqFrom(span, values, EqualityCompareFrom);
+                b = MemoryExt.EndsWithSeqFrom(span, values, EqualityCompareVS);
                 Assert.False(b);
                 Assert.Equal(targetIndex + 1, log.Count);
 
                 log.Clear();
-                b = MemoryExt.EndsWithSeq(rspan, values, EqualityCompare);
+                b = MemoryExt.EndsWithSeq(rspan, values, EqualityCompareSV);
                 Assert.False(b);
                 Assert.Equal(targetIndex + 1, log.Count);
 
                 log.Clear();
-                b = MemoryExt.EndsWithSeqFrom(rspan, values, EqualityCompareFrom);
+                b = MemoryExt.EndsWithSeqFrom(rspan, values, EqualityCompareVS);
                 Assert.False(b);
                 Assert.Equal(targetIndex + 1, log.Count);
 
@@ -453,49 +461,49 @@ namespace DrNet.Tests.Span
 
             bool b = MemoryExt.EndsWithSeq(span, values);
             Assert.True(b);
-            b = MemoryExt.EndsWithSeq(span, values, EqualityCompare);
+            b = MemoryExt.EndsWithSeq(span, values, EqualityCompareSV);
             Assert.True(b);
-            b = MemoryExt.EndsWithSeqFrom(span, values, EqualityCompareFrom);
+            b = MemoryExt.EndsWithSeqFrom(span, values, EqualityCompareVS);
             Assert.True(b);
 
             b = MemoryExt.EndsWithSeq(rspan, values);
             Assert.True(b);
-            b = MemoryExt.EndsWithSeq(rspan, values, EqualityCompare);
+            b = MemoryExt.EndsWithSeq(rspan, values, EqualityCompareSV);
             Assert.True(b);
-            b = MemoryExt.EndsWithSeqFrom(rspan, values, EqualityCompareFrom);
+            b = MemoryExt.EndsWithSeqFrom(rspan, values, EqualityCompareVS);
             Assert.True(b);
         }
     }
 
-    public class EndsWithSeq_byte : EndsWithSeq<byte, byte, byte>
+    public sealed class EndsWithSeq_byte : EndsWithSeq<byte, byte, byte>
     {
         protected override byte NewT(int value) => unchecked((byte)value);
         protected override byte NewTSource(byte value, Action<byte, byte> onCompare) => value;
         protected override byte NewTValue(byte value, Action<byte, byte> onCompare) => value;
     }
 
-    public class EndsWithSeq_char : EndsWithSeq<char, char, char>
+    public sealed class EndsWithSeq_char : EndsWithSeq<char, char, char>
     {
         protected override char NewT(int value) => unchecked((char)value);
         protected override char NewTSource(char value, Action<char, char> onCompare) => value;
         protected override char NewTValue(char value, Action<char, char> onCompare) => value;
     }
 
-    public class EndsWithSeq_int : EndsWithSeq<int, int, int>
+    public sealed class EndsWithSeq_int : EndsWithSeq<int, int, int>
     {
         protected override int NewT(int value) => value;
         protected override int NewTSource(int value, Action<int, int> onCompare) => value;
         protected override int NewTValue(int value, Action<int, int> onCompare) => value;
     }
 
-    public class EndsWithSeq_string : EndsWithSeq<string, string, string>
+    public sealed class EndsWithSeq_string : EndsWithSeq<string, string, string>
     {
         protected override string NewT(int value) => value.ToString();
         protected override string NewTSource(string value, Action<string, string> onCompare) => value;
         protected override string NewTValue(string value, Action<string, string> onCompare) => value;
     }
 
-    public class EndsWithSeq_intEE : EndsWithSeq<int, TEquatable<int>, TEquatable<int>>
+    public sealed class EndsWithSeq_intEE : EndsWithSeq<int, TEquatable<int>, TEquatable<int>>
     {
         protected override int NewT(int value) => value;
         protected override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) =>
@@ -504,7 +512,7 @@ namespace DrNet.Tests.Span
             new TEquatable<int>(value, onCompare);
     }
 
-    public class EndsWithSeq_intEO : EndsWithSeq<int, TEquatable<int>, TObject<int>>
+    public sealed class EndsWithSeq_intEO : EndsWithSeq<int, TEquatable<int>, TObject<int>>
     {
         protected override int NewT(int value) => value;
         protected override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) =>
@@ -517,7 +525,7 @@ namespace DrNet.Tests.Span
         }
     }
 
-    public class EndsWithSeq_intOE : EndsWithSeq<int, TObject<int>, TEquatable<int>>
+    public sealed class EndsWithSeq_intOE : EndsWithSeq<int, TObject<int>, TEquatable<int>>
     {
         protected override int NewT(int value) => value;
         protected override TObject<int> NewTSource(int value, Action<int, int> onCompare)
@@ -530,7 +538,7 @@ namespace DrNet.Tests.Span
             new TEquatable<int>(value, onCompare);
     }
 
-    public class EndsWithSeq_intOO : EndsWithSeq<int, TObject<int>, TObject<int>>
+    public sealed class EndsWithSeq_intOO : EndsWithSeq<int, TObject<int>, TObject<int>>
     {
         protected override int NewT(int value) => value;
         protected override TObject<int> NewTSource(int value, Action<int, int> onCompare) =>
@@ -539,7 +547,7 @@ namespace DrNet.Tests.Span
             new TObject<int>(value, onCompare);
     }
 
-    public class EndsWithSeq_stringEE : EndsWithSeq<string, TEquatable<string>, TEquatable<string>>
+    public sealed class EndsWithSeq_stringEE : EndsWithSeq<string, TEquatable<string>, TEquatable<string>>
     {
         protected override string NewT(int value) => value.ToString();
         protected override TEquatable<string> NewTSource(string value, Action<string, string> onCompare) =>
@@ -548,7 +556,7 @@ namespace DrNet.Tests.Span
             new TEquatable<string>(value, onCompare);
     }
 
-    public class EndsWithSeq_stringEO : EndsWithSeq<string, TEquatable<string>, TObject<string>>
+    public sealed class EndsWithSeq_stringEO : EndsWithSeq<string, TEquatable<string>, TObject<string>>
     {
         protected override string NewT(int value) => value.ToString();
         protected override TEquatable<string> NewTSource(string value, Action<string, string> onCompare) =>
@@ -561,7 +569,7 @@ namespace DrNet.Tests.Span
         }
     }
 
-    public class EndsWithSeq_stringOE : EndsWithSeq<string, TObject<string>, TEquatable<string>>
+    public sealed class EndsWithSeq_stringOE : EndsWithSeq<string, TObject<string>, TEquatable<string>>
     {
         protected override string NewT(int value) => value.ToString();
         protected override TObject<string> NewTSource(string value, Action<string, string> onCompare)
@@ -574,7 +582,7 @@ namespace DrNet.Tests.Span
             new TEquatable<string>(value, onCompare);
     }
 
-    public class EndsWithSeq_stringOO : EndsWithSeq<string, TObject<string>, TObject<string>>
+    public sealed class EndsWithSeq_stringOO : EndsWithSeq<string, TObject<string>, TObject<string>>
     {
         protected override string NewT(int value) => value.ToString();
         protected override TObject<string> NewTSource(string value, Action<string, string> onCompare) =>

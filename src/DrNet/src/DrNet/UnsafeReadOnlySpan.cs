@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
 using DrNet.Internal;
 using DrNet.Internal.Unsafe;
 
@@ -20,15 +22,19 @@ namespace DrNet
 
         public UnsafeReadOnlySpan(void* pointer, int length)
         {
-            if (pointer == null)
-                throw new ArgumentNullException(nameof(pointer));
-            if (length < 0)
+            if (length < 0 || pointer == null && length > 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
             _pointer = pointer;
             _length = length;
         }
 
-        public ReadOnlySpan<T> AsSpan() => SpanHelpers.AsReadOnlySpan<T>(_pointer, _length);
+        public UnsafeReadOnlySpan(ReadOnlySpan<T> span)
+        {
+            _pointer = Unsafe.AsPointer(ref MemoryMarshal.GetReference(span));
+            _length = span.Length;
+        }
+
+        public ReadOnlySpan<T> AsSpan() => MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef<T>(_pointer), _length);
 
         public ref readonly T this[int index]
         {
@@ -102,7 +108,17 @@ namespace DrNet
 
         T IList<T>.this[int index] { get => this[index]; set => throw new InvalidOperationException(); }
 
-        public int IndexOf(T item) => MemoryExt.IndexOfEqual(AsSpan(), item);
+        public int IndexOf(T item)
+        {
+            if (typeof(T) == typeof(byte) || typeof(T) == typeof(char))
+                return MemoryExtensionsEquatablePatternMatching<T>.Instance.IndexOf(
+                    new ReadOnlySpan<T>(_pointer, _length), item);
+            if (item is IEquatable<T> vEquatable)
+                return SpanHelpers.IndexOfEqualValueComparer(ref Unsafe.AsRef<T>(_pointer), _length, vEquatable, 
+                    (eValue, sValue) => eValue.Equals(sValue));
+            return SpanHelpers.IndexOfEqualSourceComparer(ref Unsafe.AsRef<T>(_pointer), _length, item,
+                (sValue, vValue) => sValue.Equals(vValue));
+        }
 
         void IList<T>.Insert(int index, T item) => throw new InvalidOperationException();
 
@@ -118,7 +134,7 @@ namespace DrNet
 
         void ICollection<T>.Clear() => throw new InvalidOperationException();
 
-        public bool Contains(T item) => MemoryExt.IndexOfEqual(AsSpan(), item) >= 0;
+        public bool Contains(T item) => IndexOf(item) >= 0;
 
         public void CopyTo(T[] array, int arrayIndex) => CopyTo(array.AsSpan(arrayIndex));
 
@@ -134,34 +150,33 @@ namespace DrNet
         {
             [EditorBrowsable(EditorBrowsableState.Never)]
             public readonly UnsafeReadOnlySpan<T> _span;
-            private int _index;
 
             internal Enumerator(UnsafeReadOnlySpan<T> span)
             {
                 _span = span;
-                _index = -1;
+                Index = -1;
             }
 
             [EditorBrowsable(EditorBrowsableState.Never)]
-            public int Index { get => _index; }
+            public int Index { get; private set; }
 
             public bool MoveNext()
             {
-                int index = _index + 1;
+                int index = Index + 1;
                 if (index < _span.Length)
                 {
-                    _index = index;
+                    Index = index;
                     return true;
                 }
 
                 return false;
             }
 
-            public ref readonly T Current { get => ref _span[_index]; }
+            public ref readonly T Current { get => ref _span[Index]; }
 
             public void Reset()
             {
-                _index = -1;
+                Index = -1;
             }
 
             T IEnumerator<T>.Current => Current;

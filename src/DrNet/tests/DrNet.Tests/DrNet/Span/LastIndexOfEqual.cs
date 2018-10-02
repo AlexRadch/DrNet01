@@ -4,88 +4,8 @@ using Xunit;
 
 namespace DrNet.Tests.Span
 {
-    public abstract class LastIndexOfEqual<T, TSource, TValue>
+    public abstract class LastIndexOfEqual<T, TSource, TValue> : SpanTest<T, TSource, TValue>
     {
-        protected abstract T NewT(int value);
-
-        protected abstract TSource NewTSource(T value, Action<T, T> onCompare = default);
-
-        protected abstract TValue NewTValue(T value, Action<T, T> onCompare = default);
-
-        private event Action<T, T> OnCompare;
-
-        private bool EqualityCompareT(T t1, T t2)
-        {
-            if (t1 is IEquatable<T> equatable)
-                return equatable.Equals(t2);
-            return t1.Equals(t2);
-        }
-
-        private bool EqualityCompareS(TSource s1, TSource s2)
-        {
-            if (s1 is IEquatable<TSource> equatable)
-                return equatable.Equals(s2);
-            return s1.Equals(s2);
-        }
-
-        private bool EqualityCompare(TSource s, TValue v)
-        {
-            T tS;
-            if (s is T t1)
-                tS = t1;
-            else if (s is TObject<T> o)
-                tS = o.Value;
-            else if (s is TEquatable<T> e)
-                tS = e.Value;
-            else
-                throw new NotImplementedException();
-
-            T tV;
-            if (v is T t2)
-                tV = t2;
-            else if (v is TObject<T> o)
-                tV = o.Value;
-            else if (v is TEquatable<T> e)
-                tV = e.Value;
-            else
-                throw new NotImplementedException();
-
-            OnCompare?.Invoke(tS, tV);
-
-            if (tS is IEquatable<T> equatable)
-                return equatable.Equals(tV);
-            return tS.Equals(tV);
-        }
-
-        private bool EqualityCompareFrom(TValue v, TSource s)
-        {
-            T tV;
-            if (v is T t2)
-                tV = t2;
-            else if (v is TObject<T> o)
-                tV = o.Value;
-            else if (v is TEquatable<T> e)
-                tV = e.Value;
-            else
-                throw new NotImplementedException();
-
-            T tS;
-            if (s is T t1)
-                tS = t1;
-            else if (s is TObject<T> o)
-                tS = o.Value;
-            else if (s is TEquatable<T> e)
-                tS = e.Value;
-            else
-                throw new NotImplementedException();
-
-            OnCompare?.Invoke(tV, tS);
-
-            if (tV is IEquatable<T> equatable)
-                return equatable.Equals(tS);
-            return tV.Equals(tS);
-        }
-
         [Fact]
         public void ZeroLength()
         {
@@ -99,30 +19,30 @@ namespace DrNet.Tests.Span
 
             int idx = MemoryExt.LastIndexOfEqual(span, default(TValue));
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqual(span, default(TValue), EqualityCompare);
+            idx = MemoryExt.LastIndexOfEqual(span, default(TValue), EqualityCompareSV);
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqualFrom(span, default(TValue), EqualityCompareFrom);
+            idx = MemoryExt.LastIndexOfEqualFrom(span, default(TValue), EqualityCompareVS);
             Assert.Equal(-1, idx);
 
             idx = MemoryExt.LastIndexOfEqual(rspan, default(TValue));
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqual(rspan, default(TValue), EqualityCompare);
+            idx = MemoryExt.LastIndexOfEqual(rspan, default(TValue), EqualityCompareSV);
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqualFrom(rspan, default(TValue), EqualityCompareFrom);
+            idx = MemoryExt.LastIndexOfEqualFrom(rspan, default(TValue), EqualityCompareVS);
             Assert.Equal(-1, idx);
 
             idx = MemoryExt.LastIndexOfEqual(span, NextTValue());
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqual(span, NextTValue(), EqualityCompare);
+            idx = MemoryExt.LastIndexOfEqual(span, NextTValue(), EqualityCompareSV);
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqualFrom(span, NextTValue(), EqualityCompareFrom);
+            idx = MemoryExt.LastIndexOfEqualFrom(span, NextTValue(), EqualityCompareVS);
             Assert.Equal(-1, idx);
 
             idx = MemoryExt.LastIndexOfEqual(rspan, NextTValue());
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqual(rspan, NextTValue(), EqualityCompare);
+            idx = MemoryExt.LastIndexOfEqual(rspan, NextTValue(), EqualityCompareSV);
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqualFrom(rspan, NextTValue(), EqualityCompareFrom);
+            idx = MemoryExt.LastIndexOfEqualFrom(rspan, NextTValue(), EqualityCompareVS);
             Assert.Equal(-1, idx);
         }
 
@@ -134,9 +54,9 @@ namespace DrNet.Tests.Span
         {
             try
             {
-                if (!EqualityCompare(default, default))
+                if (!EqualityCompareSV(default, default))
                     return;
-                if (!EqualityCompareFrom(default, default))
+                if (!EqualityCompareVS(default, default))
                     return;
             }
             catch
@@ -153,30 +73,30 @@ namespace DrNet.Tests.Span
 
             int idx = MemoryExt.LastIndexOfEqual(span, default(TValue));
             Assert.Equal(length - 1, idx);
-            idx = MemoryExt.LastIndexOfEqual(span, default(TValue), EqualityCompare);
+            idx = MemoryExt.LastIndexOfEqual(span, default(TValue), EqualityCompareSV);
             Assert.Equal(length - 1, idx);
-            idx = MemoryExt.LastIndexOfEqualFrom(span, default(TValue), EqualityCompareFrom);
+            idx = MemoryExt.LastIndexOfEqualFrom(span, default(TValue), EqualityCompareVS);
             Assert.Equal(length - 1, idx);
 
             idx = MemoryExt.LastIndexOfEqual(rspan, default(TValue));
             Assert.Equal(length - 1, idx);
-            idx = MemoryExt.LastIndexOfEqual(rspan, default(TValue), EqualityCompare);
+            idx = MemoryExt.LastIndexOfEqual(rspan, default(TValue), EqualityCompareSV);
             Assert.Equal(length - 1, idx);
-            idx = MemoryExt.LastIndexOfEqualFrom(rspan, default(TValue), EqualityCompareFrom);
+            idx = MemoryExt.LastIndexOfEqualFrom(rspan, default(TValue), EqualityCompareVS);
             Assert.Equal(length - 1, idx);
 
             idx = MemoryExt.LastIndexOfEqual(span, NextTValue());
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqual(span, NextTValue(), EqualityCompare);
+            idx = MemoryExt.LastIndexOfEqual(span, NextTValue(), EqualityCompareSV);
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqualFrom(span, NextTValue(), EqualityCompareFrom);
+            idx = MemoryExt.LastIndexOfEqualFrom(span, NextTValue(), EqualityCompareVS);
             Assert.Equal(-1, idx);
 
             idx = MemoryExt.LastIndexOfEqual(rspan, NextTValue());
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqual(rspan, NextTValue(), EqualityCompare);
+            idx = MemoryExt.LastIndexOfEqual(rspan, NextTValue(), EqualityCompareSV);
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqualFrom(rspan, NextTValue(), EqualityCompareFrom);
+            idx = MemoryExt.LastIndexOfEqualFrom(rspan, NextTValue(), EqualityCompareVS);
             Assert.Equal(-1, idx);
         }
 
@@ -210,16 +130,16 @@ namespace DrNet.Tests.Span
 
                 int idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target));
                 Assert.Equal(targetIndex, idx);
-                idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target), EqualityCompare);
+                idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target), EqualityCompareSV);
                 Assert.Equal(targetIndex, idx);
-                idx = MemoryExt.LastIndexOfEqualFrom(span, NewTValue(target), EqualityCompareFrom);
+                idx = MemoryExt.LastIndexOfEqualFrom(span, NewTValue(target), EqualityCompareVS);
                 Assert.Equal(targetIndex, idx);
 
                 idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target));
                 Assert.Equal(targetIndex, idx);
-                idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target), EqualityCompare);
+                idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target), EqualityCompareSV);
                 Assert.Equal(targetIndex, idx);
-                idx = MemoryExt.LastIndexOfEqualFrom(rspan, NewTValue(target), EqualityCompareFrom);
+                idx = MemoryExt.LastIndexOfEqualFrom(rspan, NewTValue(target), EqualityCompareVS);
                 Assert.Equal(targetIndex, idx);
 
                 s[targetIndex] = temp;
@@ -253,16 +173,16 @@ namespace DrNet.Tests.Span
 
             int idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target));
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target), EqualityCompare);
+            idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target), EqualityCompareSV);
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqualFrom(span, NewTValue(target), EqualityCompareFrom);
+            idx = MemoryExt.LastIndexOfEqualFrom(span, NewTValue(target), EqualityCompareVS);
             Assert.Equal(-1, idx);
 
             idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target));
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target), EqualityCompare);
+            idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target), EqualityCompareSV);
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqualFrom(rspan, NewTValue(target), EqualityCompareFrom);
+            idx = MemoryExt.LastIndexOfEqualFrom(rspan, NewTValue(target), EqualityCompareVS);
             Assert.Equal(-1, idx);
         }
 
@@ -297,16 +217,16 @@ namespace DrNet.Tests.Span
 
                 int idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target));
                 Assert.Equal(targetIndex, idx);
-                idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target), EqualityCompare);
+                idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target), EqualityCompareSV);
                 Assert.Equal(targetIndex, idx);
-                idx = MemoryExt.LastIndexOfEqualFrom(span, NewTValue(target), EqualityCompareFrom);
+                idx = MemoryExt.LastIndexOfEqualFrom(span, NewTValue(target), EqualityCompareVS);
                 Assert.Equal(targetIndex, idx);
 
                 idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target));
                 Assert.Equal(targetIndex, idx);
-                idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target), EqualityCompare);
+                idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target), EqualityCompareSV);
                 Assert.Equal(targetIndex, idx);
-                idx = MemoryExt.LastIndexOfEqualFrom(rspan, NewTValue(target), EqualityCompareFrom);
+                idx = MemoryExt.LastIndexOfEqualFrom(rspan, NewTValue(target), EqualityCompareVS);
                 Assert.Equal(targetIndex, idx);
 
                 s[targetIndex - 0] = temp0;
@@ -357,8 +277,8 @@ namespace DrNet.Tests.Span
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
 
             {
-                EqualityCompare(NewTSource(NewT(1), log.Add), NewTValue(NewT(1), log.Add));
-                EqualityCompareFrom(NewTValue(NewT(1), log.Add), NewTSource(NewT(1), log.Add));
+                EqualityCompareSV(NewTSource(NewT(1), log.Add), NewTValue(NewT(1), log.Add));
+                EqualityCompareVS(NewTValue(NewT(1), log.Add), NewTSource(NewT(1), log.Add));
             }
             bool logSupported = log.Count == 2;
             if (!logSupported)
@@ -384,22 +304,22 @@ namespace DrNet.Tests.Span
                 OnCompare += log.Add;
 
             log.Clear();
-            idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target, log.Add), EqualityCompare);
+            idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target, log.Add), EqualityCompareSV);
             Assert.Equal(-1, idx);
             CheckCompares();
 
             log.Clear();
-            idx = MemoryExt.LastIndexOfEqualFrom(span, NewTValue(target, log.Add), EqualityCompareFrom);
+            idx = MemoryExt.LastIndexOfEqualFrom(span, NewTValue(target, log.Add), EqualityCompareVS);
             Assert.Equal(-1, idx);
             CheckCompares();
 
             log.Clear();
-            idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target, log.Add), EqualityCompare);
+            idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target, log.Add), EqualityCompareSV);
             Assert.Equal(-1, idx);
             CheckCompares();
 
             log.Clear();
-            idx = MemoryExt.LastIndexOfEqualFrom(rspan, NewTValue(target, log.Add), EqualityCompareFrom);
+            idx = MemoryExt.LastIndexOfEqualFrom(rspan, NewTValue(target, log.Add), EqualityCompareVS);
             Assert.Equal(-1, idx);
             CheckCompares();
         }
@@ -452,47 +372,47 @@ namespace DrNet.Tests.Span
 
             OnCompare += checkForOutOfRangeAccess;
 
-            idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target, checkForOutOfRangeAccess), EqualityCompare);
+            idx = MemoryExt.LastIndexOfEqual(span, NewTValue(target, checkForOutOfRangeAccess), EqualityCompareSV);
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqualFrom(span, NewTValue(target, checkForOutOfRangeAccess), EqualityCompareFrom);
+            idx = MemoryExt.LastIndexOfEqualFrom(span, NewTValue(target, checkForOutOfRangeAccess), EqualityCompareVS);
             Assert.Equal(-1, idx);
 
-            idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target, checkForOutOfRangeAccess), EqualityCompare);
+            idx = MemoryExt.LastIndexOfEqual(rspan, NewTValue(target, checkForOutOfRangeAccess), EqualityCompareSV);
             Assert.Equal(-1, idx);
-            idx = MemoryExt.LastIndexOfEqualFrom(rspan, NewTValue(target, checkForOutOfRangeAccess), EqualityCompareFrom);
+            idx = MemoryExt.LastIndexOfEqualFrom(rspan, NewTValue(target, checkForOutOfRangeAccess), EqualityCompareVS);
             Assert.Equal(-1, idx);
         }
     }
 
-    public class LastIndexOfEqual_byte : LastIndexOfEqual<byte, byte, byte>
+    public sealed class LastIndexOfEqual_byte : LastIndexOfEqual<byte, byte, byte>
     {
         protected override byte NewT(int value) => unchecked((byte)value);
         protected override byte NewTSource(byte value, Action<byte, byte> onCompare) => value;
         protected override byte NewTValue(byte value, Action<byte, byte> onCompare) => value;
     }
 
-    public class LastIndexOfEqual_char : LastIndexOfEqual<char, char, char>
+    public sealed class LastIndexOfEqual_char : LastIndexOfEqual<char, char, char>
     {
         protected override char NewT(int value) => unchecked((char)value);
         protected override char NewTSource(char value, Action<char, char> onCompare) => value;
         protected override char NewTValue(char value, Action<char, char> onCompare) => value;
     }
 
-    public class LastIndexOfEqual_int : LastIndexOfEqual<int, int, int>
+    public sealed class LastIndexOfEqual_int : LastIndexOfEqual<int, int, int>
     {
         protected override int NewT(int value) => value;
         protected override int NewTSource(int value, Action<int, int> onCompare) => value;
         protected override int NewTValue(int value, Action<int, int> onCompare) => value;
     }
 
-    public class LastIndexOfEqual_string : LastIndexOfEqual<string, string, string>
+    public sealed class LastIndexOfEqual_string : LastIndexOfEqual<string, string, string>
     {
         protected override string NewT(int value) => value.ToString();
         protected override string NewTSource(string value, Action<string, string> onCompare) => value;
         protected override string NewTValue(string value, Action<string, string> onCompare) => value;
     }
 
-    public class LastIndexOfEqual_intEE : LastIndexOfEqual<int, TEquatable<int>, TEquatable<int>>
+    public sealed class LastIndexOfEqual_intEE : LastIndexOfEqual<int, TEquatable<int>, TEquatable<int>>
     {
         protected override int NewT(int value) => value;
         protected override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) =>
@@ -501,7 +421,7 @@ namespace DrNet.Tests.Span
             new TEquatable<int>(value, onCompare);
     }
 
-    public class LastIndexOfEqual_intEO : LastIndexOfEqual<int, TEquatable<int>, TObject<int>>
+    public sealed class LastIndexOfEqual_intEO : LastIndexOfEqual<int, TEquatable<int>, TObject<int>>
     {
         protected override int NewT(int value) => value;
         protected override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) =>
@@ -514,7 +434,7 @@ namespace DrNet.Tests.Span
         }
     }
 
-    public class LastIndexOfEqual_intOE : LastIndexOfEqual<int, TObject<int>, TEquatable<int>>
+    public sealed class LastIndexOfEqual_intOE : LastIndexOfEqual<int, TObject<int>, TEquatable<int>>
     {
         protected override int NewT(int value) => value;
         protected override TObject<int> NewTSource(int value, Action<int, int> onCompare)
@@ -527,7 +447,7 @@ namespace DrNet.Tests.Span
             new TEquatable<int>(value, onCompare);
     }
 
-    public class LastIndexOfEqual_intOO : LastIndexOfEqual<int, TObject<int>, TObject<int>>
+    public sealed class LastIndexOfEqual_intOO : LastIndexOfEqual<int, TObject<int>, TObject<int>>
     {
         protected override int NewT(int value) => value;
         protected override TObject<int> NewTSource(int value, Action<int, int> onCompare) =>
@@ -536,7 +456,7 @@ namespace DrNet.Tests.Span
             new TObject<int>(value, onCompare);
     }
 
-    public class LastIndexOfEqual_stringEE : LastIndexOfEqual<string, TEquatable<string>, TEquatable<string>>
+    public sealed class LastIndexOfEqual_stringEE : LastIndexOfEqual<string, TEquatable<string>, TEquatable<string>>
     {
         protected override string NewT(int value) => value.ToString();
         protected override TEquatable<string> NewTSource(string value, Action<string, string> onCompare) =>
@@ -545,7 +465,7 @@ namespace DrNet.Tests.Span
             new TEquatable<string>(value, onCompare);
     }
 
-    public class LastIndexOfEqual_stringEO : LastIndexOfEqual<string, TEquatable<string>, TObject<string>>
+    public sealed class LastIndexOfEqual_stringEO : LastIndexOfEqual<string, TEquatable<string>, TObject<string>>
     {
         protected override string NewT(int value) => value.ToString();
         protected override TEquatable<string> NewTSource(string value, Action<string, string> onCompare) =>
@@ -558,7 +478,7 @@ namespace DrNet.Tests.Span
         }
     }
 
-    public class LastIndexOfEqual_stringOE : LastIndexOfEqual<string, TObject<string>, TEquatable<string>>
+    public sealed class LastIndexOfEqual_stringOE : LastIndexOfEqual<string, TObject<string>, TEquatable<string>>
     {
         protected override string NewT(int value) => value.ToString();
         protected override TObject<string> NewTSource(string value, Action<string, string> onCompare)
@@ -571,7 +491,7 @@ namespace DrNet.Tests.Span
             new TEquatable<string>(value, onCompare);
     }
 
-    public class LastIndexOfEqual_stringOO : LastIndexOfEqual<string, TObject<string>, TObject<string>>
+    public sealed class LastIndexOfEqual_stringOO : LastIndexOfEqual<string, TObject<string>, TObject<string>>
     {
         protected override string NewT(int value) => value.ToString();
         protected override TObject<string> NewTSource(string value, Action<string, string> onCompare) =>

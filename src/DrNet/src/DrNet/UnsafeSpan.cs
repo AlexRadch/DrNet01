@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
 using DrNet.Internal;
 using DrNet.Internal.Unsafe;
 
@@ -14,9 +16,6 @@ namespace DrNet
     public readonly unsafe struct UnsafeSpan<T>: IList<T>, IReadOnlyList<T>, ICollection<T>, IReadOnlyCollection<T>,
         IEnumerable<T>, IEnumerable
     {
-        //[EditorBrowsable(EditorBrowsableState.Never)]
-        //public readonly SpanInternal _spanInternal;
-
         [EditorBrowsable(EditorBrowsableState.Never)]
         public readonly void* _pointer;
 
@@ -25,15 +24,19 @@ namespace DrNet
 
         public UnsafeSpan(void* pointer, int length)
         {
-            if (pointer == null)
-                throw new ArgumentNullException(nameof(pointer));
-            if (length < 0)
+            if (length < 0 || pointer == null && length > 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
             _pointer = pointer;
             _length = length;
         }
 
-        public Span<T> AsSpan() => SpanHelpers.AsSpan<T>(_pointer, _length);
+        public UnsafeSpan(Span<T> span)
+        {
+            _pointer = Unsafe.AsPointer(ref MemoryMarshal.GetReference(span));
+            _length = span.Length;
+        }
+
+        public Span<T> AsSpan() => MemoryMarshal.CreateSpan(ref Unsafe.AsRef<T>(_pointer), _length);
 
         public ref T this[int index]
         {
@@ -110,10 +113,8 @@ namespace DrNet
         public int IndexOf(T item)
         {
             if (typeof(T) == typeof(byte) || typeof(T) == typeof(char))
-            {
                 return MemoryExtensionsEquatablePatternMatching<T>.Instance.IndexOf(new Span<T>(_pointer, _length),
                     item);
-            }
             if (item is IEquatable<T> vEquatable)
                 return SpanHelpers.IndexOfEqualValueComparer(ref Unsafe.AsRef<T>(_pointer), _length, vEquatable, 
                     (eValue, sValue) => eValue.Equals(sValue));
@@ -151,35 +152,33 @@ namespace DrNet
         {
             [EditorBrowsable(EditorBrowsableState.Never)]
             public readonly UnsafeSpan<T> _span;
-            private int _index;
 
             internal Enumerator(UnsafeSpan<T> span)
             {
                 _span = span;
-                _index = -1;
+                Index = -1;
             }
 
             [EditorBrowsable(EditorBrowsableState.Never)]
-            public int Index { get => _index; }
+            public int Index { get; private set; }
 
             public bool MoveNext()
             {
-                int index = _index + 1;
+                int index = Index + 1;
                 if (index < _span.Length)
                 {
-                    _index = index;
+                    Index = index;
                     return true;
                 }
 
-                _index = _span.Length;
                 return false;
             }
 
-            public ref T Current { get => ref _span[_index]; }
+            public ref T Current { get => ref _span[Index]; }
 
             public void Reset()
             {
-                _index = -1;
+                Index = -1;
             }
 
             T IEnumerator<T>.Current => Current;
