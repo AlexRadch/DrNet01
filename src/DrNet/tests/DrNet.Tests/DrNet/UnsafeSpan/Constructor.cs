@@ -45,13 +45,12 @@ namespace DrNet.Tests.DrNet.UnsafeSpan
         [InlineData(100)]
         public void FromSpan(int length)
         {
-            var rnd = new Random(40);
             const int guardLength = 50;
 
             T[] t = new T[guardLength + length + guardLength];
 
             Span<T> span = new Span<T>(t, guardLength, length);
-            ReadOnlySpan<T> rspan = new ReadOnlySpan<T>(t, guardLength, length);
+            ReadOnlySpan<T> rspan = new ReadOnlySpan<T>(t, guardLength + 1, length);
 
             UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
             UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(rspan);
@@ -63,6 +62,91 @@ namespace DrNet.Tests.DrNet.UnsafeSpan
             Assert.Equal(length, uSpan._length);
             Assert.Equal(length, urSpan._length);
         }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(10)]
+        [InlineData(100)]
+        public void FromRef(int length)
+        {
+            const int guardLength = 50;
+
+            T[] t = new T[guardLength + length + guardLength];
+
+            Span<T> span = new Span<T>(t, guardLength, length);
+            ReadOnlySpan<T> rspan = new ReadOnlySpan<T>(t, guardLength + 1, length);
+
+            UnsafeSpan<T> uSpan = new UnsafeSpan<T>(ref MemoryMarshal.GetReference(span), length);
+            UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(in MemoryMarshal.GetReference(rspan), length);
+            unsafe
+            {
+                Assert.True(Unsafe.AsPointer(ref MemoryMarshal.GetReference(span)) == uSpan._pointer);
+                Assert.True(Unsafe.AsPointer(ref MemoryMarshal.GetReference(rspan)) == urSpan._pointer);
+            }
+            Assert.Equal(length, uSpan._length);
+            Assert.Equal(length, urSpan._length);
+        }
+
+        [Fact]
+        public void WrongLength()
+        {
+            unsafe
+            {
+                Assert.Throws<ArgumentOutOfRangeException>(() => new UnsafeSpan<T>(null, -1));
+                Assert.Throws<ArgumentOutOfRangeException>(() => new UnsafeReadOnlySpan<T>(null, -1));
+
+                Assert.Throws<ArgumentOutOfRangeException>(() => new UnsafeSpan<T>(null, 1));
+                Assert.Throws<ArgumentOutOfRangeException>(() => new UnsafeReadOnlySpan<T>(null, 1));
+
+                Assert.Throws<ArgumentOutOfRangeException>(() => new UnsafeSpan<T>(ref Unsafe.AsRef<T>(null), -1));
+                Assert.Throws<ArgumentOutOfRangeException>(() => new UnsafeReadOnlySpan<T>(in Unsafe.AsRef<T>(null),
+                    -1));
+
+                Assert.Throws<ArgumentOutOfRangeException>(() => new UnsafeSpan<T>(ref Unsafe.AsRef<T>(null), 1));
+                Assert.Throws<ArgumentOutOfRangeException>(() => new UnsafeReadOnlySpan<T>(in Unsafe.AsRef<T>(null), 
+                    1));
+            }
+
+            var rnd = new Random(40);
+            T[] t = new T[] { NewT(rnd.Next()), NewT(rnd.Next()), NewT(rnd.Next()) };
+
+            UnsafeSpan<T> WrongLengthSpanFromPointer()
+            {
+                Span<T> span = new Span<T>(t, 1, 1);
+                unsafe
+                {
+                    return new UnsafeSpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(span)), -1);
+                }
+            }
+
+            UnsafeReadOnlySpan<T> WrongLengthReadOnlySpanFromPointer()
+            {
+                ReadOnlySpan<T> span = new ReadOnlySpan<T>(t, 2, 1);
+                unsafe
+                {
+                    return new UnsafeReadOnlySpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(span)), -1);
+                }
+            }
+
+            UnsafeSpan<T> WrongLengthSpanFromRef()
+            {
+                Span<T> span = new Span<T>(t, 1, 1);
+                return new UnsafeSpan<T>(ref MemoryMarshal.GetReference(span), -1);
+            }
+
+            UnsafeReadOnlySpan<T> WrongLengthReadOnlySpanFromRef()
+            {
+                ReadOnlySpan<T> span = new ReadOnlySpan<T>(t, 2, 1);
+                return new UnsafeReadOnlySpan<T>(in MemoryMarshal.GetReference(span), -1);
+            }
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => WrongLengthSpanFromPointer());
+            Assert.Throws<ArgumentOutOfRangeException>(() => WrongLengthReadOnlySpanFromPointer());
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => WrongLengthSpanFromRef());
+            Assert.Throws<ArgumentOutOfRangeException>(() => WrongLengthReadOnlySpanFromRef());
+        }
     }
 
     public sealed class Constructor_byte : Constructor<byte>
@@ -70,7 +154,7 @@ namespace DrNet.Tests.DrNet.UnsafeSpan
         protected override byte NewT(int value) => unchecked((byte)value);
 
         [Fact]
-        public void FromDefaultFixed()
+        public void FromDefaultPointer()
         {
             Span<byte> span = default;
             ReadOnlySpan<byte> rspan = default;
@@ -98,7 +182,7 @@ namespace DrNet.Tests.DrNet.UnsafeSpan
         [InlineData(1)]
         [InlineData(10)]
         [InlineData(100)]
-        public void FromSpanFixed(int length)
+        public void FromPointer(int length)
         {
             var rnd = new Random(40);
             const int guardLength = 50;
@@ -106,7 +190,7 @@ namespace DrNet.Tests.DrNet.UnsafeSpan
             byte[] t = new byte[guardLength + length + guardLength];
 
             Span<byte> span = new Span<byte>(t, guardLength, length);
-            ReadOnlySpan<byte> rspan = new ReadOnlySpan<byte>(t, guardLength, length);
+            ReadOnlySpan<byte> rspan = new ReadOnlySpan<byte>(t, guardLength + 1, length);
 
             unsafe
             {
@@ -132,7 +216,7 @@ namespace DrNet.Tests.DrNet.UnsafeSpan
         protected override char NewT(int value) => unchecked((char)value);
 
         [Fact]
-        public void FromDefaultFixed()
+        public void FromDefaultPointer()
         {
             Span<char> span = default;
             ReadOnlySpan<char> rspan = default;
@@ -160,7 +244,7 @@ namespace DrNet.Tests.DrNet.UnsafeSpan
         [InlineData(1)]
         [InlineData(10)]
         [InlineData(100)]
-        public void FromSpanFixed(int length)
+        public void FromPointer(int length)
         {
             var rnd = new Random(40);
             const int guardLength = 50;
@@ -168,7 +252,7 @@ namespace DrNet.Tests.DrNet.UnsafeSpan
             char[] t = new char[guardLength + length + guardLength];
 
             Span<char> span = new Span<char>(t, guardLength, length);
-            ReadOnlySpan<char> rspan = new ReadOnlySpan<char>(t, guardLength, length);
+            ReadOnlySpan<char> rspan = new ReadOnlySpan<char>(t, guardLength + 1, length);
 
             unsafe
             {
@@ -194,7 +278,7 @@ namespace DrNet.Tests.DrNet.UnsafeSpan
         protected override int NewT(int value) => value;
 
         [Fact]
-        public void FromDefaultFixed()
+        public void FromDefaultPointer()
         {
             Span<int> span = default;
             ReadOnlySpan<int> rspan = default;
@@ -222,7 +306,7 @@ namespace DrNet.Tests.DrNet.UnsafeSpan
         [InlineData(1)]
         [InlineData(10)]
         [InlineData(100)]
-        public void FromSpanFixed(int length)
+        public void FromPointer(int length)
         {
             var rnd = new Random(40);
             const int guardLength = 50;
@@ -230,7 +314,7 @@ namespace DrNet.Tests.DrNet.UnsafeSpan
             int[] t = new int[guardLength + length + guardLength];
 
             Span<int> span = new Span<int>(t, guardLength, length);
-            ReadOnlySpan<int> rspan = new ReadOnlySpan<int>(t, guardLength, length);
+            ReadOnlySpan<int> rspan = new ReadOnlySpan<int>(t, guardLength + 1, length);
 
             unsafe
             {

@@ -36,6 +36,8 @@ namespace DrNet
             _length = span.Length;
         }
 
+        public UnsafeSpan(ref T reference, int length) : this(Unsafe.AsPointer(ref reference), length) { }
+
         public Span<T> AsSpan() => MemoryMarshal.CreateSpan(ref Unsafe.AsRef<T>(_pointer), _length);
 
         public ref T this[int index]
@@ -71,6 +73,14 @@ namespace DrNet
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode() => throw new NotSupportedException();
 #pragma warning restore CS0809 // Obsolete member 'memberA' overrides non-obsolete member 'memberB'.
+
+        /// <summary>
+        /// Returns a reference to the 0th element of the UnsafeSpan. If the Span is empty, returns null reference.
+        /// It can be used for pinning and is required to support the use of span within a fixed statement.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public unsafe ref T GetPinnableReference() => ref (_length != 0) ? ref Unsafe.AsRef<T>(_pointer) :
+            ref Unsafe.AsRef<T>(null);
 
         public UnsafeSpan<T> Slice(int start)
         {
