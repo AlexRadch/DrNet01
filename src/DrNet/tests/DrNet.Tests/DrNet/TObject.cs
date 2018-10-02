@@ -6,7 +6,7 @@ using System;
 
 namespace DrNet.Tests
 {
-    // A wrapped integer that invokes a custom delegate every time Object.Equals() is invoked.
+    // A wrapped T that invokes a custom delegate every time Object.Equals() is invoked.
     public struct TObject<T>
     {
         public TObject(T value, Action<T, T> onCompare = null)

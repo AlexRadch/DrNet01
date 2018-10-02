@@ -339,4 +339,9 @@ namespace DrNet.Tests.UnsafeSpan
     {
         protected override string NewT(int value) => value.ToString();
     }
+
+    public sealed class Constructor_stringE : Constructor<TEquatable<string>>
+    {
+        protected override TEquatable<string> NewT(int value) => new TEquatable<string>(value.ToString());
+    }
 }
