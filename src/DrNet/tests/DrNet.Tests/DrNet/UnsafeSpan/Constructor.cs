@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using Xunit;
 
 
-namespace DrNet.Tests.DrNet.UnsafeSpan
+namespace DrNet.Tests.UnsafeSpan
 {
     public abstract class Constructor<T> : SpanTest<T>
     {
