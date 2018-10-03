@@ -18,8 +18,8 @@ namespace DrNet.Tests.UnsafeSpan
                 Assert.True(null == uSpan._pointer);
                 Assert.True(null == urSpan._pointer);
             }
-            Assert.Equal(0, uSpan._length);
-            Assert.Equal(0, urSpan._length);
+            Assert.Equal(0, uSpan.Length);
+            Assert.Equal(0, urSpan.Length);
         }
 
         [Fact]
@@ -34,8 +34,8 @@ namespace DrNet.Tests.UnsafeSpan
                 Assert.True(null == uSpan._pointer);
                 Assert.True(null == urSpan._pointer);
             }
-            Assert.Equal(0, uSpan._length);
-            Assert.Equal(0, urSpan._length);
+            Assert.Equal(0, uSpan.Length);
+            Assert.Equal(0, urSpan.Length);
         }
 
         [Theory]
@@ -59,8 +59,8 @@ namespace DrNet.Tests.UnsafeSpan
                 Assert.True(Unsafe.AsPointer(ref MemoryMarshal.GetReference(span)) == uSpan._pointer);
                 Assert.True(Unsafe.AsPointer(ref MemoryMarshal.GetReference(rspan)) == urSpan._pointer);
             }
-            Assert.Equal(length, uSpan._length);
-            Assert.Equal(length, urSpan._length);
+            Assert.Equal(length, uSpan.Length);
+            Assert.Equal(length, urSpan.Length);
         }
 
         [Theory]
@@ -84,8 +84,8 @@ namespace DrNet.Tests.UnsafeSpan
                 Assert.True(Unsafe.AsPointer(ref MemoryMarshal.GetReference(span)) == uSpan._pointer);
                 Assert.True(Unsafe.AsPointer(ref MemoryMarshal.GetReference(rspan)) == urSpan._pointer);
             }
-            Assert.Equal(length, uSpan._length);
-            Assert.Equal(length, urSpan._length);
+            Assert.Equal(length, uSpan.Length);
+            Assert.Equal(length, urSpan.Length);
         }
 
         [Fact]
@@ -165,14 +165,14 @@ namespace DrNet.Tests.UnsafeSpan
                 {
                     UnsafeSpan<byte> uSpan = new UnsafeSpan<byte>(p, span.Length);
                     Assert.True(null == uSpan._pointer);
-                    Assert.Equal(0, uSpan._length);
+                    Assert.Equal(0, uSpan.Length);
                 }
 
                 fixed(byte* p = rspan)
                 {
                     UnsafeReadOnlySpan<byte> urSpan = new UnsafeReadOnlySpan<byte>(p, rspan.Length);
                     Assert.True(null == urSpan._pointer);
-                    Assert.Equal(0, urSpan._length);
+                    Assert.Equal(0, urSpan.Length);
                 }
             }
         }
@@ -198,14 +198,14 @@ namespace DrNet.Tests.UnsafeSpan
                 {
                     UnsafeSpan<byte> uSpan = new UnsafeSpan<byte>(p, span.Length);
                     Assert.True(Unsafe.AsPointer(ref span.GetPinnableReference()) == uSpan._pointer);
-                    Assert.Equal(length, uSpan._length);
+                    Assert.Equal(length, uSpan.Length);
                 }
 
                 fixed(byte* p = rspan)
                 {
                     UnsafeReadOnlySpan<byte> urSpan = new UnsafeReadOnlySpan<byte>(p, rspan.Length);
                     Assert.True(Unsafe.AsPointer(ref Unsafe.AsRef(in rspan.GetPinnableReference())) == urSpan._pointer);
-                    Assert.Equal(length, urSpan._length);
+                    Assert.Equal(length, urSpan.Length);
                 }
             }
         }
@@ -227,14 +227,14 @@ namespace DrNet.Tests.UnsafeSpan
                 {
                     UnsafeSpan<char> uSpan = new UnsafeSpan<char>(p, span.Length);
                     Assert.True(null == uSpan._pointer);
-                    Assert.Equal(0, uSpan._length);
+                    Assert.Equal(0, uSpan.Length);
                 }
 
                 fixed(char* p = rspan)
                 {
                     UnsafeReadOnlySpan<char> urSpan = new UnsafeReadOnlySpan<char>(p, rspan.Length);
                     Assert.True(null == urSpan._pointer);
-                    Assert.Equal(0, urSpan._length);
+                    Assert.Equal(0, urSpan.Length);
                 }
             }
         }
@@ -260,14 +260,14 @@ namespace DrNet.Tests.UnsafeSpan
                 {
                     UnsafeSpan<char> uSpan = new UnsafeSpan<char>(p, span.Length);
                     Assert.True(Unsafe.AsPointer(ref span.GetPinnableReference()) == uSpan._pointer);
-                    Assert.Equal(length, uSpan._length);
+                    Assert.Equal(length, uSpan.Length);
                 }
 
                 fixed(char* p = rspan)
                 {
                     UnsafeReadOnlySpan<char> urSpan = new UnsafeReadOnlySpan<char>(p, rspan.Length);
                     Assert.True(Unsafe.AsPointer(ref Unsafe.AsRef(in rspan.GetPinnableReference())) == urSpan._pointer);
-                    Assert.Equal(length, urSpan._length);
+                    Assert.Equal(length, urSpan.Length);
                 }
             }
         }
@@ -289,14 +289,14 @@ namespace DrNet.Tests.UnsafeSpan
                 {
                     UnsafeSpan<int> uSpan = new UnsafeSpan<int>(p, span.Length);
                     Assert.True(null == uSpan._pointer);
-                    Assert.Equal(0, uSpan._length);
+                    Assert.Equal(0, uSpan.Length);
                 }
 
                 fixed(int* p = rspan)
                 {
                     UnsafeReadOnlySpan<int> urSpan = new UnsafeReadOnlySpan<int>(p, rspan.Length);
                     Assert.True(null == urSpan._pointer);
-                    Assert.Equal(0, urSpan._length);
+                    Assert.Equal(0, urSpan.Length);
                 }
             }
         }
@@ -322,14 +322,14 @@ namespace DrNet.Tests.UnsafeSpan
                 {
                     UnsafeSpan<int> uSpan = new UnsafeSpan<int>(p, span.Length);
                     Assert.True(Unsafe.AsPointer(ref span.GetPinnableReference()) == uSpan._pointer);
-                    Assert.Equal(length, uSpan._length);
+                    Assert.Equal(length, uSpan.Length);
                 }
 
                 fixed(int* p = rspan)
                 {
                     UnsafeReadOnlySpan<int> urSpan = new UnsafeReadOnlySpan<int>(p, rspan.Length);
                     Assert.True(Unsafe.AsPointer(ref Unsafe.AsRef(in rspan.GetPinnableReference())) == urSpan._pointer);
-                    Assert.Equal(length, urSpan._length);
+                    Assert.Equal(length, urSpan.Length);
                 }
             }
         }

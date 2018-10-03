@@ -52,7 +52,7 @@ namespace DrNet
 
         public int Length => _length;
 
-        public bool IsEmpty => 0 >= (uint)_length;
+        public bool IsEmpty => 0 >= (uint)_length; // Workaround for https://github.com/dotnet/coreclr/issues/19620
 
         public void Clear() => AsSpan().Clear();
 
