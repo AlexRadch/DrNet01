@@ -2,16 +2,11 @@
 
 namespace DrNet.Tests
 {
-    public abstract class SpanTest<T>
+    public abstract class SpanTest<T>: IDisposable
     {
         protected abstract T NewT(int value);
 
-        protected event Action<T, T> OnCompare;
-
-        protected void DoOnCompare(T t1, T t2)
-        {
-            OnCompare?.Invoke(t1, t2);
-        }
+        protected int handle;
 
         protected bool EqualityCompareT(T t1, T t2)
         {
@@ -19,11 +14,53 @@ namespace DrNet.Tests
                 return equatable.Equals(t2);
             return t1.Equals(t2);
         }
+
+        #region IDisposable Support
+
+        private bool disposedValue = false; // Для определения избыточных вызовов
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                disposedValue = true;
+
+                if (disposing)
+                {
+                    // TODO: освободить управляемое состояние (управляемые объекты).
+                }
+
+                // TODO: освободить неуправляемые ресурсы (неуправляемые объекты) и переопределить ниже метод завершения.
+                // TODO: задать большим полям значение NULL.
+
+                if (handle > 0)
+                    OnCompareActions<T>.RemoveHandler(handle);
+                handle = 0;
+            }
+        }
+
+        // TODO: переопределить метод завершения, только если Dispose(bool disposing) выше включает код для освобождения неуправляемых ресурсов.
+        ~SpanTest()
+        {
+            // Не изменяйте этот код. Разместите код очистки выше, в методе Dispose(bool disposing).
+            Dispose(false);
+        }
+
+        // Этот код добавлен для правильной реализации шаблона высвобождаемого класса.
+        public void Dispose()
+        {
+            // Не изменяйте этот код. Разместите код очистки выше, в методе Dispose(bool disposing).
+            Dispose(true);
+            // TODO: раскомментировать следующую строку, если метод завершения переопределен выше.
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
     }
 
     public abstract class SpanTest<T, TSource> : SpanTest<T>
     {
-        protected abstract TSource NewTSource(T value, Action<T, T> onCompare = default);
+        protected abstract TSource NewTSource(T value, int handle = 0);
 
         public static T AsT(TSource item)
         {
@@ -41,14 +78,14 @@ namespace DrNet.Tests
             T t1 = AsT(s1);
             T t2 = AsT(s2);
 
-            DoOnCompare(t1, t2);
+            OnCompareActions<T>.OnCompare(handle, t1, t2);
             return EqualityCompareT(t1, t2);
         }
     }
 
     public abstract class SpanTest<T, TSource, TValue> : SpanTest<T, TSource>
     {
-        protected abstract TValue NewTValue(T value, Action<T, T> onCompare = default);
+        protected abstract TValue NewTValue(T value, int handle = 0);
 
         public static T AsT(TValue item)
         {
@@ -66,7 +103,7 @@ namespace DrNet.Tests
             T t1 = AsT(s);
             T t2 = AsT(v);
 
-            DoOnCompare(t1, t2);
+            OnCompareActions<T>.OnCompare(handle, t1, t2);
             return EqualityCompareT(t1, t2);
         }
 
@@ -75,8 +112,15 @@ namespace DrNet.Tests
             T t1 = AsT(v);
             T t2 = AsT(s);
 
-            DoOnCompare(t1, t2);
+            OnCompareActions<T>.OnCompare(handle, t1, t2);
             return EqualityCompareT(t1, t2);
+        }
+
+        protected bool IsLogSupported()
+        {
+            bool sourceWithLog = typeof(TSource) == typeof(TObject<T>) || typeof(TSource) == typeof(TEquatable<T>);
+            bool valueWithLog = typeof(TValue) == typeof(TObject<T>) || typeof(TValue) == typeof(TEquatable<T>);
+            return sourceWithLog || valueWithLog;
         }
     }
 }

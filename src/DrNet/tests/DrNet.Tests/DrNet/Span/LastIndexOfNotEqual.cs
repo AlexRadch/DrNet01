@@ -14,8 +14,8 @@ namespace DrNet.Tests.Span
 
             Span<TSource> span = new TSource[] { NewTSource(NewT(rnd.Next())), NewTSource(NewT(rnd.Next())),
                 NewTSource(NewT(rnd.Next())) }.AsSpan(1, 0);
-            ReadOnlySpan<TSource> rspan = new TSource[] { NewTSource(NewT(rnd.Next())), NewTSource(NewT(rnd.Next())),
-                NewTSource(NewT(rnd.Next())) }.AsReadOnlySpan(2, 0);
+            ReadOnlySpan<TSource> rspan = new TSource[] { NewTSource(NewT(rnd.Next())),
+                NewTSource(NewT(rnd.Next())), NewTSource(NewT(rnd.Next())) }.AsReadOnlySpan(2, 0);
 
             int idx = MemoryExt.LastIndexOfNotEqual(span, default(TValue));
             Assert.Equal(-1, idx);
@@ -230,12 +230,14 @@ namespace DrNet.Tests.Span
         [InlineData(100)]
         public void OnNoMatchMakeSureEveryElementIsCompared(int length)
         {
+            handle = OnCompareActions<T>.CreateHandler(null);
+            TLog<T> log = new TLog<T>(handle);
+
             var rnd = new Random(45 * (length + 1));
             T target = NewT(rnd.Next());
-            TLog<T> log = new TLog<T>();
 
             TSource[] s = new TSource[length];
-            Array.Fill(s, NewTSource(target, log.Add));
+            Array.Fill(s, NewTSource(target, handle));
 
             // Since we asked for a non-existent value, make sure each element of the array was compared once.
             // (Strictly speaking, it would not be illegal for LastIndexOfNotEqual to compare an element more than once but
@@ -251,32 +253,22 @@ namespace DrNet.Tests.Span
             Span<TSource> span = new Span<TSource>(s);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
 
-            {
-                EqualityCompareSV(NewTSource(NewT(1), log.Add), NewTValue(NewT(1), log.Add));
-                EqualityCompareVS(NewTValue(NewT(1), log.Add), NewTSource(NewT(1), log.Add));
-            }
-            bool logSupported = log.Count == 2;
-            if (!logSupported)
-            {
-                bool sourceWithLog = typeof(TSource) == typeof(TObject<T>) && typeof(TSource) == typeof(TEquatable<T>);
-                bool valueWithLog = typeof(TValue) == typeof(TObject<T>) && typeof(TValue) == typeof(TEquatable<T>);
-                Assert.False(sourceWithLog && valueWithLog);
-            }
+            bool logSupported = IsLogSupported();
 
             log.Clear();
-            int idx = MemoryExt.LastIndexOfNotEqual(span, NewTValue(target, log.Add));
+            int idx = MemoryExt.LastIndexOfNotEqual(span, NewTValue(target, handle));
             Assert.Equal(-1, idx);
             if (logSupported)
                 CheckCompares();
 
             log.Clear();
-            idx = MemoryExt.LastIndexOfNotEqual(rspan, NewTValue(target, log.Add));
+            idx = MemoryExt.LastIndexOfNotEqual(rspan, NewTValue(target, handle));
             Assert.Equal(-1, idx);
             if (logSupported)
                 CheckCompares();
 
-            if (!logSupported)
-                OnCompare += log.Add;
+            //if (!logSupported)
+            //    OnCompare += log.Add;
 
             //log.Clear();
             //idx = MemoryExt.LastIndexOfNotEqual(span, NewTValue(target, log.Add), EqualityCompare);
@@ -297,6 +289,10 @@ namespace DrNet.Tests.Span
             //idx = MemoryExt.LastIndexOfNotEqualFrom(rspan, NewTValue(target, log.Add), EqualityCompareFrom);
             //Assert.Equal(-1, idx);
             //CheckCompares();
+
+            log.Dispose();
+            OnCompareActions<T>.RemoveHandler(handle);
+            handle = 0;
         }
 
         [Theory]
@@ -306,6 +302,8 @@ namespace DrNet.Tests.Span
         [InlineData(100)]
         public void MakeSureNoChecksGoOutOfRange(int length)
         {
+            handle = OnCompareActions<T>.CreateHandler(null);
+
             var rnd = new Random(46 * (length + 1));
             T target = NewT(rnd.Next());
             const int guardLength = 50;
@@ -322,21 +320,22 @@ namespace DrNet.Tests.Span
                     EqualityCompareT(y, guard) || EqualityCompareT(guard, y))
                     throw new Exception("Detected out of range access in LastIndexOfNotEqual()");
             }
+            OnCompareActions<T>.Add(handle, checkForOutOfRangeAccess);
 
             TSource[] s = new TSource[guardLength + length + guardLength];
-            Array.Fill(s, NewTSource(guard, checkForOutOfRangeAccess));
-            Array.Fill(s, NewTSource(target, checkForOutOfRangeAccess), guardLength, length);
+            Array.Fill(s, NewTSource(guard, handle));
+            Array.Fill(s, NewTSource(target, handle), guardLength, length);
 
             Span<TSource> span = new Span<TSource>(s, guardLength, length);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s, guardLength, length);
 
-            int idx = MemoryExt.LastIndexOfNotEqual(span, NewTValue(target, checkForOutOfRangeAccess));
+            int idx = MemoryExt.LastIndexOfNotEqual(span, NewTValue(target, handle));
             Assert.Equal(-1, idx);
 
-            idx = MemoryExt.LastIndexOfNotEqual(rspan, NewTValue(target, checkForOutOfRangeAccess));
+            idx = MemoryExt.LastIndexOfNotEqual(rspan, NewTValue(target, handle));
             Assert.Equal(-1, idx);
 
-            OnCompare += checkForOutOfRangeAccess;
+            //OnCompare += checkForOutOfRangeAccess;
 
             //idx = MemoryExt.LastIndexOfNotEqual(span, NewTValue(target, checkForOutOfRangeAccess), EqualityCompare);
             //Assert.Equal(-1, idx);
@@ -347,122 +346,100 @@ namespace DrNet.Tests.Span
             //Assert.Equal(-1, idx);
             //idx = MemoryExt.LastIndexOfNotEqualFrom(rspan, NewTValue(target, checkForOutOfRangeAccess), EqualityCompareFrom);
             //Assert.Equal(-1, idx);
+
+            OnCompareActions<T>.RemoveHandler(handle);
+            handle = 0;
         }
     }
 
     public sealed class LastIndexOfNotEqual_byte : LastIndexOfNotEqual<byte, byte, byte>
     {
         protected override byte NewT(int value) => unchecked((byte)value);
-        protected override byte NewTSource(byte value, Action<byte, byte> onCompare) => value;
-        protected override byte NewTValue(byte value, Action<byte, byte> onCompare) => value;
+        protected override byte NewTSource(byte value, int handle = 0) => value;
+        protected override byte NewTValue(byte value, int handle = 0) => value;
     }
 
     public sealed class LastIndexOfNotEqual_char : LastIndexOfNotEqual<char, char, char>
     {
         protected override char NewT(int value) => unchecked((char)value);
-        protected override char NewTSource(char value, Action<char, char> onCompare) => value;
-        protected override char NewTValue(char value, Action<char, char> onCompare) => value;
+        protected override char NewTSource(char value, int handle = 0) => value;
+        protected override char NewTValue(char value, int handle = 0) => value;
     }
 
     public sealed class LastIndexOfNotEqual_int : LastIndexOfNotEqual<int, int, int>
     {
         protected override int NewT(int value) => value;
-        protected override int NewTSource(int value, Action<int, int> onCompare) => value;
-        protected override int NewTValue(int value, Action<int, int> onCompare) => value;
+        protected override int NewTSource(int value, int handle = 0) => value;
+        protected override int NewTValue(int value, int handle = 0) => value;
     }
 
     public sealed class LastIndexOfNotEqual_string : LastIndexOfNotEqual<string, string, string>
     {
         protected override string NewT(int value) => value.ToString();
-        protected override string NewTSource(string value, Action<string, string> onCompare) => value;
-        protected override string NewTValue(string value, Action<string, string> onCompare) => value;
+        protected override string NewTSource(string value, int handle = 0) => value;
+        protected override string NewTValue(string value, int handle = 0) => value;
     }
 
     public sealed class LastIndexOfNotEqual_intEE : LastIndexOfNotEqual<int, TEquatable<int>, TEquatable<int>>
     {
         protected override int NewT(int value) => value;
-        protected override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) =>
-            new TEquatable<int>(value, onCompare);
-        protected override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) =>
-            new TEquatable<int>(value, onCompare);
+        protected override TEquatable<int> NewTSource(int value, int handle = 0) => new TEquatable<int>(value, handle);
+        protected override TEquatable<int> NewTValue(int value, int handle = 0) => new TEquatable<int>(value, handle);
     }
 
     public sealed class LastIndexOfNotEqual_intEO : LastIndexOfNotEqual<int, TEquatable<int>, TObject<int>>
     {
         protected override int NewT(int value) => value;
-        protected override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) =>
-            new TEquatable<int>(value, onCompare);
-        protected override TObject<int> NewTValue(int value, Action<int, int> onCompare)
-        {
-            var result = new TObject<int>(value, onCompare);
-            result.OnCompare += (x, y) => { throw new Exception("Detected Object.Equals comparition call"); };
-            return result;
-        }
+        protected override TEquatable<int> NewTSource(int value, int handle = 0) => new TEquatable<int>(value, handle);
+        protected override TObject<int> NewTValue(int value, int handle = -1) => new TObject<int>(value, -1);
     }
 
     public sealed class LastIndexOfNotEqual_intOE : LastIndexOfNotEqual<int, TObject<int>, TEquatable<int>>
     {
         protected override int NewT(int value) => value;
-        protected override TObject<int> NewTSource(int value, Action<int, int> onCompare)
-        {
-            var result = new TObject<int>(value, onCompare);
-            result.OnCompare += (x, y) => { throw new Exception("Detected Object.Equals comparition call"); };
-            return result;
-        }
-        protected override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) =>
-            new TEquatable<int>(value, onCompare);
+        protected override TObject<int> NewTSource(int value, int handle = -1) => new TObject<int>(value, -1);
+        protected override TEquatable<int> NewTValue(int value, int handle = 0) => new TEquatable<int>(value, handle);
     }
 
     public sealed class LastIndexOfNotEqual_intOO : LastIndexOfNotEqual<int, TObject<int>, TObject<int>>
     {
         protected override int NewT(int value) => value;
-        protected override TObject<int> NewTSource(int value, Action<int, int> onCompare) =>
-            new TObject<int>(value, onCompare);
-        protected override TObject<int> NewTValue(int value, Action<int, int> onCompare) =>
-            new TObject<int>(value, onCompare);
+        protected override TObject<int> NewTSource(int value, int handle = 0) => new TObject<int>(value, handle);
+        protected override TObject<int> NewTValue(int value, int handle = 0) => new TObject<int>(value, handle);
     }
 
-    public sealed class LastIndexOfNotEqual_stringEE : LastIndexOfNotEqual<string, TEquatable<string>, TEquatable<string>>
+    public sealed class LastIndexOfNotEqual_stringEE : 
+        LastIndexOfNotEqual<string, TEquatable<string>, TEquatable<string>>
     {
         protected override string NewT(int value) => value.ToString();
-        protected override TEquatable<string> NewTSource(string value, Action<string, string> onCompare) =>
-            new TEquatable<string>(value, onCompare);
-        protected override TEquatable<string> NewTValue(string value, Action<string, string> onCompare) =>
-            new TEquatable<string>(value, onCompare);
+        protected override TEquatable<string> NewTSource(string value, int handle = 0) =>
+            new TEquatable<string>(value, handle);
+        protected override TEquatable<string> NewTValue(string value, int handle = 0) =>
+            new TEquatable<string>(value, handle);
     }
 
     public sealed class LastIndexOfNotEqual_stringEO : LastIndexOfNotEqual<string, TEquatable<string>, TObject<string>>
     {
         protected override string NewT(int value) => value.ToString();
-        protected override TEquatable<string> NewTSource(string value, Action<string, string> onCompare) =>
-            new TEquatable<string>(value, onCompare);
-        protected override TObject<string> NewTValue(string value, Action<string, string> onCompare)
-        {
-            var result = new TObject<string>(value, onCompare);
-            result.OnCompare += (x, y) => { throw new Exception("Detected Object.Equals comparition call"); };
-            return result;
-        }
+        protected override TEquatable<string> NewTSource(string value, int handle = 0) => 
+            new TEquatable<string>(value, handle);
+        protected override TObject<string> NewTValue(string value, int handle = -1) => new TObject<string>(value, -1);
     }
 
     public sealed class LastIndexOfNotEqual_stringOE : LastIndexOfNotEqual<string, TObject<string>, TEquatable<string>>
     {
         protected override string NewT(int value) => value.ToString();
-        protected override TObject<string> NewTSource(string value, Action<string, string> onCompare)
-        {
-            var result = new TObject<string>(value, onCompare);
-            result.OnCompare += (x, y) => { throw new Exception("Detected Object.Equals comparition call"); };
-            return result;
-        }
-        protected override TEquatable<string> NewTValue(string value, Action<string, string> onCompare) =>
-            new TEquatable<string>(value, onCompare);
+        protected override TObject<string> NewTSource(string value, int handle = -1) => new TObject<string>(value, -1);
+        protected override TEquatable<string> NewTValue(string value, int handle = 0) =>
+            new TEquatable<string>(value, handle);
     }
 
     public sealed class LastIndexOfNotEqual_stringOO : LastIndexOfNotEqual<string, TObject<string>, TObject<string>>
     {
         protected override string NewT(int value) => value.ToString();
-        protected override TObject<string> NewTSource(string value, Action<string, string> onCompare) =>
-            new TObject<string>(value, onCompare);
-        protected override TObject<string> NewTValue(string value, Action<string, string> onCompare) =>
-            new TObject<string>(value, onCompare);
+        protected override TObject<string> NewTSource(string value, int handle = 0) =>
+            new TObject<string>(value, handle);
+        protected override TObject<string> NewTValue(string value, int handle = 0) =>
+            new TObject<string>(value, handle);
     }
 }

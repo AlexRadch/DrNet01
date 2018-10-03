@@ -9,32 +9,29 @@ namespace DrNet.Tests
     // A wrapped T that invokes a custom delegate every time Object.Equals() is invoked.
     public struct TObject<T>
     {
-        public TObject(T value, Action<T, T> onCompare = null)
-        {
-            Value = value;
-            OnCompare = default;
+        private readonly int _handle;
 
-            if (onCompare != null)
-                OnCompare += onCompare;
+        public TObject(T value, int handle = 0)
+        {
+            _handle = handle;
+            Value = value;
         }
+
+        public T Value { get; }
 
         private bool Equals(T other)
         {
-            OnCompare?.Invoke(Value, other);
+            if (_handle < 0)
+                throw new Exception("Detected Object.Equals comparition call");
+            OnCompareActions<T>.OnCompare(_handle, Value, other);
             if (Value is IEquatable<T> equatable)
                 return equatable.Equals(other);
             return Value.Equals(other);
         }
 
-        private bool Equals(TObject<T> other)
-        {
-            return Equals(other.Value);
-        }
+        private bool Equals(TObject<T> other) => Equals(other.Value);
 
-        private bool Equals(TEquatable<T> other)
-        {
-            return Equals(other.Value);
-        }
+        private bool Equals(TEquatable<T> other) => Equals(other.Value);
 
         public override bool Equals(object obj)
         {
@@ -49,13 +46,6 @@ namespace DrNet.Tests
 
         public override int GetHashCode() => Value.GetHashCode();
 
-        public override string ToString()
-        {
-            return Value.ToString();
-        }
-
-        public T Value { get; }
-
-        public event Action<T, T> OnCompare;
+        public override string ToString() => Value.ToString();
     }
 }

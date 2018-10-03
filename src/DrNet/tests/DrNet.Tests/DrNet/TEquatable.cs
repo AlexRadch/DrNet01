@@ -6,53 +6,37 @@ using System;
 
 namespace DrNet.Tests
 {
-    // A wrapped T that invokes a custom delegate every time Object.Equals() is invoked.
+    // A wrapped T that invokes a custom delegate every time IEquatable.Equals() is invoked.
     public struct TEquatable<T>: IEquatable<TEquatable<T>>, IEquatable<TObject<T>>
     {
-        public TEquatable(T value, Action<T, T> onCompare = null)
+        private readonly int _handle;
+
+        public TEquatable(T value, int handle)
         {
+            _handle = handle;
             Value = value;
-            OnCompareTEquatableT = default;
-            OnCompareTObjectT = default;
-
-            if (onCompare != null)
-            {
-                OnCompareTEquatableT += onCompare;
-                OnCompareTObjectT += onCompare;
-            }
-        }
-
-        public bool Equals(TEquatable<T> other)
-        {
-            OnCompareTEquatableT?.Invoke(Value, other.Value);
-            if (Value is IEquatable<T> equatable)
-                return equatable.Equals(other.Value);
-            return Value.Equals(other.Value);
-        }
-
-        public bool Equals(TObject<T> other)
-        {
-            OnCompareTObjectT?.Invoke(Value, other.Value);
-            if (Value is IEquatable<T> equatable)
-                return equatable.Equals(other.Value);
-            return Value.Equals(other.Value);
-        }
-
-        public override bool Equals(object obj)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override int GetHashCode() => Value.GetHashCode();
-
-        public override string ToString()
-        {
-            return Value.ToString();
         }
 
         public T Value { get; }
 
-        public event Action<T, T> OnCompareTEquatableT;
-        public event Action<T, T> OnCompareTObjectT;
+        private bool Equals(T other)
+        {
+            if (_handle < -1)
+                throw new Exception("Detected Object.Equals comparition call");
+            OnCompareActions<T>.OnCompare(_handle, Value, other);
+            if (Value is IEquatable<T> equatable)
+                return equatable.Equals(other);
+            return Value.Equals(other);
+        }
+
+        public bool Equals(TEquatable<T> other) => Equals(other.Value);
+
+        public bool Equals(TObject<T> other) => Equals(other.Value);
+
+        public override bool Equals(object obj) => throw new NotImplementedException();
+
+        public override int GetHashCode() => Value.GetHashCode();
+
+        public override string ToString() => Value.ToString();
     }
 }

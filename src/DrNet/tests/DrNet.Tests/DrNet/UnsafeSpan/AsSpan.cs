@@ -60,26 +60,34 @@ namespace DrNet.Tests.UnsafeSpan
             Span<T> span = new Span<T>(t, guardLength, length);
             ReadOnlySpan<T> rspan =  new ReadOnlySpan<T>(t, guardLength + 1, length);
 
-            UnsafeSpan<T> uSpan;
-            UnsafeReadOnlySpan<T> urSpan;
-            unsafe
+            GCHandle gch = GCHandle.Alloc(t, GCHandleType.Pinned);
+            try
             {
-                uSpan = new UnsafeSpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(span)), span.Length);
-                urSpan = new UnsafeReadOnlySpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(rspan)),
-                    rspan.Length);
+                UnsafeSpan<T> uSpan;
+                UnsafeReadOnlySpan<T> urSpan;
+                unsafe
+                {
+                    uSpan = new UnsafeSpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(span)), span.Length);
+                    urSpan = new UnsafeReadOnlySpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(rspan)),
+                        rspan.Length);
+                }
+                Assert.True(span == uSpan.AsSpan());
+                Assert.True(rspan == urSpan.AsSpan());
+
+                uSpan = new UnsafeSpan<T>(span);
+                urSpan = new UnsafeReadOnlySpan<T>(rspan);
+                Assert.True(span == uSpan.AsSpan());
+                Assert.True(rspan == urSpan.AsSpan());
+
+                uSpan = new UnsafeSpan<T>(ref MemoryMarshal.GetReference(span), span.Length);
+                urSpan = new UnsafeReadOnlySpan<T>(in MemoryMarshal.GetReference(rspan), span.Length);
+                Assert.True(span == uSpan.AsSpan());
+                Assert.True(rspan == urSpan.AsSpan());
             }
-            Assert.True(span == uSpan.AsSpan());
-            Assert.True(rspan == urSpan.AsSpan());
-
-            uSpan = new UnsafeSpan<T>(span);
-            urSpan = new UnsafeReadOnlySpan<T>(rspan);
-            Assert.True(span == uSpan.AsSpan());
-            Assert.True(rspan == urSpan.AsSpan());
-
-            uSpan = new UnsafeSpan<T>(ref MemoryMarshal.GetReference(span), span.Length);
-            urSpan = new UnsafeReadOnlySpan<T>(in MemoryMarshal.GetReference(rspan), span.Length);
-            Assert.True(span == uSpan.AsSpan());
-            Assert.True(rspan == urSpan.AsSpan());
+            finally
+            {
+                gch.Free();
+            }
         }
     }
 
@@ -98,13 +106,18 @@ namespace DrNet.Tests.UnsafeSpan
         protected override int NewT(int value) => value;
     }
 
-    public sealed class AsSpan_string : AsSpan<string>
+    public sealed class AsSpan_intT : AsSpan<Tuple<int>>
     {
-        protected override string NewT(int value) => value.ToString();
+        protected override Tuple<int> NewT(int value) => new Tuple<int>(value);
     }
 
-    public sealed class AsSpan_stringE : AsSpan<TEquatable<string>>
-    {
-        protected override TEquatable<string> NewT(int value) => new TEquatable<string>(value.ToString());
-    }
+    //public sealed class AsSpan_string : AsSpan<string>
+    //{
+    //    protected override string NewT(int value) => value.ToString();
+    //}
+
+    //public sealed class AsSpan_stringE : AsSpan<TEquatable<string>>
+    //{
+    //    protected override TEquatable<string> NewT(int value) => new TEquatable<string>(value.ToString());
+    //}
 }

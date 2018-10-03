@@ -77,15 +77,23 @@ namespace DrNet.Tests.UnsafeSpan
             Span<T> span = new Span<T>(t, guardLength, length);
             ReadOnlySpan<T> rspan = new ReadOnlySpan<T>(t, guardLength + 1, length);
 
-            UnsafeSpan<T> uSpan = new UnsafeSpan<T>(ref MemoryMarshal.GetReference(span), length);
-            UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(in MemoryMarshal.GetReference(rspan), length);
-            unsafe
+            GCHandle gch = GCHandle.Alloc(t, GCHandleType.Pinned);
+            try
             {
-                Assert.True(Unsafe.AsPointer(ref MemoryMarshal.GetReference(span)) == uSpan._pointer);
-                Assert.True(Unsafe.AsPointer(ref MemoryMarshal.GetReference(rspan)) == urSpan._pointer);
+                UnsafeSpan<T> uSpan = new UnsafeSpan<T>(ref MemoryMarshal.GetReference(span), length);
+                UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(in MemoryMarshal.GetReference(rspan), length);
+                unsafe
+                {
+                    Assert.True(Unsafe.AsPointer(ref MemoryMarshal.GetReference(span)) == uSpan._pointer);
+                    Assert.True(Unsafe.AsPointer(ref MemoryMarshal.GetReference(rspan)) == urSpan._pointer);
+                }
+                Assert.Equal(length, uSpan.Length);
+                Assert.Equal(length, urSpan.Length);
             }
-            Assert.Equal(length, uSpan.Length);
-            Assert.Equal(length, urSpan.Length);
+            finally
+            {
+                gch.Free();
+            }
         }
 
         [Fact]
@@ -333,15 +341,5 @@ namespace DrNet.Tests.UnsafeSpan
                 }
             }
         }
-    }
-
-    public sealed class Constructor_string : Constructor<string>
-    {
-        protected override string NewT(int value) => value.ToString();
-    }
-
-    public sealed class Constructor_stringE : Constructor<TEquatable<string>>
-    {
-        protected override TEquatable<string> NewT(int value) => new TEquatable<string>(value.ToString());
     }
 }

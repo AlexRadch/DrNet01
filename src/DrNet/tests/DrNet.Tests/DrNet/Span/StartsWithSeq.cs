@@ -14,10 +14,10 @@ namespace DrNet.Tests.Span
 
             Span<TSource> span = new TSource[] { NewTSource(NewT(rnd.Next())), NewTSource(NewT(rnd.Next())),
                 NewTSource(NewT(rnd.Next())) }.AsSpan(1, 0);
-            ReadOnlySpan<TSource> rspan = new TSource[] { NewTSource(NewT(rnd.Next())), NewTSource(NewT(rnd.Next())),
-                NewTSource(NewT(rnd.Next())) }.AsReadOnlySpan(2, 0);
-            ReadOnlySpan<TValue> values = new TValue[] { NewTValue(NewT(rnd.Next())), NewTValue(NewT(rnd.Next())),
-                NewTValue(NewT(rnd.Next())) }.AsReadOnlySpan(3, 0);
+            ReadOnlySpan<TSource> rspan = new TSource[] { NewTSource(NewT(rnd.Next())),
+                NewTSource(NewT(rnd.Next())), NewTSource(NewT(rnd.Next())) }.AsReadOnlySpan(2, 0);
+            ReadOnlySpan<TValue> values = new TValue[] { NewTValue(NewT(rnd.Next())),
+                NewTValue(NewT(rnd.Next())), NewTValue(NewT(rnd.Next())) }.AsReadOnlySpan(3, 0);
 
             bool b = MemoryExt.StartsWithSeq(span, values);
             Assert.True(b);
@@ -195,18 +195,20 @@ namespace DrNet.Tests.Span
         [InlineData(100)]
         public void OnEqualSpansMakeSureEveryElementIsCompared(int length)
         {
+            handle = OnCompareActions<T>.CreateHandler(null);
+            TLog<T> log = new TLog<T>(handle);
+
             var rnd = new Random(45 * (length + 1));
-            TLog<T> log = new TLog<T>();
 
             T[] t = new T[length];
             TSource[] s = new TSource[length + 1];
             TValue[] v = new TValue[length];
-            s[length] = NewTSource(NewT(rnd.Next()), log.Add);
+            s[length] = NewTSource(NewT(rnd.Next()), handle);
             for (int i = 0; i < length; i++)
             {
                 t[i] = NewT(rnd.Next());
-                s[i] = NewTSource(t[i], log.Add);
-                v[i] = NewTValue(t[i], log.Add);
+                s[i] = NewTSource(t[i], handle);
+                v[i] = NewTValue(t[i], handle);
             }
 
             // Make sure each element of the array was compared once. (Strictly speaking, it would not be illegal for 
@@ -227,17 +229,7 @@ namespace DrNet.Tests.Span
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
             ReadOnlySpan<TValue> values = new ReadOnlySpan<TValue>(v);
 
-            {
-                EqualityCompareSV(NewTSource(NewT(1), log.Add), NewTValue(NewT(1), log.Add));
-                EqualityCompareVS(NewTValue(NewT(1), log.Add), NewTSource(NewT(1), log.Add));
-            }
-            bool logSupported = log.Count == 2;
-            if (!logSupported)
-            {
-                bool sourceWithLog = typeof(TSource) == typeof(TObject<T>) && typeof(TSource) == typeof(TEquatable<T>);
-                bool valueWithLog = typeof(TValue) == typeof(TObject<T>) && typeof(TValue) == typeof(TEquatable<T>);
-                Assert.False(sourceWithLog && valueWithLog);
-            }
+            bool logSupported = IsLogSupported();
 
             log.Clear();
             bool b = MemoryExt.StartsWithSeq(span, values);
@@ -251,8 +243,8 @@ namespace DrNet.Tests.Span
             if (logSupported)
                 CheckCompares();
 
-            if (!logSupported)
-                OnCompare += log.Add;
+            //if (!logSupported)
+            //    OnCompare += log.Add;
 
             log.Clear();
             b = MemoryExt.StartsWithSeq(span, values, EqualityCompareSV);
@@ -273,6 +265,10 @@ namespace DrNet.Tests.Span
             b = MemoryExt.StartsWithSeqFrom(rspan, values, EqualityCompareVS);
             Assert.True(b);
             CheckCompares();
+
+            log.Dispose();
+            OnCompareActions<T>.RemoveHandler(handle);
+            handle = 0;
         }
 
         [Theory]
@@ -281,13 +277,15 @@ namespace DrNet.Tests.Span
         [InlineData(100)]
         public void TestNoMatch(int length)
         {
+            handle = OnCompareActions<T>.CreateHandler(null);
+            TLog<T> log = new TLog<T>(handle);
+
             var rnd = new Random(46 * (length + 1));
             T target = NewT(rnd.Next());
-            TLog<T> log = new TLog<T>();
 
             TSource[] s = new TSource[length + 1];
             TValue[] v = new TValue[length];
-            s[length] = NewTSource(target, log.Add);
+            s[length] = NewTSource(target, handle);
             for (int i = 0; i < length; i++)
             {
                 T item;
@@ -296,30 +294,20 @@ namespace DrNet.Tests.Span
                     item = NewT(rnd.Next());
                 } while (EqualityCompareT(item, target) || EqualityCompareT(target, item));
 
-                s[i] = NewTSource(item, log.Add);
-                v[i] = NewTValue(item, log.Add);
+                s[i] = NewTSource(item, handle);
+                v[i] = NewTValue(item, handle);
             }
 
             Span<TSource> span = new Span<TSource>(s);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
             ReadOnlySpan<TValue> values = new ReadOnlySpan<TValue>(v);
 
-            {
-                EqualityCompareSV(NewTSource(NewT(1), log.Add), NewTValue(NewT(1), log.Add));
-                EqualityCompareVS(NewTValue(NewT(1), log.Add), NewTSource(NewT(1), log.Add));
-            }
-            bool logSupported = log.Count == 2;
-            if (!logSupported)
-            {
-                bool sourceWithLog = typeof(TSource) == typeof(TObject<T>) && typeof(TSource) == typeof(TEquatable<T>);
-                bool valueWithLog = typeof(TValue) == typeof(TObject<T>) && typeof(TValue) == typeof(TEquatable<T>);
-                Assert.False(sourceWithLog && valueWithLog);
-            }
+            bool logSupported = IsLogSupported();
 
             for (int targetIndex = 0; targetIndex < length; targetIndex++)
             {
                 TSource tempS = s[targetIndex];
-                s[targetIndex] = NewTSource(target, log.Add);
+                s[targetIndex] = NewTSource(target, handle);
 
                 log.Clear();
                 bool b = MemoryExt.StartsWithSeq(span, values);
@@ -335,7 +323,7 @@ namespace DrNet.Tests.Span
 
                 s[targetIndex] = tempS;
                 TValue tempV = v[targetIndex];
-                v[targetIndex] = NewTValue(target, log.Add);
+                v[targetIndex] = NewTValue(target, handle);
 
                 log.Clear();
                 b = MemoryExt.StartsWithSeq(span, values);
@@ -352,13 +340,13 @@ namespace DrNet.Tests.Span
                 v[targetIndex] = tempV;
             }
 
-            if (!logSupported)
-                OnCompare += log.Add;
+            //if (!logSupported)
+            //    OnCompare += log.Add;
 
             for (int targetIndex = 0; targetIndex < length; targetIndex++)
             {
                 TSource tempS = s[targetIndex];
-                s[targetIndex] = NewTSource(target, log.Add);
+                s[targetIndex] = NewTSource(target, handle);
 
                 log.Clear();
                 bool b = MemoryExt.StartsWithSeq(span, values, EqualityCompareSV);
@@ -382,7 +370,7 @@ namespace DrNet.Tests.Span
 
                 s[targetIndex] = tempS;
                 TValue tempV = v[targetIndex];
-                v[targetIndex] = NewTValue(target, log.Add);
+                v[targetIndex] = NewTValue(target, handle);
 
                 log.Clear();
                 b = MemoryExt.StartsWithSeq(span, values, EqualityCompareSV);
@@ -406,6 +394,10 @@ namespace DrNet.Tests.Span
 
                 v[targetIndex] = tempV;
             }
+
+            log.Dispose();
+            OnCompareActions<T>.RemoveHandler(handle);
+            handle = 0;
         }
 
         [Theory]
@@ -415,6 +407,8 @@ namespace DrNet.Tests.Span
         [InlineData(100)]
         public void MakeSureNoChecksGoOutOfRange(int length)
         {
+            handle = OnCompareActions<T>.CreateHandler(null);
+
             var rnd = new Random(47 * (length + 1));
             T target = NewT(rnd.Next());
             const int guardLength = 50;
@@ -431,13 +425,14 @@ namespace DrNet.Tests.Span
                     EqualityCompareT(y, guard) || EqualityCompareT(guard, y))
                     throw new Exception("Detected out of range access in StartsWithSeq()");
             }
+            OnCompareActions<T>.Add(handle, checkForOutOfRangeAccess);
 
             TSource[] s = new TSource[guardLength + length + guardLength];
             TValue[] v = new TValue[guardLength + length + guardLength];
             for (int i = 0; i < s.Length; i++)
             {
-                s[i] = NewTSource(guard, checkForOutOfRangeAccess);
-                v[i] = NewTValue(guard, checkForOutOfRangeAccess);
+                s[i] = NewTSource(guard, handle);
+                v[i] = NewTValue(guard, handle);
             }
 
             for (int i = 0; i < length; i++)
@@ -449,15 +444,15 @@ namespace DrNet.Tests.Span
                 } while (EqualityCompareT(item, target) || EqualityCompareT(target, item) ||
                     EqualityCompareT(item, guard) || EqualityCompareT(guard, item));
 
-                s[guardLength + i] = NewTSource(item, checkForOutOfRangeAccess);
-                v[guardLength + i] = NewTValue(item, checkForOutOfRangeAccess);
+                s[guardLength + i] = NewTSource(item, handle);
+                v[guardLength + i] = NewTValue(item, handle);
             }
 
             Span<TSource> span = new Span<TSource>(s, guardLength, guardLength + length);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s, guardLength, guardLength + length);
             ReadOnlySpan<TValue> values = new ReadOnlySpan<TValue>(v, guardLength, length);
 
-            OnCompare += checkForOutOfRangeAccess;
+            //OnCompare += checkForOutOfRangeAccess;
 
             bool b = MemoryExt.StartsWithSeq(span, values);
             Assert.True(b);
@@ -472,122 +467,99 @@ namespace DrNet.Tests.Span
             Assert.True(b);
             b = MemoryExt.StartsWithSeqFrom(rspan, values, EqualityCompareVS);
             Assert.True(b);
+
+            OnCompareActions<T>.RemoveHandler(handle);
+            handle = 0;
         }
     }
 
     public sealed class StartsWithSeq_byte : StartsWithSeq<byte, byte, byte>
     {
         protected override byte NewT(int value) => unchecked((byte)value);
-        protected override byte NewTSource(byte value, Action<byte, byte> onCompare) => value;
-        protected override byte NewTValue(byte value, Action<byte, byte> onCompare) => value;
+        protected override byte NewTSource(byte value, int handle = 0) => value;
+        protected override byte NewTValue(byte value, int handle = 0) => value;
     }
 
     public sealed class StartsWithSeq_char : StartsWithSeq<char, char, char>
     {
         protected override char NewT(int value) => unchecked((char)value);
-        protected override char NewTSource(char value, Action<char, char> onCompare) => value;
-        protected override char NewTValue(char value, Action<char, char> onCompare) => value;
+        protected override char NewTSource(char value, int handle = 0) => value;
+        protected override char NewTValue(char value, int handle = 0) => value;
     }
 
     public sealed class StartsWithSeq_int : StartsWithSeq<int, int, int>
     {
         protected override int NewT(int value) => value;
-        protected override int NewTSource(int value, Action<int, int> onCompare) => value;
-        protected override int NewTValue(int value, Action<int, int> onCompare) => value;
+        protected override int NewTSource(int value, int handle = 0) => value;
+        protected override int NewTValue(int value, int handle = 0) => value;
     }
 
     public sealed class StartsWithSeq_string : StartsWithSeq<string, string, string>
     {
         protected override string NewT(int value) => value.ToString();
-        protected override string NewTSource(string value, Action<string, string> onCompare) => value;
-        protected override string NewTValue(string value, Action<string, string> onCompare) => value;
+        protected override string NewTSource(string value, int handle = 0) => value;
+        protected override string NewTValue(string value, int handle = 0) => value;
     }
 
     public sealed class StartsWithSeq_intEE : StartsWithSeq<int, TEquatable<int>, TEquatable<int>>
     {
         protected override int NewT(int value) => value;
-        protected override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) =>
-            new TEquatable<int>(value, onCompare);
-        protected override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) =>
-            new TEquatable<int>(value, onCompare);
+        protected override TEquatable<int> NewTSource(int value, int handle = 0) => new TEquatable<int>(value, handle);
+        protected override TEquatable<int> NewTValue(int value, int handle = 0) => new TEquatable<int>(value, handle);
     }
 
     public sealed class StartsWithSeq_intEO : StartsWithSeq<int, TEquatable<int>, TObject<int>>
     {
         protected override int NewT(int value) => value;
-        protected override TEquatable<int> NewTSource(int value, Action<int, int> onCompare) =>
-            new TEquatable<int>(value, onCompare);
-        protected override TObject<int> NewTValue(int value, Action<int, int> onCompare)
-        {
-            var result = new TObject<int>(value, onCompare);
-            result.OnCompare += (x, y) => { throw new Exception("Detected Object.Equals comparition call"); };
-            return result;
-        }
+        protected override TEquatable<int> NewTSource(int value, int handle = 0) => new TEquatable<int>(value, handle);
+        protected override TObject<int> NewTValue(int value, int handle = -1) => new TObject<int>(value, -1);
     }
 
     public sealed class StartsWithSeq_intOE : StartsWithSeq<int, TObject<int>, TEquatable<int>>
     {
         protected override int NewT(int value) => value;
-        protected override TObject<int> NewTSource(int value, Action<int, int> onCompare)
-        {
-            var result = new TObject<int>(value, onCompare);
-            result.OnCompare += (x, y) => { throw new Exception("Detected Object.Equals comparition call"); };
-            return result;
-        }
-        protected override TEquatable<int> NewTValue(int value, Action<int, int> onCompare) =>
-            new TEquatable<int>(value, onCompare);
+        protected override TObject<int> NewTSource(int value, int handle = -1) => new TObject<int>(value, -1);
+        protected override TEquatable<int> NewTValue(int value, int handle = 0) => new TEquatable<int>(value, handle);
     }
 
     public sealed class StartsWithSeq_intOO : StartsWithSeq<int, TObject<int>, TObject<int>>
     {
         protected override int NewT(int value) => value;
-        protected override TObject<int> NewTSource(int value, Action<int, int> onCompare) =>
-            new TObject<int>(value, onCompare);
-        protected override TObject<int> NewTValue(int value, Action<int, int> onCompare) =>
-            new TObject<int>(value, onCompare);
+        protected override TObject<int> NewTSource(int value, int handle = 0) => new TObject<int>(value, handle);
+        protected override TObject<int> NewTValue(int value, int handle = 0) => new TObject<int>(value, handle);
     }
 
     public sealed class StartsWithSeq_stringEE : StartsWithSeq<string, TEquatable<string>, TEquatable<string>>
     {
         protected override string NewT(int value) => value.ToString();
-        protected override TEquatable<string> NewTSource(string value, Action<string, string> onCompare) =>
-            new TEquatable<string>(value, onCompare);
-        protected override TEquatable<string> NewTValue(string value, Action<string, string> onCompare) =>
-            new TEquatable<string>(value, onCompare);
+        protected override TEquatable<string> NewTSource(string value, int handle = 0) => 
+            new TEquatable<string>(value, handle);
+        protected override TEquatable<string> NewTValue(string value, int handle = 0) =>
+            new TEquatable<string>(value, handle);
     }
 
     public sealed class StartsWithSeq_stringEO : StartsWithSeq<string, TEquatable<string>, TObject<string>>
     {
         protected override string NewT(int value) => value.ToString();
-        protected override TEquatable<string> NewTSource(string value, Action<string, string> onCompare) =>
-            new TEquatable<string>(value, onCompare);
-        protected override TObject<string> NewTValue(string value, Action<string, string> onCompare)
-        {
-            var result = new TObject<string>(value, onCompare);
-            result.OnCompare += (x, y) => { throw new Exception("Detected Object.Equals comparition call"); };
-            return result;
-        }
+        protected override TEquatable<string> NewTSource(string value, int handle = 0) => 
+            new TEquatable<string>(value, handle);
+        protected override TObject<string> NewTValue(string value, int handle = -1) => new TObject<string>(value, -1);
     }
 
     public sealed class StartsWithSeq_stringOE : StartsWithSeq<string, TObject<string>, TEquatable<string>>
     {
         protected override string NewT(int value) => value.ToString();
-        protected override TObject<string> NewTSource(string value, Action<string, string> onCompare)
-        {
-            var result = new TObject<string>(value, onCompare);
-            result.OnCompare += (x, y) => { throw new Exception("Detected Object.Equals comparition call"); };
-            return result;
-        }
-        protected override TEquatable<string> NewTValue(string value, Action<string, string> onCompare) =>
-            new TEquatable<string>(value, onCompare);
+        protected override TObject<string> NewTSource(string value, int handle = -1) => new TObject<string>(value, -1);
+        protected override TEquatable<string> NewTValue(string value, int handle = 0) => 
+            new TEquatable<string>(value, handle);
     }
 
     public sealed class StartsWithSeq_stringOO : StartsWithSeq<string, TObject<string>, TObject<string>>
     {
         protected override string NewT(int value) => value.ToString();
-        protected override TObject<string> NewTSource(string value, Action<string, string> onCompare) =>
-            new TObject<string>(value, onCompare);
-        protected override TObject<string> NewTValue(string value, Action<string, string> onCompare) =>
-            new TObject<string>(value, onCompare);
+        protected override TObject<string> NewTSource(string value, int handle = 0) =>
+            new TObject<string>(value, handle);
+        protected override TObject<string> NewTValue(string value, int handle = 0) =>
+            new TObject<string>(value, handle);
     }
 }
