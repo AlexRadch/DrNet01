@@ -12,7 +12,7 @@ namespace DrNet.Tests.UnsafeSpan
         [InlineData(1)]
         [InlineData(10)]
         [InlineData(100)]
-        public void FromSpanRead(int length)
+        public void Read(int length)
         {
             var rnd = new Random(40);
             const int guardLength = 50;
@@ -49,7 +49,7 @@ namespace DrNet.Tests.UnsafeSpan
         [InlineData(1)]
         [InlineData(10)]
         [InlineData(100)]
-        public void FromSpanReadWrited(int length)
+        public void ReadWrited(int length)
         {
             var rnd = new Random(41);
             const int guardLength = 50;
@@ -88,7 +88,7 @@ namespace DrNet.Tests.UnsafeSpan
         [InlineData(1)]
         [InlineData(10)]
         [InlineData(100)]
-        public void FromSpanWrite(int length)
+        public void Write(int length)
         {
             var rnd = new Random(42);
             const int guardLength = 50;

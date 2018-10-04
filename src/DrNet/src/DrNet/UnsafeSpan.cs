@@ -162,33 +162,33 @@ namespace DrNet
         {
             [EditorBrowsable(EditorBrowsableState.Never)]
             public readonly UnsafeSpan<T> _span;
-
-            internal Enumerator(UnsafeSpan<T> span)
-            {
-                _span = span;
-                Index = -1;
-            }
+            [EditorBrowsable(EditorBrowsableState.Never)]
+            public int _index;
 
             [EditorBrowsable(EditorBrowsableState.Never)]
-            public int Index { get; private set; }
+            public Enumerator(UnsafeSpan<T> span)
+            {
+                _span = span;
+                _index = -1;
+            }
 
             public bool MoveNext()
             {
-                int index = Index + 1;
+                int index = _index + 1;
                 if (index < _span.Length)
                 {
-                    Index = index;
+                    _index = index;
                     return true;
                 }
 
                 return false;
             }
 
-            public ref T Current { get => ref _span[Index]; }
+            public ref T Current { get => ref _span[_index]; }
 
             public void Reset()
             {
-                Index = -1;
+                _index = -1;
             }
 
             T IEnumerator<T>.Current => Current;

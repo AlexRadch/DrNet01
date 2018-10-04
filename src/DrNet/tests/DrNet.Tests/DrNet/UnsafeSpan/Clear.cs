@@ -38,20 +38,17 @@ namespace DrNet.Tests.UnsafeSpan
             T[] t2 = t.AsSpan().ToArray();
 
             Span<T> span = new Span<T>(t, guardLength, length);
-            ReadOnlySpan<T> rspan = new ReadOnlySpan<T>(t, guardLength, length);
 
             GCHandle gch = GCHandle.Alloc(t, GCHandleType.Pinned);
             try
             {
                 UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
-                UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(rspan);
                 uSpan.Clear();
 
                 for (var i = 0; i < length; i++)
                 {
                     Assert.Equal(default, span[i]);
                     Assert.Equal(default, uSpan[i]);
-                    Assert.Equal(default, urSpan[i]);
                 }
             }
             finally
