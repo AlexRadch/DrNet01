@@ -106,18 +106,8 @@ namespace DrNet.Tests.UnsafeSpan
         protected override int NewT(int value) => value;
     }
 
-    public sealed class AsSpan_intT : AsSpan<Tuple<int>>
+    public sealed class AsSpan_intE : AsSpan<TEquatableInt>
     {
-        protected override Tuple<int> NewT(int value) => new Tuple<int>(value);
+        protected override TEquatableInt NewT(int value) => new TEquatableInt(value, 0);
     }
-
-    //public sealed class AsSpan_string : AsSpan<string>
-    //{
-    //    protected override string NewT(int value) => value.ToString();
-    //}
-
-    //public sealed class AsSpan_stringE : AsSpan<TEquatable<string>>
-    //{
-    //    protected override TEquatable<string> NewT(int value) => new TEquatable<string>(value.ToString());
-    //}
 }

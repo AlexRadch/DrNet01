@@ -7,37 +7,35 @@ using System;
 namespace DrNet.Tests
 {
     // A wrapped T that invokes a custom delegate every time Object.Equals() is invoked.
-    public struct TObject<T>
+    public struct TObjectInt
     {
         private readonly int _handle;
 
-        public TObject(T value, int handle = 0)
+        public TObjectInt(int value, int handle = 0)
         {
             _handle = handle;
             Value = value;
         }
 
-        public T Value { get; }
+        public int Value { get; }
 
-        private bool Equals(T other)
+        private bool Equals(int other)
         {
             if (_handle < 0)
                 throw new Exception("Detected Object.Equals comparition call");
-            OnCompareActions<T>.OnCompare(_handle, Value, other);
-            if (Value is IEquatable<T> equatable)
-                return equatable.Equals(other);
+            OnCompareActions<int>.OnCompare(_handle, Value, other);
             return Value.Equals(other);
         }
 
-        private bool Equals(TObject<T> other) => Equals(other.Value);
+        private bool Equals(TObjectInt other) => Equals(other.Value);
 
-        private bool Equals(TEquatable<T> other) => Equals(other.Value);
+        private bool Equals(TEquatableInt other) => Equals(other.Value);
 
         public override bool Equals(object obj)
         {
-            if (obj is TObject<T> otherO)
+            if (obj is TObjectInt otherO)
                 return Equals(otherO);
-            if (obj is TEquatable<T> otherE)
+            if (obj is TEquatableInt otherE)
                 return Equals(otherE);
             throw new NotImplementedException();
         }

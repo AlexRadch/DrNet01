@@ -426,11 +426,12 @@ namespace DrNet.Tests.Span
                 Assert.Equal(s.Length * targets.Length, log.Count);
                 foreach (T item in t)
                 {
-                    int itemCount = t.Where(x => EqualityCompareT(item, x) || EqualityCompareT(x, item)).Count();
+                    int itemCount = t.Where(x => EqualityCompareT(item, x, true) || EqualityCompareT(x, item, true)).
+                        Count();
                     foreach(T target in targets)
                     {
                         int targetCount = targets.
-                            Where(x => EqualityCompareT(target, x) || EqualityCompareT(x, target)).Count();
+                            Where(x => EqualityCompareT(target, x, true) || EqualityCompareT(x, target, true)).Count();
 
                         int count = itemCount * targetCount;
                         int numCompares = log.CountCompares(item, target);
@@ -507,8 +508,8 @@ namespace DrNet.Tests.Span
 
             void checkForOutOfRangeAccess(T x, T y)
             {
-                if (EqualityCompareT(x, guard) || EqualityCompareT(guard, x) ||
-                    EqualityCompareT(y, guard) || EqualityCompareT(guard, y))
+                if (EqualityCompareT(x, guard, true) || EqualityCompareT(guard, x, true) ||
+                    EqualityCompareT(y, guard, true) || EqualityCompareT(guard, y, true))
                     throw new Exception("Detected out of range access in IndexOfEqualAny()");
             }
             OnCompareActions<T>.Add(handle, checkForOutOfRangeAccess);
@@ -522,7 +523,7 @@ namespace DrNet.Tests.Span
                 {
                     item = NewT(rnd.Next());
                 } while (targets.AsSpan().IndexOfEqual(item) >= 0 ||
-                    EqualityCompareT(item, guard) || EqualityCompareT(guard, item));
+                    EqualityCompareT(item, guard, true) || EqualityCompareT(guard, item, true));
 
                 s[i + guardLength] = NewTSource(item, handle);
             }

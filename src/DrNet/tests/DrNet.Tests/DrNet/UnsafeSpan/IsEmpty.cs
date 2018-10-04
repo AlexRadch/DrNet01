@@ -65,13 +65,8 @@ namespace DrNet.Tests.UnsafeSpan
         protected override int NewT(int value) => value;
     }
 
-    public sealed class IsEmpty_string : IsEmpty<string>
+    public sealed class IsEmpty_intE : IsEmpty<TEquatableInt>
     {
-        protected override string NewT(int value) => value.ToString();
-    }
-
-    public sealed class IsEmpty_stringE : IsEmpty<TEquatable<string>>
-    {
-        protected override TEquatable<string> NewT(int value) => new TEquatable<string>(value.ToString(), handle);
+        protected override TEquatableInt NewT(int value) => new TEquatableInt(value, 0);
     }
 }

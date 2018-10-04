@@ -96,6 +96,7 @@ namespace DrNet.Tests.UnsafeSpan
             T[] t = new T[guardLength + length + guardLength];
             for (var i = 0; i < t.Length; i++)
                 t[i] = NewT(rnd.Next());
+            T[] t2 = t.AsSpan().ToArray();
 
             Span<T> span = new Span<T>(t, guardLength, length);
             ReadOnlySpan<T> rspan = new ReadOnlySpan<T>(t, guardLength, length);
@@ -117,11 +118,18 @@ namespace DrNet.Tests.UnsafeSpan
                     Assert.Equal(item, uSpan[i]);
                     Assert.Equal(item, urSpan[i]);
                 }
+
+                span.EqualsToSeq<T, T>(uSpan.AsSpan());
+                span.EqualsToSeq(urSpan.AsSpan());
             }
             finally
             {
                 gch.Free();
             }
+
+            Assert.True(t2.AsReadOnlySpan(0, guardLength).EqualsToSeq(t2.AsReadOnlySpan(0, guardLength)));
+            Assert.True(t2.AsReadOnlySpan(guardLength + length, guardLength).EqualsToSeq(
+                t2.AsReadOnlySpan(guardLength + length, guardLength)));
         }
     }
 
@@ -140,13 +148,8 @@ namespace DrNet.Tests.UnsafeSpan
         protected override int NewT(int value) => value;
     }
 
-    public sealed class Items_string : Items<string>
+    public sealed class Items_intE : Items<TEquatableInt>
     {
-        protected override string NewT(int value) => value.ToString();
-    }
-
-    public sealed class Items_stringE : Items<TEquatable<string>>
-    {
-        protected override TEquatable<string> NewT(int value) => new TEquatable<string>(value.ToString(), handle);
+        protected override TEquatableInt NewT(int value) => new TEquatableInt(value, 0);
     }
 }

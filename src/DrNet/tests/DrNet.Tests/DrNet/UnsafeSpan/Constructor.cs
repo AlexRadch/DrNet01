@@ -48,19 +48,26 @@ namespace DrNet.Tests.UnsafeSpan
             const int guardLength = 50;
 
             T[] t = new T[guardLength + length + guardLength];
-
             Span<T> span = new Span<T>(t, guardLength, length);
             ReadOnlySpan<T> rspan = new ReadOnlySpan<T>(t, guardLength + 1, length);
 
-            UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
-            UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(rspan);
-            unsafe
+            GCHandle gch = GCHandle.Alloc(t, GCHandleType.Pinned);
+            try
             {
-                Assert.True(Unsafe.AsPointer(ref MemoryMarshal.GetReference(span)) == uSpan._pointer);
-                Assert.True(Unsafe.AsPointer(ref MemoryMarshal.GetReference(rspan)) == urSpan._pointer);
+                UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
+                UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(rspan);
+                unsafe
+                {
+                    Assert.True(Unsafe.AsPointer(ref MemoryMarshal.GetReference(span)) == uSpan._pointer);
+                    Assert.True(Unsafe.AsPointer(ref MemoryMarshal.GetReference(rspan)) == urSpan._pointer);
+                }
+                Assert.Equal(length, uSpan.Length);
+                Assert.Equal(length, urSpan.Length);
             }
-            Assert.Equal(length, uSpan.Length);
-            Assert.Equal(length, urSpan.Length);
+            finally
+            {
+                gch.Free();
+            }
         }
 
         [Theory]
@@ -336,6 +343,68 @@ namespace DrNet.Tests.UnsafeSpan
                 fixed(int* p = rspan)
                 {
                     UnsafeReadOnlySpan<int> urSpan = new UnsafeReadOnlySpan<int>(p, rspan.Length);
+                    Assert.True(Unsafe.AsPointer(ref Unsafe.AsRef(in rspan.GetPinnableReference())) == urSpan._pointer);
+                    Assert.Equal(length, urSpan.Length);
+                }
+            }
+        }
+    }
+
+    public sealed class Constructor_intE : Constructor<TEquatableInt>
+    {
+        protected override TEquatableInt NewT(int value) => new TEquatableInt(value, 0);
+
+        [Fact]
+        public void FromDefaultPointer()
+        {
+            Span<TEquatableInt> span = default;
+            ReadOnlySpan<TEquatableInt> rspan = default;
+
+            unsafe
+            {
+                fixed (TEquatableInt* p = span)
+                {
+                    UnsafeSpan<TEquatableInt> uSpan = new UnsafeSpan<TEquatableInt>(p, span.Length);
+                    Assert.True(null == uSpan._pointer);
+                    Assert.Equal(0, uSpan.Length);
+                }
+
+                fixed (TEquatableInt* p = rspan)
+                {
+                    UnsafeReadOnlySpan<TEquatableInt> urSpan = new UnsafeReadOnlySpan<TEquatableInt>(p, rspan.Length);
+                    Assert.True(null == urSpan._pointer);
+                    Assert.Equal(0, urSpan.Length);
+                }
+            }
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(10)]
+        [InlineData(100)]
+        public void FromPointer(int length)
+        {
+            var rnd = new Random(40);
+            const int guardLength = 50;
+
+            TEquatableInt[] t = new TEquatableInt[guardLength + length + guardLength];
+
+            Span<TEquatableInt> span = new Span<TEquatableInt>(t, guardLength, length);
+            ReadOnlySpan<TEquatableInt> rspan = new ReadOnlySpan<TEquatableInt>(t, guardLength + 1, length);
+
+            unsafe
+            {
+                fixed (TEquatableInt* p = span)
+                {
+                    UnsafeSpan<TEquatableInt> uSpan = new UnsafeSpan<TEquatableInt>(p, span.Length);
+                    Assert.True(Unsafe.AsPointer(ref span.GetPinnableReference()) == uSpan._pointer);
+                    Assert.Equal(length, uSpan.Length);
+                }
+
+                fixed (TEquatableInt* p = rspan)
+                {
+                    UnsafeReadOnlySpan<TEquatableInt> urSpan = new UnsafeReadOnlySpan<TEquatableInt>(p, rspan.Length);
                     Assert.True(Unsafe.AsPointer(ref Unsafe.AsRef(in rspan.GetPinnableReference())) == urSpan._pointer);
                     Assert.Equal(length, urSpan.Length);
                 }

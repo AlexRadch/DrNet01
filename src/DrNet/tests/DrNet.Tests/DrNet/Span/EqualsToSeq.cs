@@ -274,7 +274,8 @@ namespace DrNet.Tests.Span
                 Assert.Equal(length, log.Count);
                 foreach (T item in t)
                 {
-                    int itemCount = t.Where(x => EqualityCompareT(item, x) || EqualityCompareT(x, item)).Count();
+                    int itemCount = t.Where(x => EqualityCompareT(item, x, true) || EqualityCompareT(x, item, true)).
+                        Count();
                     int numCompares = log.CountCompares(item, item);
                     Assert.True(itemCount == numCompares, $"Expected {itemCount} == {numCompares} for element {item}.");
                 }
@@ -346,7 +347,7 @@ namespace DrNet.Tests.Span
                 do
                 {
                     item = NewT(rnd.Next());
-                } while (EqualityCompareT(item, target) || EqualityCompareT(target, item));
+                } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true));
 
                 s[i] = NewTSource(item, handle);
                 v[i] = NewTValue(item, handle);
@@ -471,12 +472,12 @@ namespace DrNet.Tests.Span
             do
             {
                 guard = NewT(rnd.Next());
-            } while (EqualityCompareT(guard, target) || EqualityCompareT(target, guard));
+            } while (EqualityCompareT(guard, target, true) || EqualityCompareT(target, guard, true));
 
             void checkForOutOfRangeAccess(T x, T y)
             {
-                if (EqualityCompareT(x, guard) || EqualityCompareT(guard, x) ||
-                    EqualityCompareT(y, guard) || EqualityCompareT(guard, y))
+                if (EqualityCompareT(x, guard, true) || EqualityCompareT(guard, x, true) ||
+                    EqualityCompareT(y, guard, true) || EqualityCompareT(guard, y, true))
                     throw new Exception("Detected out of range access in EqualsToSeq()");
             }
             OnCompareActions<T>.Add(handle, checkForOutOfRangeAccess);
@@ -495,8 +496,8 @@ namespace DrNet.Tests.Span
                 do
                 {
                     item = NewT(rnd.Next());
-                } while (EqualityCompareT(item, target) || EqualityCompareT(target, item) ||
-                    EqualityCompareT(item, guard) || EqualityCompareT(guard, item));
+                } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true) ||
+                    EqualityCompareT(item, guard, true) || EqualityCompareT(guard, item, true));
 
                 s[guardLength + i] = NewTSource(item, handle);
                 v[guardLength + i] = NewTValue(item, handle);

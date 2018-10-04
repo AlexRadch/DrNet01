@@ -390,23 +390,24 @@ namespace DrNet.Tests.Span
                 int countAll = 0;
                 foreach (T item in t)
                 {
-                    int itemCount = t.Where(x => EqualityCompareT(item, x) || EqualityCompareT(x, item)).Count();
+                    int itemCount = t.Where(x => EqualityCompareT(item, x, true) || EqualityCompareT(x, item, true)).
+                        Count();
                     int itemIndex = targets.AsReadOnlySpan().IndexOfEqual(item);
                     foreach (var target in targets)
                     {
                         int targetCount = targets.Take(itemIndex < 0 ? targets.Length : itemIndex + 1).
-                            Where(x => EqualityCompareT(target, x) || EqualityCompareT(x, target)).Count();
+                            Where(x => EqualityCompareT(target, x, true) || EqualityCompareT(x, target, true)).Count();
 
                         int count = itemCount * targetCount;
                         countAll += targetCount;
 
-                        if (!EqualityCompareT(item, target))
+                        if (!EqualityCompareT(item, target, true))
                         {
-                            int itemCount2 = t.Where(x => EqualityCompareT(target, x) || EqualityCompareT(x, target)).
-                                Count();
+                            int itemCount2 = t.Where(x => EqualityCompareT(target, x, true) || 
+                                EqualityCompareT(x, target, true)).Count();
                             int itemIndex2 = targets.AsReadOnlySpan().IndexOfEqual(target);
                             int targetCount2 = targets.Take(itemIndex2 < 0 ? targets.Length : itemIndex2 + 1).
-                                Where(x => EqualityCompareT(item, x) || EqualityCompareT(x, item)).Count();
+                                Where(x => EqualityCompareT(item, x, true) || EqualityCompareT(x, item, true)).Count();
 
                             count += itemCount2 * targetCount2;
                         }
@@ -486,8 +487,8 @@ namespace DrNet.Tests.Span
 
             void checkForOutOfRangeAccess(T x, T y)
             {
-                if (EqualityCompareT(x, guard) || EqualityCompareT(guard, x) ||
-                    EqualityCompareT(y, guard) || EqualityCompareT(guard, y))
+                if (EqualityCompareT(x, guard, true) || EqualityCompareT(guard, x, true) ||
+                    EqualityCompareT(y, guard, true) || EqualityCompareT(guard, y, true))
                     throw new Exception("Detected out of range access in LastIndexOfNotEqualAll()");
             }
             OnCompareActions<T>.Add(handle, checkForOutOfRangeAccess);

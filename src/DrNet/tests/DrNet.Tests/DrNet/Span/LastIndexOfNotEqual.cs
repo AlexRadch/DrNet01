@@ -117,7 +117,7 @@ namespace DrNet.Tests.Span
             do
             {
                 item = NewT(rnd.Next());
-            } while (EqualityCompareT(item, target) || EqualityCompareT(target, item));
+            } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true));
 
             Span<TSource> span = new Span<TSource>(s);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
@@ -193,7 +193,7 @@ namespace DrNet.Tests.Span
             do
             {
                 item = NewT(rnd.Next());
-            } while (EqualityCompareT(item, target) || EqualityCompareT(target, item));
+            } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true));
 
             Span<TSource> span = new Span<TSource>(s);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
@@ -312,12 +312,12 @@ namespace DrNet.Tests.Span
             do
             {
                 guard = NewT(rnd.Next());
-            } while (EqualityCompareT(guard, target) || EqualityCompareT(target, guard));
+            } while (EqualityCompareT(guard, target, true) || EqualityCompareT(target, guard, true));
 
             void checkForOutOfRangeAccess(T x, T y)
             {
-                if (EqualityCompareT(x, guard) || EqualityCompareT(guard, x) ||
-                    EqualityCompareT(y, guard) || EqualityCompareT(guard, y))
+                if (EqualityCompareT(x, guard, true) || EqualityCompareT(guard, x, true) ||
+                    EqualityCompareT(y, guard, true) || EqualityCompareT(guard, y, true))
                     throw new Exception("Detected out of range access in LastIndexOfNotEqual()");
             }
             OnCompareActions<T>.Add(handle, checkForOutOfRangeAccess);
