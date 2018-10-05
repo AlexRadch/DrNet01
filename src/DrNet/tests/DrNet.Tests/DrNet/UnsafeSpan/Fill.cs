@@ -66,9 +66,9 @@ namespace DrNet.Tests.UnsafeSpan
                 gch.Free();
             }
 
-            Assert.True(t2.AsReadOnlySpan(0, guardLength).EqualsToSeq(t2.AsReadOnlySpan(0, guardLength)));
+            Assert.True(t2.AsReadOnlySpan(0, guardLength).EqualsToSeq(t.AsReadOnlySpan(0, guardLength)));
             Assert.True(t2.AsReadOnlySpan(guardLength + length, guardLength).EqualsToSeq(
-                t2.AsReadOnlySpan(guardLength + length, guardLength)));
+                t.AsReadOnlySpan(guardLength + length, guardLength)));
         }
     }
 

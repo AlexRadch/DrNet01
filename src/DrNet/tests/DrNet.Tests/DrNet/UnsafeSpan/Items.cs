@@ -41,6 +41,9 @@ namespace DrNet.Tests.UnsafeSpan
                     Assert.Equal(span[i], uSpan[i]);
                     Assert.Equal(span[i], urSpan[i]);
                 }
+
+                span.EqualsToSeq<T, T>(uSpan.AsSpan());
+                span.EqualsToSeq(urSpan.AsSpan());
             }
             finally
             {
@@ -72,14 +75,14 @@ namespace DrNet.Tests.UnsafeSpan
 
                 for (var i = 0; i < length; i++)
                 {
-                    Assert.True(Unsafe.AreSame(ref span[i], ref uSpan[i]));
-                    Assert.True(Unsafe.AreSame(ref span[i], ref Unsafe.AsRef(in urSpan[i])));
-
                     T item = NewT(rnd.Next());
                     span[i] = item;
                     Assert.Equal(item, uSpan[i]);
                     Assert.Equal(item, urSpan[i]);
                 }
+
+                span.EqualsToSeq<T, T>(uSpan.AsSpan());
+                span.EqualsToSeq(urSpan.AsSpan());
             }
             finally
             {
@@ -108,22 +111,15 @@ namespace DrNet.Tests.UnsafeSpan
             try
             {
                 UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
-                UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(rspan);
 
                 for (var i = 0; i < length; i++)
                 {
-                    Assert.True(Unsafe.AreSame(ref span[i], ref uSpan[i]));
-                    Assert.True(Unsafe.AreSame(ref span[i], ref Unsafe.AsRef(in urSpan[i])));
-
                     T item = NewT(rnd.Next());
                     uSpan[i] = item;
                     Assert.Equal(item, span[i]);
-                    Assert.Equal(item, uSpan[i]);
-                    Assert.Equal(item, urSpan[i]);
                 }
 
                 span.EqualsToSeq<T, T>(uSpan.AsSpan());
-                span.EqualsToSeq(urSpan.AsSpan());
             }
             finally
             {

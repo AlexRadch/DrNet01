@@ -147,7 +147,7 @@ namespace DrNet.Tests.UnsafeSpan
             span.CopyTo(dspan);
             rspan.CopyTo(dspan);
 
-            Assert.True(t.AsReadOnlySpan().EqualsToSeq(t2.AsReadOnlySpan()));
+            Assert.True(t2.AsReadOnlySpan().EqualsToSeq(t.AsReadOnlySpan()));
         }
 
         [Theory]
@@ -188,7 +188,7 @@ namespace DrNet.Tests.UnsafeSpan
             span.CopyTo(dspan);
             rspan.CopyTo(dspan);
 
-            Assert.True(t.AsReadOnlySpan().EqualsToSeq(t2.AsReadOnlySpan()));
+            Assert.True(t2.AsReadOnlySpan().EqualsToSeq(t.AsReadOnlySpan()));
         }
     }
 
