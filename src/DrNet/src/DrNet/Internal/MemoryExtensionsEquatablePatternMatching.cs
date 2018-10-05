@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace DrNet.Internal
 {
-    public delegate int IndexOfFunc<T>(ReadOnlySpan<T> span, T value) where T: IEquatable<T>;
+    //public delegate int IndexOfFunc<T>(ReadOnlySpan<T> span, T value) where T: IEquatable<T>;
 
     /// See https://github.com/dotnet/csharplang/issues/1840#issuecomment-419456424
     public abstract class MemoryExtensionsEquatablePatternMatching<T>

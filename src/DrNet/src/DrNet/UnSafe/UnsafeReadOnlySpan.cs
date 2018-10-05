@@ -7,11 +7,11 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 using DrNet.Internal;
-using DrNet.Internal.Unsafe;
+using DrNet.Internal.UnSafe;
 
-namespace DrNet
+namespace DrNet.UnSafe
 {
-    [DebuggerTypeProxy(typeof(SpanDebugView<>))]
+    [DebuggerTypeProxy(typeof(UnsafeSpanDebugView<>))]
     [DebuggerDisplay("{ToString(),raw}")]
     public readonly unsafe struct UnsafeReadOnlySpan<T>: IList<T>, IReadOnlyList<T>, ICollection<T>, IReadOnlyCollection<T>, IEnumerable<T>, IEnumerable
     {
@@ -82,21 +82,21 @@ namespace DrNet
         public unsafe ref readonly T GetPinnableReference() => ref (_length != 0) ? ref Unsafe.AsRef<T>(_pointer) :
             ref Unsafe.AsRef<T>(null);
 
-        public UnsafeSpan<T> Slice(int start)
+        public UnsafeReadOnlySpan<T> Slice(int start)
         {
             if ((uint)start > (uint)_length)
                 throw new ArgumentOutOfRangeException(nameof(start));
 
-            return new UnsafeSpan<T>(Unsafe.AsPointer(ref Unsafe.Add(ref Unsafe.AsRef<T>(_pointer), start)), 
+            return new UnsafeReadOnlySpan<T>(in Unsafe.Add(ref Unsafe.AsRef<T>(_pointer), start),
                 _length - start);
         }
 
-        public UnsafeSpan<T> Slice(int start, int length)
+        public UnsafeReadOnlySpan<T> Slice(int start, int length)
         {
             if ((uint)start > (uint)_length || (uint)length > (uint)(_length - start))
                 throw new ArgumentOutOfRangeException(nameof(start));
 
-            return new UnsafeSpan<T>(Unsafe.AsPointer(ref Unsafe.Add(ref Unsafe.AsRef<T>(_pointer), start)), length);
+            return new UnsafeReadOnlySpan<T>(in Unsafe.Add(ref Unsafe.AsRef<T>(_pointer), start), length);
         }
 
         public T[] ToArray() => AsSpan().ToArray();
@@ -126,9 +126,9 @@ namespace DrNet
                 return MemoryExtensionsEquatablePatternMatching<T>.Instance.IndexOf(
                     new ReadOnlySpan<T>(_pointer, _length), item);
             if (item is IEquatable<T> vEquatable)
-                return SpanHelpers.IndexOfEqualValueComparer(ref Unsafe.AsRef<T>(_pointer), _length, vEquatable, 
+                return DrNetSpanHelpers.IndexOfEqualValueComparer(in UnsafeIn.AsRef<T>(_pointer), _length, vEquatable, 
                     (eValue, sValue) => eValue.Equals(sValue));
-            return SpanHelpers.IndexOfEqualSourceComparer(ref Unsafe.AsRef<T>(_pointer), _length, item,
+            return DrNetSpanHelpers.IndexOfEqualSourceComparer(in UnsafeIn.AsRef<T>(_pointer), _length, item,
                 (sValue, vValue) => sValue.Equals(vValue));
         }
 

@@ -2,7 +2,7 @@
 
 namespace DrNet.Internal
 {
-    public static class TypeExt
+    public static class DrNetTypeExt
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsTypeComparableAsBytes<T>()

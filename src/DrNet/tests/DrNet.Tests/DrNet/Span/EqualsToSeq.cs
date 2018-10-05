@@ -21,32 +21,32 @@ namespace DrNet.Tests.Span
             ReadOnlySpan<TValue> values = new TValue[] { NextTValue(), NextTValue(), NextTValue() }.
                 AsReadOnlySpan(3, 0);
 
-            bool b = MemoryExt.EqualsToSeq(span, values);
+            bool b = DrNetMemoryExt.EqualsToSeq(span, values);
             Assert.True(b);
-            b = MemoryExt.EqualsToSeq(span, values, EqualityCompareSV);
+            b = DrNetMemoryExt.EqualsToSeq(span, values, EqualityCompareSV);
             Assert.True(b);
             //c = MemoryExt.EqualsToSeqFrom(span, values, EqualityCompareFrom);
             //Assert.True(c);
 
-            b = MemoryExt.EqualsToSeq(rspan, values);
+            b = DrNetMemoryExt.EqualsToSeq(rspan, values);
             Assert.True(b);
-            b = MemoryExt.EqualsToSeq(rspan, values, EqualityCompareSV);
+            b = DrNetMemoryExt.EqualsToSeq(rspan, values, EqualityCompareSV);
             Assert.True(b);
             //c = MemoryExt.EqualsToSeqFrom(span, values, EqualityCompareFrom);
             //Assert.True(c);
 
             values = default;
 
-            b = MemoryExt.EqualsToSeq(span, values);
+            b = DrNetMemoryExt.EqualsToSeq(span, values);
             Assert.True(b);
-            b = MemoryExt.EqualsToSeq(span, values, EqualityCompareSV);
+            b = DrNetMemoryExt.EqualsToSeq(span, values, EqualityCompareSV);
             Assert.True(b);
             //c = MemoryExt.EqualsToSeqFrom(span, values, EqualityCompareFrom);
             //Assert.True(c);
 
-            b = MemoryExt.EqualsToSeq(rspan, values);
+            b = DrNetMemoryExt.EqualsToSeq(rspan, values);
             Assert.True(b);
-            b = MemoryExt.EqualsToSeq(rspan, values, EqualityCompareSV);
+            b = DrNetMemoryExt.EqualsToSeq(rspan, values, EqualityCompareSV);
             Assert.True(b);
             //c = MemoryExt.EqualsToSeqFrom(rspan, values, EqualityCompareFrom);
             //Assert.True(c);
@@ -55,32 +55,32 @@ namespace DrNet.Tests.Span
             rspan = default;
             values = new TValue[] { NextTValue(), NextTValue(), NextTValue() }.AsReadOnlySpan(3, 0);
 
-            b = MemoryExt.EqualsToSeq(span, values);
+            b = DrNetMemoryExt.EqualsToSeq(span, values);
             Assert.True(b);
-            b = MemoryExt.EqualsToSeq(span, values, EqualityCompareSV);
+            b = DrNetMemoryExt.EqualsToSeq(span, values, EqualityCompareSV);
             Assert.True(b);
             //c = MemoryExt.EqualsToSeqFrom(span, values, EqualityCompareFrom);
             //Assert.True(c);
 
-            b = MemoryExt.EqualsToSeq(rspan, values);
+            b = DrNetMemoryExt.EqualsToSeq(rspan, values);
             Assert.True(b);
-            b = MemoryExt.EqualsToSeq(rspan, values, EqualityCompareSV);
+            b = DrNetMemoryExt.EqualsToSeq(rspan, values, EqualityCompareSV);
             Assert.True(b);
             //c = MemoryExt.EqualsToSeqFrom(rspan, values, EqualityCompareFrom);
             //Assert.True(c);
 
             values = default;
 
-            b = MemoryExt.EqualsToSeq(span, values);
+            b = DrNetMemoryExt.EqualsToSeq(span, values);
             Assert.True(b);
-            b = MemoryExt.EqualsToSeq(span, values, EqualityCompareSV);
+            b = DrNetMemoryExt.EqualsToSeq(span, values, EqualityCompareSV);
             Assert.True(b);
             //c = MemoryExt.EqualsToSeqFrom(span, values, EqualityCompareFrom);
             //Assert.True(c);
 
-            b = MemoryExt.EqualsToSeq(rspan, values);
+            b = DrNetMemoryExt.EqualsToSeq(rspan, values);
             Assert.True(b);
-            b = MemoryExt.EqualsToSeq(rspan, values, EqualityCompareSV);
+            b = DrNetMemoryExt.EqualsToSeq(rspan, values, EqualityCompareSV);
             Assert.True(b);
             //c = MemoryExt.EqualsToSeqFrom(rspan, values, EqualityCompareFrom);
             //Assert.True(c);
@@ -104,12 +104,12 @@ namespace DrNet.Tests.Span
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
             ReadOnlySpan<TSource> values = new ReadOnlySpan<TSource>(s);
 
-            bool b = MemoryExt.EqualsToSeq(span, values);
+            bool b = DrNetMemoryExt.EqualsToSeq(span, values);
             Assert.True(b);
             //b = MemoryExt.EqualsToSeq(span, values, EqualityCompareS);
             //Assert.True(b);
 
-            b = MemoryExt.EqualsToSeq(rspan, values);
+            b = DrNetMemoryExt.EqualsToSeq(rspan, values);
             Assert.True(b);
             //b = MemoryExt.EqualsToSeq(rspan, values, EqualityCompareS);
             //Assert.True(b);
@@ -136,16 +136,16 @@ namespace DrNet.Tests.Span
             Span<TSource> span = new Span<TSource>(s, 0, length);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s, 0, length);
 
-            bool b = MemoryExt.EqualsToSeq<TSource, TValue>(span, v);
+            bool b = DrNetMemoryExt.EqualsToSeq<TSource, TValue>(span, v);
             Assert.True(b);
-            b = MemoryExt.EqualsToSeq<TSource, TValue>(span, v, EqualityCompareSV);
+            b = DrNetMemoryExt.EqualsToSeq<TSource, TValue>(span, v, EqualityCompareSV);
             Assert.True(b);
             //b = MemoryExt.EqualsToSeqFrom<TSource, TValue>(span, v, EqualityCompareFrom);
             //Assert.True(b);
 
-            b = MemoryExt.EqualsToSeq<TSource, TValue>(rspan, v);
+            b = DrNetMemoryExt.EqualsToSeq<TSource, TValue>(rspan, v);
             Assert.True(b);
-            b = MemoryExt.EqualsToSeq<TSource, TValue>(rspan, v, EqualityCompareSV);
+            b = DrNetMemoryExt.EqualsToSeq<TSource, TValue>(rspan, v, EqualityCompareSV);
             Assert.True(b);
             //b = MemoryExt.EqualsToSeqFrom<TSource, TValue>(rspan, v, EqualityCompareFrom);
             //Assert.True(b);
@@ -174,16 +174,16 @@ namespace DrNet.Tests.Span
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s, 0, length);
             var segment = new ArraySegment<TValue>(v, 1, length);
 
-            bool b = MemoryExt.EqualsToSeq<TSource, TValue>(span, segment);
+            bool b = DrNetMemoryExt.EqualsToSeq<TSource, TValue>(span, segment);
             Assert.True(b);
-            b = MemoryExt.EqualsToSeq<TSource, TValue>(span, segment, EqualityCompareSV);
+            b = DrNetMemoryExt.EqualsToSeq<TSource, TValue>(span, segment, EqualityCompareSV);
             Assert.True(b);
             //b = MemoryExt.EqualsToSeqFrom<TSource, TValue>(span, segment, EqualityCompareFrom);
             //Assert.True(b);
 
-            b = MemoryExt.EqualsToSeq<TSource, TValue>(rspan, segment);
+            b = DrNetMemoryExt.EqualsToSeq<TSource, TValue>(rspan, segment);
             Assert.True(b);
-            b = MemoryExt.EqualsToSeq<TSource, TValue>(rspan, segment, EqualityCompareSV);
+            b = DrNetMemoryExt.EqualsToSeq<TSource, TValue>(rspan, segment, EqualityCompareSV);
             Assert.True(b);
             //b = MemoryExt.EqualsToSeqFrom<TSource, TValue>(rspan, segment, EqualityCompareFrom);
             //Assert.True(b);
@@ -211,16 +211,16 @@ namespace DrNet.Tests.Span
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s, 0, length);
             ReadOnlySpan<TValue> values = new ReadOnlySpan<TValue>(v, 0, length + 1);
 
-            bool c = MemoryExt.EqualsToSeq(span, values);
+            bool c = DrNetMemoryExt.EqualsToSeq(span, values);
             Assert.False(c);
-            c = MemoryExt.EqualsToSeq(span, values, EqualityCompareSV);
+            c = DrNetMemoryExt.EqualsToSeq(span, values, EqualityCompareSV);
             Assert.False(c);
             //c = MemoryExt.EqualsToSeqFrom(span, values, EqualityCompareFrom);
             //Assert.False(c);
 
-            c = MemoryExt.EqualsToSeq(rspan, values);
+            c = DrNetMemoryExt.EqualsToSeq(rspan, values);
             Assert.False(c);
-            c = MemoryExt.EqualsToSeq(rspan, values, EqualityCompareSV);
+            c = DrNetMemoryExt.EqualsToSeq(rspan, values, EqualityCompareSV);
             Assert.False(c);
             //c = MemoryExt.EqualsToSeqFrom(rspan, values, EqualityCompareFrom);
             //Assert.False(c);
@@ -229,16 +229,16 @@ namespace DrNet.Tests.Span
             rspan = new ReadOnlySpan<TSource>(s, 0, length + 1);
             values = new ReadOnlySpan<TValue>(v, 0, length);
 
-            c = MemoryExt.EqualsToSeq(span, values);
+            c = DrNetMemoryExt.EqualsToSeq(span, values);
             Assert.False(c);
-            c = MemoryExt.EqualsToSeq(span, values, EqualityCompareSV);
+            c = DrNetMemoryExt.EqualsToSeq(span, values, EqualityCompareSV);
             Assert.False(c);
             //c = MemoryExt.EqualsToSeqFrom(span, values, EqualityCompareFrom);
             //Assert.False(c);
 
-            c = MemoryExt.EqualsToSeq(rspan, values);
+            c = DrNetMemoryExt.EqualsToSeq(rspan, values);
             Assert.False(c);
-            c = MemoryExt.EqualsToSeq(rspan, values, EqualityCompareSV);
+            c = DrNetMemoryExt.EqualsToSeq(rspan, values, EqualityCompareSV);
             Assert.False(c);
             //c = MemoryExt.EqualsToSeqFrom(rspan, values, EqualityCompareFrom);
             //Assert.False(c);
@@ -288,13 +288,13 @@ namespace DrNet.Tests.Span
             bool logSupported = IsLogSupported();
 
             log.Clear();
-            bool b = MemoryExt.EqualsToSeq(span, values);
+            bool b = DrNetMemoryExt.EqualsToSeq(span, values);
             Assert.True(b);
             if (logSupported)
                 CheckCompares();
 
             log.Clear();
-            b = MemoryExt.EqualsToSeq(rspan, values);
+            b = DrNetMemoryExt.EqualsToSeq(rspan, values);
             Assert.True(b);
             if (logSupported)
                 CheckCompares();
@@ -303,7 +303,7 @@ namespace DrNet.Tests.Span
             //    OnCompare += log.Add;
 
             log.Clear();
-            b = MemoryExt.EqualsToSeq(span, values, EqualityCompareSV);
+            b = DrNetMemoryExt.EqualsToSeq(span, values, EqualityCompareSV);
             Assert.True(b);
             CheckCompares();
 
@@ -313,7 +313,7 @@ namespace DrNet.Tests.Span
             //CheckCompares();
 
             log.Clear();
-            b = MemoryExt.EqualsToSeq(rspan, values, EqualityCompareSV);
+            b = DrNetMemoryExt.EqualsToSeq(rspan, values, EqualityCompareSV);
             Assert.True(b);
             CheckCompares();
 
@@ -365,13 +365,13 @@ namespace DrNet.Tests.Span
                 s[targetIndex] = NewTSource(target, handle);
 
                 log.Clear();
-                bool b = MemoryExt.EqualsToSeq(span, values);
+                bool b = DrNetMemoryExt.EqualsToSeq(span, values);
                 Assert.False(b);
                 if (logSupported)
                     Assert.Equal(targetIndex + 1, log.Count);
 
                 log.Clear();
-                b = MemoryExt.EqualsToSeq(rspan, values);
+                b = DrNetMemoryExt.EqualsToSeq(rspan, values);
                 Assert.False(b);
                 if (logSupported)
                     Assert.Equal(targetIndex + 1, log.Count);
@@ -381,13 +381,13 @@ namespace DrNet.Tests.Span
                 v[targetIndex] = NewTValue(target, handle);
 
                 log.Clear();
-                b = MemoryExt.EqualsToSeq(span, values);
+                b = DrNetMemoryExt.EqualsToSeq(span, values);
                 Assert.False(b);
                 if (logSupported)
                     Assert.Equal(targetIndex + 1, log.Count);
 
                 log.Clear();
-                b = MemoryExt.EqualsToSeq(rspan, values);
+                b = DrNetMemoryExt.EqualsToSeq(rspan, values);
                 Assert.False(b);
                 if (logSupported)
                     Assert.Equal(targetIndex + 1, log.Count);
@@ -404,7 +404,7 @@ namespace DrNet.Tests.Span
                 s[targetIndex] = NewTSource(target, handle);
 
                 log.Clear();
-                bool b = MemoryExt.EqualsToSeq(span, values, EqualityCompareSV);
+                bool b = DrNetMemoryExt.EqualsToSeq(span, values, EqualityCompareSV);
                 Assert.False(b);
                 Assert.Equal(targetIndex + 1, log.Count);
 
@@ -414,7 +414,7 @@ namespace DrNet.Tests.Span
                 //Assert.Equal(targetIndex + 1, log.Count);
 
                 log.Clear();
-                b = MemoryExt.EqualsToSeq(rspan, values, EqualityCompareSV);
+                b = DrNetMemoryExt.EqualsToSeq(rspan, values, EqualityCompareSV);
                 Assert.False(b);
                 Assert.Equal(targetIndex + 1, log.Count);
 
@@ -428,7 +428,7 @@ namespace DrNet.Tests.Span
                 v[targetIndex] = NewTValue(target, handle);
 
                 log.Clear();
-                b = MemoryExt.EqualsToSeq(span, values, EqualityCompareSV);
+                b = DrNetMemoryExt.EqualsToSeq(span, values, EqualityCompareSV);
                 Assert.False(b);
                 Assert.Equal(targetIndex + 1, log.Count);
 
@@ -438,7 +438,7 @@ namespace DrNet.Tests.Span
                 //Assert.Equal(targetIndex + 1, log.Count);
 
                 log.Clear();
-                b = MemoryExt.EqualsToSeq(rspan, values, EqualityCompareSV);
+                b = DrNetMemoryExt.EqualsToSeq(rspan, values, EqualityCompareSV);
                 Assert.False(b);
                 Assert.Equal(targetIndex + 1, log.Count);
 
@@ -509,16 +509,16 @@ namespace DrNet.Tests.Span
 
             //OnCompare += checkForOutOfRangeAccess;
 
-            bool b = MemoryExt.EqualsToSeq(span, values);
+            bool b = DrNetMemoryExt.EqualsToSeq(span, values);
             Assert.True(b);
-            b = MemoryExt.EqualsToSeq(span, values, EqualityCompareSV);
+            b = DrNetMemoryExt.EqualsToSeq(span, values, EqualityCompareSV);
             Assert.True(b);
             //b = MemoryExt.EqualsToSeqFrom(span, values, EqualityCompareFrom);
             //Assert.True(b);
 
-            b = MemoryExt.EqualsToSeq(rspan, values);
+            b = DrNetMemoryExt.EqualsToSeq(rspan, values);
             Assert.True(b);
-            b = MemoryExt.EqualsToSeq(rspan, values, EqualityCompareSV);
+            b = DrNetMemoryExt.EqualsToSeq(rspan, values, EqualityCompareSV);
             Assert.True(b);
             //b = MemoryExt.EqualsToSeqFrom(rspan, values, EqualityCompareFrom);
             //Assert.True(b);

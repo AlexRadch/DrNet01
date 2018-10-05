@@ -7,11 +7,11 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 using DrNet.Internal;
-using DrNet.Internal.Unsafe;
+using DrNet.Internal.UnSafe;
 
-namespace DrNet
+namespace DrNet.UnSafe
 {
-    [DebuggerTypeProxy(typeof(SpanDebugView<>))]
+    [DebuggerTypeProxy(typeof(UnsafeSpanDebugView<>))]
     [DebuggerDisplay("{ToString(),raw}")]
     public readonly unsafe struct UnsafeSpan<T>: IList<T>, IReadOnlyList<T>, ICollection<T>, IReadOnlyCollection<T>,
         IEnumerable<T>, IEnumerable
@@ -126,9 +126,9 @@ namespace DrNet
                 return MemoryExtensionsEquatablePatternMatching<T>.Instance.IndexOf(new Span<T>(_pointer, _length),
                     item);
             if (item is IEquatable<T> vEquatable)
-                return SpanHelpers.IndexOfEqualValueComparer(ref Unsafe.AsRef<T>(_pointer), _length, vEquatable, 
+                return DrNetSpanHelpers.IndexOfEqualValueComparer(in Unsafe.AsRef<T>(_pointer), _length, vEquatable, 
                     (eValue, sValue) => eValue.Equals(sValue));
-            return SpanHelpers.IndexOfEqualSourceComparer(ref Unsafe.AsRef<T>(_pointer), _length, item,
+            return DrNetSpanHelpers.IndexOfEqualSourceComparer(in Unsafe.AsRef<T>(_pointer), _length, item,
                 (sValue, vValue) => sValue.Equals(vValue));
         }
 

@@ -1,26 +1,28 @@
 ﻿using System;
 using System.Diagnostics;
 
+using DrNet.UnSafe;
+
 namespace DrNet.Internal
 {
-    public class SpanDebugView<T>
+    public class UnsafeSpanDebugView<T>
     {
-        public SpanDebugView(Span<T> span)
+        public UnsafeSpanDebugView(Span<T> span)
         {
             Items = span.ToArray();
         }
 
-        public SpanDebugView(ReadOnlySpan<T> span)
+        public UnsafeSpanDebugView(ReadOnlySpan<T> span)
         {
             Items = span.ToArray();
         }
 
-        public SpanDebugView(UnsafeSpan<T> span)
+        public UnsafeSpanDebugView(UnsafeSpan<T> span)
         {
             Items = span.AsSpan().ToArray();
         }
 
-        public SpanDebugView(UnsafeReadOnlySpan<T> span)
+        public UnsafeSpanDebugView(UnsafeReadOnlySpan<T> span)
         {
             Items = span.AsSpan().ToArray();
         }

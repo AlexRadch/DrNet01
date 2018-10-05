@@ -11,11 +11,11 @@ namespace DrNet.Tests.ReadOnlySpan
         public static void ArrayDefault()
         {
             int[] a = default;
-            ReadOnlySpan<int> m = MemoryExt.AsReadOnlySpan(a);
+            ReadOnlySpan<int> m = DrNetMemoryExt.AsReadOnlySpan(a);
             Assert.True(m == default);
-            m = MemoryExt.AsReadOnlySpan(a, 0);
+            m = DrNetMemoryExt.AsReadOnlySpan(a, 0);
             Assert.True(m == default);
-            m = MemoryExt.AsReadOnlySpan(a, 0, 0);
+            m = DrNetMemoryExt.AsReadOnlySpan(a, 0, 0);
             Assert.True(m == default);
         }
 
@@ -26,7 +26,7 @@ namespace DrNet.Tests.ReadOnlySpan
         public static void Array(int length)
         {
             int[] a = new int[length];
-            ReadOnlySpan<int> m = MemoryExt.AsReadOnlySpan(a);
+            ReadOnlySpan<int> m = DrNetMemoryExt.AsReadOnlySpan(a);
             Assert.Equal(length, m.Length);
             if (length > 0)
             {
@@ -47,7 +47,7 @@ namespace DrNet.Tests.ReadOnlySpan
         public static void ArrayWithStart(int length, int start)
         {
             int[] a = new int[length];
-            ReadOnlySpan<int> m = MemoryExt.AsReadOnlySpan(a, start);
+            ReadOnlySpan<int> m = DrNetMemoryExt.AsReadOnlySpan(a, start);
             Assert.Equal(length - start, m.Length);
             if (start != length)
             {
@@ -67,7 +67,7 @@ namespace DrNet.Tests.ReadOnlySpan
         public static void ArrayWithStartAndLength(int length, int start, int subLength)
         {
             int[] a = new int[length];
-            ReadOnlySpan<int> m = MemoryExt.AsReadOnlySpan(a, start, subLength);
+            ReadOnlySpan<int> m = DrNetMemoryExt.AsReadOnlySpan(a, start, subLength);
             Assert.Equal(subLength, m.Length);
             if (subLength != 0)
             {
@@ -82,7 +82,7 @@ namespace DrNet.Tests.ReadOnlySpan
         public static void ArrayDefaultWithStartNegative(int start)
         {
             int[] a = default;
-            Assert.Throws<ArgumentOutOfRangeException>(() => MemoryExt.AsReadOnlySpan(a, start));
+            Assert.Throws<ArgumentOutOfRangeException>(() => DrNetMemoryExt.AsReadOnlySpan(a, start));
         }
 
         [Theory]
@@ -92,7 +92,7 @@ namespace DrNet.Tests.ReadOnlySpan
         public static void ArrayWithStartNegative(int length, int start)
         {
             int[] a = new int[length];
-            Assert.Throws<ArgumentOutOfRangeException>(() => MemoryExt.AsReadOnlySpan(a, start));
+            Assert.Throws<ArgumentOutOfRangeException>(() => DrNetMemoryExt.AsReadOnlySpan(a, start));
         }
 
         [Theory]
@@ -103,7 +103,7 @@ namespace DrNet.Tests.ReadOnlySpan
         public static void ArrayDefaultWithStartAndLengthNegative(int start, int subLength)
         {
             int[] a = default;
-            Assert.Throws<ArgumentOutOfRangeException>(() => MemoryExt.AsReadOnlySpan(a, start, subLength));
+            Assert.Throws<ArgumentOutOfRangeException>(() => DrNetMemoryExt.AsReadOnlySpan(a, start, subLength));
         }
 
         [Theory]
@@ -116,7 +116,7 @@ namespace DrNet.Tests.ReadOnlySpan
         public static void ArrayWithStartAndLengthNegative(int length, int start, int subLength)
         {
             int[] a = new int[length];
-            Assert.Throws<ArgumentOutOfRangeException>(() => MemoryExt.AsReadOnlySpan(a, start, subLength));
+            Assert.Throws<ArgumentOutOfRangeException>(() => DrNetMemoryExt.AsReadOnlySpan(a, start, subLength));
         }
 
         #endregion
@@ -127,11 +127,11 @@ namespace DrNet.Tests.ReadOnlySpan
         public static void ArraySegmentDefault()
         {
             ArraySegment<int> segment = default;
-            ReadOnlySpan<int> m = MemoryExt.AsReadOnlySpan(segment);
+            ReadOnlySpan<int> m = DrNetMemoryExt.AsReadOnlySpan(segment);
             Assert.True(m == default);
-            m = MemoryExt.AsReadOnlySpan(segment, 0);
+            m = DrNetMemoryExt.AsReadOnlySpan(segment, 0);
             Assert.True(m == default);
-            m = MemoryExt.AsReadOnlySpan(segment, 0, 0);
+            m = DrNetMemoryExt.AsReadOnlySpan(segment, 0, 0);
             Assert.True(m == default);
         }
 
@@ -145,7 +145,7 @@ namespace DrNet.Tests.ReadOnlySpan
 
             int[] a = new int[length + segmentOffset];
             ArraySegment<int> segment = new ArraySegment<int>(a, 5, length);
-            ReadOnlySpan<int> m = MemoryExt.AsReadOnlySpan(segment);
+            ReadOnlySpan<int> m = DrNetMemoryExt.AsReadOnlySpan(segment);
             Assert.Equal(length, m.Length);
             if (m.Length != 0)
             {
@@ -169,7 +169,7 @@ namespace DrNet.Tests.ReadOnlySpan
 
             int[] a = new int[length + segmentOffset];
             ArraySegment<int> segment = new ArraySegment<int>(a, 5, length);
-            ReadOnlySpan<int> m = MemoryExt.AsReadOnlySpan(segment, start);
+            ReadOnlySpan<int> m = DrNetMemoryExt.AsReadOnlySpan(segment, start);
             Assert.Equal(length - start, m.Length);
             if (m.Length != 0)
             {
@@ -192,7 +192,7 @@ namespace DrNet.Tests.ReadOnlySpan
 
             int[] a = new int[length + segmentOffset];
             ArraySegment<int> segment = new ArraySegment<int>(a, segmentOffset, length);
-            ReadOnlySpan<int> m = MemoryExt.AsReadOnlySpan(segment, start, subLength);
+            ReadOnlySpan<int> m = DrNetMemoryExt.AsReadOnlySpan(segment, start, subLength);
             Assert.Equal(subLength, m.Length);
             if (subLength != 0)
             {
@@ -207,7 +207,7 @@ namespace DrNet.Tests.ReadOnlySpan
         public static void ArraySegmentDefaultWithStartNegative(int start)
         {
             ArraySegment<int> segment = default;
-            Assert.Throws<ArgumentOutOfRangeException>(() => MemoryExt.AsReadOnlySpan(segment, start));
+            Assert.Throws<ArgumentOutOfRangeException>(() => DrNetMemoryExt.AsReadOnlySpan(segment, start));
         }
 
         [Theory]
@@ -220,7 +220,7 @@ namespace DrNet.Tests.ReadOnlySpan
 
             int[] a = new int[length + segmentOffset];
             ArraySegment<int> segment = new ArraySegment<int>(a, segmentOffset, length);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MemoryExt.AsReadOnlySpan(segment, start));
+            Assert.Throws<ArgumentOutOfRangeException>(() => DrNetMemoryExt.AsReadOnlySpan(segment, start));
         }
 
         [Theory]
@@ -231,7 +231,7 @@ namespace DrNet.Tests.ReadOnlySpan
         public static void ArraySegmentDefaultWithStartAndLengthNegative(int start, int subLength)
         {
             ArraySegment<int> segment = default;
-            Assert.Throws<ArgumentOutOfRangeException>(() => MemoryExt.AsReadOnlySpan(segment, start, subLength));
+            Assert.Throws<ArgumentOutOfRangeException>(() => DrNetMemoryExt.AsReadOnlySpan(segment, start, subLength));
         }
 
         [Theory]
@@ -247,7 +247,7 @@ namespace DrNet.Tests.ReadOnlySpan
 
             int[] a = new int[length + segmentOffset];
             ArraySegment<int> segment = new ArraySegment<int>(a, segmentOffset, length);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MemoryExt.AsReadOnlySpan(segment, start, subLength));
+            Assert.Throws<ArgumentOutOfRangeException>(() => DrNetMemoryExt.AsReadOnlySpan(segment, start, subLength));
         }
 
         #endregion
