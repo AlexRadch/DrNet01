@@ -20,6 +20,7 @@ namespace DrNet.UnSafe
         [EditorBrowsable(EditorBrowsableState.Never)]
         public readonly int _length;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public UnsafeReadOnlySpan(void* pointer, int length)
         {
             if (length < 0 || pointer == null && length > 0)
@@ -28,20 +29,18 @@ namespace DrNet.UnSafe
             _length = length;
         }
 
-        public UnsafeReadOnlySpan(ReadOnlySpan<T> span)
-        {
-            _pointer = Unsafe.AsPointer(ref MemoryMarshal.GetReference(span));
-            _length = span.Length;
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public UnsafeReadOnlySpan(ReadOnlySpan<T> span) : this(in DrNetMarshal.GetReference(span), span.Length) { }
 
-        public UnsafeReadOnlySpan(in T reference, int length) : this(
-            Unsafe.AsPointer(ref Unsafe.AsRef(in reference)), length)
-        { }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public UnsafeReadOnlySpan(in T reference, int length) : this(UnsafeIn.AsPointer(in reference), length) { }
 
-        public ReadOnlySpan<T> AsSpan() => MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef<T>(_pointer), _length);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<T> AsSpan() => DrNetMarshal.CreateReadOnlySpan(in UnsafeIn.AsRef<T>(_pointer), _length);
 
         public ref readonly T this[int index]
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 if ((uint)index >= (uint)_length)
@@ -50,12 +49,22 @@ namespace DrNet.UnSafe
             }
         }
 
-        public int Length => _length;
+        public int Length
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _length;
+        }
 
-        public bool IsEmpty => 0 >= (uint)_length;
+        public bool IsEmpty
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => 0 >= (uint)_length; // Workaround for https://github.com/dotnet/coreclr/issues/19620
+        }
 
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         //public void Clear() => AsSpan().Clear();
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void CopyTo(Span<T> destination) => AsSpan().CopyTo(destination);
 
 #pragma warning disable CS0809 // Obsolete member 'memberA' overrides non-obsolete member 'memberB'.
@@ -64,8 +73,10 @@ namespace DrNet.UnSafe
         public override bool Equals(object obj) => throw new NotSupportedException();
 #pragma warning restore CS0809 // Obsolete member 'memberA' overrides non-obsolete member 'memberB'.
 
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         //public void Fill(T value) => AsSpan().Fill(value);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Enumerator GetEnumerator() => new Enumerator(this);
 
 #pragma warning disable CS0809 // Obsolete member 'memberA' overrides non-obsolete member 'memberB'.
@@ -79,9 +90,11 @@ namespace DrNet.UnSafe
         /// It can be used for pinning and is required to support the use of span within a fixed statement.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe ref readonly T GetPinnableReference() => ref (_length != 0) ? ref Unsafe.AsRef<T>(_pointer) :
             ref Unsafe.AsRef<T>(null);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public UnsafeReadOnlySpan<T> Slice(int start)
         {
             if ((uint)start > (uint)_length)
@@ -91,6 +104,7 @@ namespace DrNet.UnSafe
                 _length - start);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public UnsafeReadOnlySpan<T> Slice(int start, int length)
         {
             if ((uint)start > (uint)_length || (uint)length > (uint)(_length - start))
@@ -99,8 +113,10 @@ namespace DrNet.UnSafe
             return new UnsafeReadOnlySpan<T>(in Unsafe.Add(ref Unsafe.AsRef<T>(_pointer), start), length);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T[] ToArray() => AsSpan().ToArray();
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override string ToString()
         {
             if (typeof(T) == typeof(char))
@@ -108,28 +124,36 @@ namespace DrNet.UnSafe
             return string.Format("DrNet.UnsafeReadOnlySpan<{0}>[{1}]", typeof(T).Name, _length);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryCopyTo(Span<T> destination) => AsSpan().TryCopyTo(destination);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(UnsafeReadOnlySpan<T> left, UnsafeReadOnlySpan<T> right) =>
             left._length == right._length && left._pointer == right._pointer;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator !=(UnsafeReadOnlySpan<T> left, UnsafeReadOnlySpan<T> right) => !(left == right);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator UnsafeReadOnlySpan<T>(UnsafeSpan<T> span) => 
-            new UnsafeReadOnlySpan<T>(span._pointer, span._length);
+            new UnsafeReadOnlySpan<T>(in UnsafeIn.AsRef<T>(span._pointer), span._length);
 
         T IList<T>.this[int index] { get => this[index]; set => throw new InvalidOperationException(); }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int IndexOf(T item)
         {
-            if (typeof(T) == typeof(byte) || typeof(T) == typeof(char))
-                return MemoryExtensionsEquatablePatternMatching<T>.Instance.IndexOf(
-                    new ReadOnlySpan<T>(_pointer, _length), item);
+            if (typeof(T) == typeof(byte))
+                return MemoryExtensions.IndexOf(DrNetMarshal.CreateReadOnlySpan(in UnsafeIn.AsRef<byte>(_pointer),
+                    _length), UnsafeIn.As<T, byte>(in item));
+            if (typeof(T) == typeof(char))
+                return MemoryExtensions.IndexOf(DrNetMarshal.CreateReadOnlySpan(in UnsafeIn.AsRef<char>(_pointer),
+                    _length), UnsafeIn.As<T, char>(in item));
             if (item is IEquatable<T> vEquatable)
-                return DrNetSpanHelpers.IndexOfEqualValueComparer(in UnsafeIn.AsRef<T>(_pointer), _length, vEquatable, 
-                    (eValue, sValue) => eValue.Equals(sValue));
-            return DrNetSpanHelpers.IndexOfEqualSourceComparer(in UnsafeIn.AsRef<T>(_pointer), _length, item,
-                (sValue, vValue) => sValue.Equals(vValue));
+                return DrNetSpanHelpers.IndexOfEqualValueComparer(in UnsafeIn.AsRef<T>(_pointer), _length,
+                    vEquatable, (eValue, sValue) => eValue.Equals(sValue));
+            return DrNetSpanHelpers.IndexOfEqualValueComparer(in UnsafeIn.AsRef<T>(_pointer), _length, item,
+                (vValue, sValue) => vValue.Equals(sValue));
         }
 
         void IList<T>.Insert(int index, T item) => throw new InvalidOperationException();
@@ -146,8 +170,10 @@ namespace DrNet.UnSafe
 
         void ICollection<T>.Clear() => throw new InvalidOperationException();
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Contains(T item) => IndexOf(item) >= 0;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void CopyTo(T[] array, int arrayIndex) => CopyTo(array.AsSpan(arrayIndex));
 
         bool ICollection<T>.Remove(T item) => throw new InvalidOperationException();
@@ -172,6 +198,7 @@ namespace DrNet.UnSafe
                 _index = -1;
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool MoveNext()
             {
                 int index = _index + 1;
@@ -184,8 +211,13 @@ namespace DrNet.UnSafe
                 return false;
             }
 
-            public ref readonly T Current { get => ref _span[_index]; }
+            public ref readonly T Current
+            {
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                get => ref _span[_index];
+            }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Reset()
             {
                 _index = -1;

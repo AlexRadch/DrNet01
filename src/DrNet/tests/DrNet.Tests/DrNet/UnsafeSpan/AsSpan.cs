@@ -29,8 +29,8 @@ namespace DrNet.Tests.UnsafeSpan
             UnsafeReadOnlySpan<T> urSpan;
             unsafe
             {
-                uSpan = new UnsafeSpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(span)), span.Length);
-                urSpan = new UnsafeReadOnlySpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(rspan)),
+                uSpan = new UnsafeSpan<T>(Unsafe.AsPointer(ref DrNetMarshal.GetReference(span)), span.Length);
+                urSpan = new UnsafeReadOnlySpan<T>(UnsafeIn.AsPointer(in DrNetMarshal.GetReference(rspan)),
                     rspan.Length);
             }
             Assert.True(span == uSpan.AsSpan());
@@ -41,8 +41,8 @@ namespace DrNet.Tests.UnsafeSpan
             Assert.True(span == uSpan.AsSpan());
             Assert.True(rspan == urSpan.AsSpan());
 
-            uSpan = new UnsafeSpan<T>(ref MemoryMarshal.GetReference(span), span.Length);
-            urSpan = new UnsafeReadOnlySpan<T>(in MemoryMarshal.GetReference(rspan), span.Length);
+            uSpan = new UnsafeSpan<T>(ref DrNetMarshal.GetReference(span), span.Length);
+            urSpan = new UnsafeReadOnlySpan<T>(in DrNetMarshal.GetReference(rspan), span.Length);
             Assert.True(span == uSpan.AsSpan());
             Assert.True(rspan == urSpan.AsSpan());
         }
@@ -68,8 +68,8 @@ namespace DrNet.Tests.UnsafeSpan
                 UnsafeReadOnlySpan<T> urSpan;
                 unsafe
                 {
-                    uSpan = new UnsafeSpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(span)), span.Length);
-                    urSpan = new UnsafeReadOnlySpan<T>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(rspan)),
+                    uSpan = new UnsafeSpan<T>(Unsafe.AsPointer(ref DrNetMarshal.GetReference(span)), span.Length);
+                    urSpan = new UnsafeReadOnlySpan<T>(UnsafeIn.AsPointer(in DrNetMarshal.GetReference(rspan)),
                         rspan.Length);
                 }
                 Assert.True(span == uSpan.AsSpan());
@@ -80,8 +80,8 @@ namespace DrNet.Tests.UnsafeSpan
                 Assert.True(span == uSpan.AsSpan());
                 Assert.True(rspan == urSpan.AsSpan());
 
-                uSpan = new UnsafeSpan<T>(ref MemoryMarshal.GetReference(span), span.Length);
-                urSpan = new UnsafeReadOnlySpan<T>(in MemoryMarshal.GetReference(rspan), span.Length);
+                uSpan = new UnsafeSpan<T>(ref DrNetMarshal.GetReference(span), span.Length);
+                urSpan = new UnsafeReadOnlySpan<T>(in DrNetMarshal.GetReference(rspan), span.Length);
                 Assert.True(span == uSpan.AsSpan());
                 Assert.True(rspan == urSpan.AsSpan());
             }
