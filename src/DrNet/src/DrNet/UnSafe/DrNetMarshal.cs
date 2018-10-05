@@ -6,6 +6,42 @@ namespace DrNet.UnSafe
 {
     public static unsafe class DrNetMarshal
     {
+        #region Span ReadOnlySpan
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Span<TTo> UnsafeAs<TFrom, TTo>(Span<TFrom> span) => 
+            CreateSpan(ref Unsafe.As<TFrom, TTo>(ref GetReference(span)), span.Length);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<TTo> UnsafeAs<TFrom, TTo>(ReadOnlySpan<TFrom> span) => 
+            CreateReadOnlySpan(in UnsafeIn.As<TFrom, TTo>(in GetReference(span)), span.Length);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Span<TTo> UnsafeCast<TFrom, TTo>(Span<TFrom> span)
+        {
+            long longLength = (long)span.Length * Unsafe.SizeOf<TFrom>() / Unsafe.SizeOf<TTo>();
+            int length = checked((int)longLength);
+            return CreateSpan(ref Unsafe.As<TFrom, TTo>(ref GetReference(span)), length);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<TTo> UnsafeCast<TFrom, TTo>(ReadOnlySpan<TFrom> span)
+        {
+            long longLength = (long)span.Length * Unsafe.SizeOf<TFrom>() / Unsafe.SizeOf<TTo>();
+            int length = checked((int)longLength);
+            return CreateReadOnlySpan(in UnsafeIn.As<TFrom, TTo>(in GetReference(span)), length);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Span<byte> UnsafeCastBytes<TFrom>(Span<TFrom> span) =>
+            CreateSpan(ref Unsafe.As<TFrom, byte>(ref GetReference(span)), 
+                checked(span.Length * Unsafe.SizeOf<TFrom>()));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<byte> UnsafeCastBytes<TFrom>(ReadOnlySpan<TFrom> span) =>
+            CreateReadOnlySpan(in UnsafeIn.As<TFrom, byte>(in GetReference(span)),
+                checked(span.Length * Unsafe.SizeOf<TFrom>()));
+
         /// <summary>
         /// Create a new span over a portion of a regular managed object. This can be useful if part of a managed object
         /// represents a "fixed array." This is dangerous because the <paramref name="length"/> is not checked.
@@ -32,27 +68,46 @@ namespace DrNet.UnSafe
             MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(in reference), length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Span<byte> UnsafeAsBytes<T>(Span<T> span) => 
-            CreateSpan(ref Unsafe.As<T, byte>(ref GetReference(span)), checked(span.Length * Unsafe.SizeOf<T>()));
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ReadOnlySpan<byte> UnsafeAsBytes<T>(ReadOnlySpan<T> span) =>
-            CreateReadOnlySpan(in UnsafeIn.As<T, byte>(in GetReference(span)), 
-                checked(span.Length * Unsafe.SizeOf<T>()));
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Span<TTo> UnsafeAs<TFrom, TTo>(Span<TFrom> span) => 
-            CreateSpan(ref Unsafe.As<TFrom, TTo>(ref GetReference(span)), span.Length);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ReadOnlySpan<TTo> UnsafeAs<TFrom, TTo>(ReadOnlySpan<TFrom> span) => 
-            CreateReadOnlySpan(in UnsafeIn.As<TFrom, TTo>(in GetReference(span)), span.Length);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref T GetReference<T>(Span<T> span) => ref MemoryMarshal.GetReference(span);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref readonly T GetReference<T>(ReadOnlySpan<T> span) => ref MemoryMarshal.GetReference(span);
+
+        #endregion
+
+        #region UnsafeSpan UnsafeReadOnlySpan
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UnsafeSpan<TTo> UnsafeAs<TFrom, TTo>(UnsafeSpan<TFrom> span) => 
+            new UnsafeSpan<TTo>(span._pointer, span._length);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UnsafeReadOnlySpan<TTo> UnsafeAs<TFrom, TTo>(UnsafeReadOnlySpan<TFrom> span) => 
+            new UnsafeReadOnlySpan<TTo>(span._pointer, span._length);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UnsafeSpan<TTo> UnsafeCast<TFrom, TTo>(UnsafeSpan<TFrom> span)
+        {
+            long longLength = (long)span.Length * Unsafe.SizeOf<TFrom>() / Unsafe.SizeOf<TTo>();
+            int length = checked((int)longLength);
+            return new UnsafeSpan<TTo>(span._pointer, length);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UnsafeReadOnlySpan<TTo> UnsafeCast<TFrom, TTo>(UnsafeReadOnlySpan<TFrom> span)
+        {
+            long longLength = (long)span.Length * Unsafe.SizeOf<TFrom>() / Unsafe.SizeOf<TTo>();
+            int length = checked((int)longLength);
+            return new UnsafeReadOnlySpan<TTo>(span._pointer, length);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UnsafeSpan<byte> UnsafeCastBytes<TFrom>(UnsafeSpan<TFrom> span) =>
+            new UnsafeSpan<byte>(span._pointer, checked(span.Length * Unsafe.SizeOf<TFrom>()));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static UnsafeReadOnlySpan<byte> UnsafeCastBytes<TFrom>(UnsafeReadOnlySpan<TFrom> span) =>
+            new UnsafeReadOnlySpan<byte>(span._pointer, checked(span.Length * Unsafe.SizeOf<TFrom>()));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref T GetReference<T>(UnsafeSpan<T> span) => ref Unsafe.AsRef<T>(span._pointer);
@@ -60,5 +115,7 @@ namespace DrNet.UnSafe
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref readonly T GetReference<T>(UnsafeReadOnlySpan<T> span) => 
             ref UnsafeIn.AsRef<T>(span._pointer);
+
+        #endregion
     }
 }

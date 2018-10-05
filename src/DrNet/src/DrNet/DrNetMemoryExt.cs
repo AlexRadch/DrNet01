@@ -1346,8 +1346,8 @@ namespace DrNet
                 if (typeof(TOther) == typeof(TSource))
                 {
                     if (default(TSource) != null && DrNetTypeExt.IsTypeComparableAsBytes<TSource>())
-                        return MemoryExtensions.SequenceEqual(DrNetMarshal.UnsafeAsBytes(span), 
-                            DrNetMarshal.UnsafeAsBytes(other));
+                        return MemoryExtensions.SequenceEqual(DrNetMarshal.UnsafeCastBytes(span), 
+                            DrNetMarshal.UnsafeCastBytes(other));
                     if (UnsafeIn.AreSame(in DrNetMarshal.GetReference(span),
                         in UnsafeIn.As<TOther, TSource>(in DrNetMarshal.GetReference(other))))
                         return true;
@@ -1389,8 +1389,8 @@ namespace DrNet
                 if (typeof(TOther) == typeof(TSource))
                 {
                     if (default(TSource) != null && DrNetTypeExt.IsTypeComparableAsBytes<TSource>())
-                        return MemoryExtensions.SequenceEqual(DrNetMarshal.UnsafeAsBytes(span),
-                            DrNetMarshal.UnsafeAsBytes(other));
+                        return MemoryExtensions.SequenceEqual(DrNetMarshal.UnsafeCastBytes(span),
+                            DrNetMarshal.UnsafeCastBytes(other));
                     if (UnsafeIn.AreSame(in DrNetMarshal.GetReference(span),
                         in UnsafeIn.As<TOther, TSource>(in DrNetMarshal.GetReference(other))))
                         return true;
@@ -1436,8 +1436,8 @@ namespace DrNet
                 if (typeof(TValue) == typeof(TSource))
                 {
                     if (default(TSource) != null && DrNetTypeExt.IsTypeComparableAsBytes<TSource>())
-                        return MemoryExtensions.StartsWith(DrNetMarshal.UnsafeAsBytes(span), 
-                            DrNetMarshal.UnsafeAsBytes(value));
+                        return MemoryExtensions.StartsWith(DrNetMarshal.UnsafeCastBytes(span), 
+                            DrNetMarshal.UnsafeCastBytes(value));
                     if (UnsafeIn.AreSame(in DrNetMarshal.GetReference(span),
                         in UnsafeIn.As<TValue, TSource>(in DrNetMarshal.GetReference(value))))
                         return true;
@@ -1479,8 +1479,8 @@ namespace DrNet
                 if (typeof(TValue) == typeof(TSource))
                 {
                     if (default(TSource) != null && DrNetTypeExt.IsTypeComparableAsBytes<TSource>())
-                        return MemoryExtensions.StartsWith(DrNetMarshal.UnsafeAsBytes(span),
-                            DrNetMarshal.UnsafeAsBytes(value));
+                        return MemoryExtensions.StartsWith(DrNetMarshal.UnsafeCastBytes(span),
+                            DrNetMarshal.UnsafeCastBytes(value));
                     if (UnsafeIn.AreSame(in DrNetMarshal.GetReference(span), 
                         in UnsafeIn.As<TValue, TSource>(in DrNetMarshal.GetReference(value))))
                         return true;
@@ -1522,8 +1522,8 @@ namespace DrNet
                 if (typeof(TValue) == typeof(TSource))
                 {
                     if (default(TSource) != null && DrNetTypeExt.IsTypeComparableAsBytes<TSource>())
-                        return MemoryExtensions.StartsWith(DrNetMarshal.UnsafeAsBytes(span),
-                            DrNetMarshal.UnsafeAsBytes(value));
+                        return MemoryExtensions.StartsWith(DrNetMarshal.UnsafeCastBytes(span),
+                            DrNetMarshal.UnsafeCastBytes(value));
                     if (UnsafeIn.AreSame(in DrNetMarshal.GetReference(span),
                         in UnsafeIn.As<TValue, TSource>(in DrNetMarshal.GetReference(value))))
                         return true;
@@ -1565,8 +1565,8 @@ namespace DrNet
                 if (typeof(TValue) == typeof(TSource))
                 {
                     if (default(TSource) != null && DrNetTypeExt.IsTypeComparableAsBytes<TSource>())
-                        return MemoryExtensions.StartsWith(DrNetMarshal.UnsafeAsBytes(span),
-                            DrNetMarshal.UnsafeAsBytes(value));
+                        return MemoryExtensions.StartsWith(DrNetMarshal.UnsafeCastBytes(span),
+                            DrNetMarshal.UnsafeCastBytes(value));
                     if (UnsafeIn.AreSame(in DrNetMarshal.GetReference(span),
                         in UnsafeIn.As<TValue, TSource>(in DrNetMarshal.GetReference(value))))
                         return true;
@@ -1613,8 +1613,8 @@ namespace DrNet
                 if (typeof(TValue) == typeof(TSource))
                 {
                     if (default(TSource) != null && DrNetTypeExt.IsTypeComparableAsBytes<TSource>())
-                        return MemoryExtensions.EndsWith(DrNetMarshal.UnsafeAsBytes(span),
-                            DrNetMarshal.UnsafeAsBytes(value));
+                        return MemoryExtensions.EndsWith(DrNetMarshal.UnsafeCastBytes(span),
+                            DrNetMarshal.UnsafeCastBytes(value));
                     if (UnsafeIn.AreSame(in Unsafe.Add(ref DrNetMarshal.GetReference(span), start), 
                         in UnsafeIn.As<TValue, TSource>(in DrNetMarshal.GetReference(value))))
                         return true;
@@ -1657,8 +1657,8 @@ namespace DrNet
                 if (typeof(TValue) == typeof(TSource))
                 {
                     if (default(TSource) != null && DrNetTypeExt.IsTypeComparableAsBytes<TSource>())
-                        return MemoryExtensions.EndsWith(DrNetMarshal.UnsafeAsBytes(span),
-                            DrNetMarshal.UnsafeAsBytes(value));
+                        return MemoryExtensions.EndsWith(DrNetMarshal.UnsafeCastBytes(span),
+                            DrNetMarshal.UnsafeCastBytes(value));
                     if (UnsafeIn.AreSame(in UnsafeIn.Add(in DrNetMarshal.GetReference(span), start),
                         in UnsafeIn.As<TValue, TSource>(in DrNetMarshal.GetReference(value))))
                         return true;
@@ -1701,8 +1701,8 @@ namespace DrNet
                 if (typeof(TValue) == typeof(TSource))
                 {
                     if (default(TSource) != null && DrNetTypeExt.IsTypeComparableAsBytes<TSource>())
-                        return MemoryExtensions.EndsWith(DrNetMarshal.UnsafeAsBytes(span),
-                            DrNetMarshal.UnsafeAsBytes(value));
+                        return MemoryExtensions.EndsWith(DrNetMarshal.UnsafeCastBytes(span),
+                            DrNetMarshal.UnsafeCastBytes(value));
                     if (UnsafeIn.AreSame(in UnsafeIn.Add(in DrNetMarshal.GetReference(span), start),
                         in UnsafeIn.As<TValue, TSource>(in DrNetMarshal.GetReference(value))))
                         return true;
@@ -1745,8 +1745,8 @@ namespace DrNet
                 if (typeof(TValue) == typeof(TSource))
                 {
                     if (default(TSource) != null && DrNetTypeExt.IsTypeComparableAsBytes<TSource>())
-                        return MemoryExtensions.EndsWith(DrNetMarshal.UnsafeAsBytes(span),
-                            DrNetMarshal.UnsafeAsBytes(value));
+                        return MemoryExtensions.EndsWith(DrNetMarshal.UnsafeCastBytes(span),
+                            DrNetMarshal.UnsafeCastBytes(value));
                     if (UnsafeIn.AreSame(in UnsafeIn.Add(in DrNetMarshal.GetReference(span), start),
                         in UnsafeIn.As<TValue, TSource>(in DrNetMarshal.GetReference(value))))
                         return true;
