@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 using Xunit;
 
@@ -167,41 +166,20 @@ namespace DrNet.Tests.UnsafeSpan
             var rnd = new Random(40);
             T[] t = new T[] { NewT(rnd.Next()), NewT(rnd.Next()), NewT(rnd.Next()) };
 
-            UnsafeSpan<T> WrongLengthSpanFromPointer()
+            Span<T> span = new Span<T>(t, 1, 1);
+            ReadOnlySpan<T> rspan = new ReadOnlySpan<T>(t, 1, 1);
+            unsafe
             {
-                Span<T> span = new Span<T>(t, 1, 1);
-                unsafe
-                {
-                    return new UnsafeSpan<T>(Unsafe.AsPointer(ref DrNetMarshal.GetReference(span)), -1);
-                }
+                TestHelpers.AssertThrows<ArgumentOutOfRangeException, T>(span, (aSpan) => 
+                    new UnsafeSpan<T>(Unsafe.AsPointer(ref DrNetMarshal.GetReference(aSpan)), -1));
+                TestHelpers.AssertThrows<ArgumentOutOfRangeException, T>(rspan, (aSpan) => 
+                    new UnsafeReadOnlySpan<T>(UnsafeIn.AsPointer(in DrNetMarshal.GetReference(aSpan)), -1));
+
+                TestHelpers.AssertThrows<ArgumentOutOfRangeException, T>(span, (aSpan) => 
+                    new UnsafeSpan<T>(ref DrNetMarshal.GetReference(aSpan), -1));
+                TestHelpers.AssertThrows<ArgumentOutOfRangeException, T>(rspan, (aSpan) => 
+                    new UnsafeReadOnlySpan<T>(in DrNetMarshal.GetReference(aSpan), -1));
             }
-
-            UnsafeReadOnlySpan<T> WrongLengthReadOnlySpanFromPointer()
-            {
-                ReadOnlySpan<T> span = new ReadOnlySpan<T>(t, 2, 1);
-                unsafe
-                {
-                    return new UnsafeReadOnlySpan<T>(UnsafeIn.AsPointer(in DrNetMarshal.GetReference(span)), -1);
-                }
-            }
-
-            UnsafeSpan<T> WrongLengthSpanFromRef()
-            {
-                Span<T> span = new Span<T>(t, 1, 1);
-                return new UnsafeSpan<T>(ref DrNetMarshal.GetReference(span), -1);
-            }
-
-            UnsafeReadOnlySpan<T> WrongLengthReadOnlySpanFromRef()
-            {
-                ReadOnlySpan<T> span = new ReadOnlySpan<T>(t, 2, 1);
-                return new UnsafeReadOnlySpan<T>(in DrNetMarshal.GetReference(span), -1);
-            }
-
-            Assert.Throws<ArgumentOutOfRangeException>(() => WrongLengthSpanFromPointer());
-            Assert.Throws<ArgumentOutOfRangeException>(() => WrongLengthReadOnlySpanFromPointer());
-
-            Assert.Throws<ArgumentOutOfRangeException>(() => WrongLengthSpanFromRef());
-            Assert.Throws<ArgumentOutOfRangeException>(() => WrongLengthReadOnlySpanFromRef());
         }
     }
 
