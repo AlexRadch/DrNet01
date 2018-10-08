@@ -12,6 +12,7 @@ namespace DrNet.Tests.UnsafeSpan
     public abstract class Items<T> : SpanTest<T>
     {
         [Theory]
+        [InlineData(0)]
         [InlineData(1)]
         [InlineData(10)]
         [InlineData(100)]
@@ -24,34 +25,28 @@ namespace DrNet.Tests.UnsafeSpan
             for (var i = 0; i < t.Length; i++)
                 t[i] = NewT(rnd.Next());
 
-            Span<T> span = new Span<T>(t, guardLength, length);
-            ReadOnlySpan<T> rspan = new ReadOnlySpan<T>(t, guardLength, length);
-
-            GCHandle gch = GCHandle.Alloc(t, GCHandleType.Pinned);
-            try
+            unsafe
             {
-                UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
-                UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(rspan);
-
-                for (var i = 0; i < length; i++)
+                Span<T> span = new Span<T>(t, guardLength, length);
+                fixed (byte* bytePtr = DrNetMarshal.UnsafeCastBytes(span))
                 {
-                    Assert.True(Unsafe.AreSame(ref span[i], ref uSpan[i]));
-                    Assert.True(Unsafe.AreSame(ref span[i], ref Unsafe.AsRef(in urSpan[i])));
+                    UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
+                    UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
 
-                    Assert.Equal(span[i], uSpan[i]);
-                    Assert.Equal(span[i], urSpan[i]);
+                    for (var i = 0; i < length; i++)
+                    {
+                        Assert.True(Unsafe.AreSame(ref span[i], ref uSpan[i]));
+                        Assert.Equal(span[i], uSpan[i]);
+
+                        Assert.True(UnsafeIn.AreSame(in span[i], in urSpan[i]));
+                        Assert.Equal(span[i], urSpan[i]);
+                    }
                 }
-
-                span.EqualsToSeq<T, T>(uSpan.AsSpan());
-                span.EqualsToSeq(urSpan.AsSpan());
-            }
-            finally
-            {
-                gch.Free();
             }
         }
 
         [Theory]
+        [InlineData(0)]
         [InlineData(1)]
         [InlineData(10)]
         [InlineData(100)]
@@ -64,33 +59,27 @@ namespace DrNet.Tests.UnsafeSpan
             for (var i = 0; i < t.Length; i++)
                 t[i] = NewT(rnd.Next());
 
-            Span<T> span = new Span<T>(t, guardLength, length);
-            ReadOnlySpan<T> rspan = new ReadOnlySpan<T>(t, guardLength, length);
-
-            GCHandle gch = GCHandle.Alloc(t, GCHandleType.Pinned);
-            try
+            unsafe
             {
-                UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
-                UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(rspan);
-
-                for (var i = 0; i < length; i++)
+                Span<T> span = new Span<T>(t, guardLength, length);
+                fixed (byte* bytePtr = DrNetMarshal.UnsafeCastBytes(span))
                 {
-                    T item = NewT(rnd.Next());
-                    span[i] = item;
-                    Assert.Equal(item, uSpan[i]);
-                    Assert.Equal(item, urSpan[i]);
-                }
+                    UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
+                    UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
 
-                span.EqualsToSeq<T, T>(uSpan.AsSpan());
-                span.EqualsToSeq(urSpan.AsSpan());
-            }
-            finally
-            {
-                gch.Free();
+                    for (var i = 0; i < length; i++)
+                    {
+                        T item = NewT(rnd.Next());
+                        span[i] = item;
+                        Assert.Equal(item, uSpan[i]);
+                        Assert.Equal(item, urSpan[i]);
+                    }
+                }
             }
         }
 
         [Theory]
+        [InlineData(0)]
         [InlineData(1)]
         [InlineData(10)]
         [InlineData(100)]
@@ -104,26 +93,21 @@ namespace DrNet.Tests.UnsafeSpan
                 t[i] = NewT(rnd.Next());
             T[] t2 = t.AsSpan().ToArray();
 
-            Span<T> span = new Span<T>(t, guardLength, length);
-            ReadOnlySpan<T> rspan = new ReadOnlySpan<T>(t, guardLength, length);
-
-            GCHandle gch = GCHandle.Alloc(t, GCHandleType.Pinned);
-            try
+            unsafe
             {
-                UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
-
-                for (var i = 0; i < length; i++)
+                Span<T> span = new Span<T>(t, guardLength, length);
+                fixed (byte* bytePtr = DrNetMarshal.UnsafeCastBytes(span))
                 {
-                    T item = NewT(rnd.Next());
-                    uSpan[i] = item;
-                    Assert.Equal(item, span[i]);
-                }
+                    UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
+                    UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
 
-                span.EqualsToSeq<T, T>(uSpan.AsSpan());
-            }
-            finally
-            {
-                gch.Free();
+                    for (var i = 0; i < length; i++)
+                    {
+                        T item = NewT(rnd.Next());
+                        uSpan[i] = item;
+                        Assert.Equal(item, span[i]);
+                    }
+                }
             }
 
             Assert.True(t2.AsReadOnlySpan(0, guardLength).EqualsToSeq(t2.AsReadOnlySpan(0, guardLength)));
@@ -147,8 +131,20 @@ namespace DrNet.Tests.UnsafeSpan
         protected override int NewT(int value) => value;
     }
 
-    public sealed class Items_intE : Items<TEquatableInt>
+    public sealed class Items_string : Items<string>
     {
-        protected override TEquatableInt NewT(int value) => new TEquatableInt(value, 0);
+        protected override string NewT(int value) => value.ToString();
+    }
+
+    public sealed class Items_Tuple : Items<Tuple<byte, char, int, string>>
+    {
+        protected override Tuple<byte, char, int, string> NewT(int value) => 
+            new Tuple<byte, char, int, string>(unchecked((byte)value), unchecked((char)value), value, value.ToString());
+    }
+
+    public sealed class Items_ValueTuple : Items<(byte, char, int, string)>
+    {
+        protected override (byte, char, int, string) NewT(int value) => 
+            (unchecked((byte)value), unchecked((char)value), value, value.ToString());
     }
 }

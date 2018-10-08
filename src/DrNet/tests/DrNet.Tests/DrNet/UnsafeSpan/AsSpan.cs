@@ -25,24 +25,8 @@ namespace DrNet.Tests.UnsafeSpan
             Span<T> span = default;
             ReadOnlySpan<T> rspan = default;
 
-            UnsafeSpan<T> uSpan;
-            UnsafeReadOnlySpan<T> urSpan;
-            unsafe
-            {
-                uSpan = new UnsafeSpan<T>(Unsafe.AsPointer(ref DrNetMarshal.GetReference(span)), span.Length);
-                urSpan = new UnsafeReadOnlySpan<T>(UnsafeIn.AsPointer(in DrNetMarshal.GetReference(rspan)),
-                    rspan.Length);
-            }
-            Assert.True(span == uSpan.AsSpan());
-            Assert.True(rspan == urSpan.AsSpan());
-
-            uSpan = new UnsafeSpan<T>(span);
-            urSpan = new UnsafeReadOnlySpan<T>(rspan);
-            Assert.True(span == uSpan.AsSpan());
-            Assert.True(rspan == urSpan.AsSpan());
-
-            uSpan = new UnsafeSpan<T>(ref DrNetMarshal.GetReference(span), span.Length);
-            urSpan = new UnsafeReadOnlySpan<T>(in DrNetMarshal.GetReference(rspan), span.Length);
+            UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
+            UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(rspan);
             Assert.True(span == uSpan.AsSpan());
             Assert.True(rspan == urSpan.AsSpan());
         }
@@ -58,36 +42,17 @@ namespace DrNet.Tests.UnsafeSpan
 
             T[] t = new T[guardLength + length + guardLength];
 
-            Span<T> span = new Span<T>(t, guardLength, length);
-            ReadOnlySpan<T> rspan =  new ReadOnlySpan<T>(t, guardLength + 1, length);
-
-            GCHandle gch = GCHandle.Alloc(t, GCHandleType.Pinned);
-            try
+            unsafe
             {
-                UnsafeSpan<T> uSpan;
-                UnsafeReadOnlySpan<T> urSpan;
-                unsafe
+                Span<T> span = new Span<T>(t, guardLength, length);
+                fixed (byte* bytePtr = DrNetMarshal.UnsafeCastBytes(span))
                 {
-                    uSpan = new UnsafeSpan<T>(Unsafe.AsPointer(ref DrNetMarshal.GetReference(span)), span.Length);
-                    urSpan = new UnsafeReadOnlySpan<T>(UnsafeIn.AsPointer(in DrNetMarshal.GetReference(rspan)),
-                        rspan.Length);
+                    UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
+                    UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
+
+                    Assert.True(span == uSpan.AsSpan());
+                    Assert.True(span == urSpan.AsSpan());
                 }
-                Assert.True(span == uSpan.AsSpan());
-                Assert.True(rspan == urSpan.AsSpan());
-
-                uSpan = new UnsafeSpan<T>(span);
-                urSpan = new UnsafeReadOnlySpan<T>(rspan);
-                Assert.True(span == uSpan.AsSpan());
-                Assert.True(rspan == urSpan.AsSpan());
-
-                uSpan = new UnsafeSpan<T>(ref DrNetMarshal.GetReference(span), span.Length);
-                urSpan = new UnsafeReadOnlySpan<T>(in DrNetMarshal.GetReference(rspan), span.Length);
-                Assert.True(span == uSpan.AsSpan());
-                Assert.True(rspan == urSpan.AsSpan());
-            }
-            finally
-            {
-                gch.Free();
             }
         }
     }
@@ -107,8 +72,20 @@ namespace DrNet.Tests.UnsafeSpan
         protected override int NewT(int value) => value;
     }
 
-    public sealed class AsSpan_intE : AsSpan<TEquatableInt>
+    public sealed class AsSpan_string : AsSpan<string>
     {
-        protected override TEquatableInt NewT(int value) => new TEquatableInt(value, 0);
+        protected override string NewT(int value) => value.ToString();
+    }
+
+    public sealed class AsSpan_Tuple : AsSpan<Tuple<byte, char, int, string>>
+    {
+        protected override Tuple<byte, char, int, string> NewT(int value) => 
+            new Tuple<byte, char, int, string>(unchecked((byte)value), unchecked((char)value), value, value.ToString());
+    }
+
+    public sealed class AsSpan_ValueTuple : AsSpan<(byte, char, int, string)>
+    {
+        protected override (byte, char, int, string) NewT(int value) => 
+            (unchecked((byte)value), unchecked((char)value), value, value.ToString());
     }
 }

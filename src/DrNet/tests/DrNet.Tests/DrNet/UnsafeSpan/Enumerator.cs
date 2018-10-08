@@ -61,33 +61,30 @@ namespace DrNet.Tests.UnsafeSpan
             for (var i = 0; i < t.Length; i++)
                 t[i] = NextT(rnd);
 
-            Span<T> span = new Span<T>(t, guardLength, length);
-
-            GCHandle gch = GCHandle.Alloc(t, GCHandleType.Pinned);
-            try
+            unsafe
             {
-                UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
-                UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
+                Span<T> span = new Span<T>(t, guardLength, length);
+                fixed (byte* bytePtr = DrNetMarshal.UnsafeCastBytes(span))
+                {
+                    UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
+                    UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
 
-                int index = 0;
-                foreach (ref T item in uSpan)
-                    Assert.True(UnsafeIn.AreSame(in span[index++], in item));
+                    int index = 0;
+                    foreach (ref T item in uSpan)
+                        Assert.True(UnsafeIn.AreSame(in span[index++], in item));
 
-                index = 0;
-                foreach (ref readonly T item in urSpan)
-                    Assert.True(UnsafeIn.AreSame(in span[index++], in item));
+                    index = 0;
+                    foreach (ref readonly T item in urSpan)
+                        Assert.True(UnsafeIn.AreSame(in span[index++], in item));
 
-                index = 0;
-                foreach (T item in uSpan)
-                    Assert.Equal(span[index++], item);
+                    index = 0;
+                    foreach (T item in uSpan)
+                        Assert.Equal(span[index++], item);
 
-                index = 0;
-                foreach (T item in urSpan)
-                    Assert.Equal(span[index++], item);
-            }
-            finally
-            {
-                gch.Free();
+                    index = 0;
+                    foreach (T item in urSpan)
+                        Assert.Equal(span[index++], item);
+                }
             }
         }
 
@@ -105,13 +102,13 @@ namespace DrNet.Tests.UnsafeSpan
             for (var i = 0; i < t.Length; i++)
                 t[i] = NextT(rnd);
 
-            Span<T> span = new Span<T>(t, guardLength, length);
-
-            GCHandle gch = GCHandle.Alloc(t, GCHandleType.Pinned);
-            try
+            unsafe
             {
-                UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
-                UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
+                Span<T> span = new Span<T>(t, guardLength, length);
+                fixed (byte* bytePtr = DrNetMarshal.UnsafeCastBytes(span))
+                {
+                    UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
+                    UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
 
                 UnsafeSpan<T>.Enumerator uEnumerator = uSpan.GetEnumerator();
                 int index = 0;
@@ -152,10 +149,7 @@ namespace DrNet.Tests.UnsafeSpan
                 index = 0;
                 while (urEnumerator.MoveNext())
                     Assert.Equal(span[index++], urEnumerator.Current);
-            }
-            finally
-            {
-                gch.Free();
+                }
             }
         }
 
@@ -173,33 +167,30 @@ namespace DrNet.Tests.UnsafeSpan
             for (var i = 0; i < t.Length; i++)
                 t[i] = NextT(rnd);
 
-            Span<T> span = new Span<T>(t, guardLength, length);
-
-            GCHandle gch = GCHandle.Alloc(t, GCHandleType.Pinned);
-            try
+            unsafe
             {
-                UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
-                UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
-
-                int index = 0;
-                foreach (ref T item in uSpan)
+                Span<T> span = new Span<T>(t, guardLength, length);
+                fixed (byte* bytePtr = DrNetMarshal.UnsafeCastBytes(span))
                 {
-                    T newItem = NextT(rnd);
-                    span[index++] = newItem;
-                    Assert.Equal(newItem, item);
-                }
+                    UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
+                    UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
 
-                index = 0;
-                foreach (ref readonly T item in urSpan)
-                {
-                    T newItem = NextT(rnd);
-                    span[index++] = newItem;
-                    Assert.Equal(newItem, item);
+                    int index = 0;
+                    foreach (ref T item in uSpan)
+                    {
+                        T newItem = NextT(rnd);
+                        span[index++] = newItem;
+                        Assert.Equal(newItem, item);
+                    }
+
+                    index = 0;
+                    foreach (ref readonly T item in urSpan)
+                    {
+                        T newItem = NextT(rnd);
+                        span[index++] = newItem;
+                        Assert.Equal(newItem, item);
+                    }
                 }
-            }
-            finally
-            {
-                gch.Free();
             }
         }
 
@@ -217,35 +208,32 @@ namespace DrNet.Tests.UnsafeSpan
             for (var i = 0; i < t.Length; i++)
                 t[i] = NextT(rnd);
 
-            Span<T> span = new Span<T>(t, guardLength, length);
-
-            GCHandle gch = GCHandle.Alloc(t, GCHandleType.Pinned);
-            try
+            unsafe
             {
-                UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
-                UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
-
-                UnsafeSpan<T>.Enumerator uEnumerator = uSpan.GetEnumerator();
-                int index = 0;
-                while (uEnumerator.MoveNext())
+                Span<T> span = new Span<T>(t, guardLength, length);
+                fixed (byte* bytePtr = DrNetMarshal.UnsafeCastBytes(span))
                 {
-                    T newItem = NextT(rnd);
-                    span[index++] = newItem;
-                    Assert.Equal(newItem, uEnumerator.Current);
-                }
+                    UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
+                    UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
 
-                UnsafeReadOnlySpan<T>.Enumerator urEnumerator = urSpan.GetEnumerator();
-                index = 0;
-                while (urEnumerator.MoveNext())
-                {
-                    T newItem = NextT(rnd);
-                    span[index++] = newItem;
-                    Assert.Equal(newItem, urEnumerator.Current);
+                    UnsafeSpan<T>.Enumerator uEnumerator = uSpan.GetEnumerator();
+                    int index = 0;
+                    while (uEnumerator.MoveNext())
+                    {
+                        T newItem = NextT(rnd);
+                        span[index++] = newItem;
+                        Assert.Equal(newItem, uEnumerator.Current);
+                    }
+
+                    UnsafeReadOnlySpan<T>.Enumerator urEnumerator = urSpan.GetEnumerator();
+                    index = 0;
+                    while (urEnumerator.MoveNext())
+                    {
+                        T newItem = NextT(rnd);
+                        span[index++] = newItem;
+                        Assert.Equal(newItem, urEnumerator.Current);
+                    }
                 }
-            }
-            finally
-            {
-                gch.Free();
             }
         }
 
@@ -264,26 +252,21 @@ namespace DrNet.Tests.UnsafeSpan
                 t[i] = NextT(rnd);
             T[] t2 = t.AsSpan().ToArray();
 
-            Span<T> span = new Span<T>(t, guardLength, length);
-
-            GCHandle gch = GCHandle.Alloc(t, GCHandleType.Pinned);
-            try
+            unsafe
             {
-                UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
-
-                int index = 0;
-                foreach (ref T item in uSpan)
+                Span<T> span = new Span<T>(t, guardLength, length);
+                fixed (byte* bytePtr = DrNetMarshal.UnsafeCastBytes(span))
                 {
-                    T newItem = NextT(rnd);
-                    item = newItem;
-                    Assert.Equal(newItem, span[index++]);
-                }
+                    UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
 
-                span.EqualsToSeq<T, T>(uSpan.AsSpan());
-            }
-            finally
-            {
-                gch.Free();
+                    int index = 0;
+                    foreach (ref T item in uSpan)
+                    {
+                        T newItem = NextT(rnd);
+                        item = newItem;
+                        Assert.Equal(newItem, span[index++]);
+                    }
+                }
             }
 
             Assert.True(t2.AsReadOnlySpan(0, guardLength).EqualsToSeq(t.AsReadOnlySpan(0, guardLength)));
@@ -306,27 +289,22 @@ namespace DrNet.Tests.UnsafeSpan
                 t[i] = NextT(rnd);
             T[] t2 = t.AsSpan().ToArray();
 
-            Span<T> span = new Span<T>(t, guardLength, length);
-
-            GCHandle gch = GCHandle.Alloc(t, GCHandleType.Pinned);
-            try
+            unsafe
             {
-                UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
-
-                UnsafeSpan<T>.Enumerator uEnumerator = uSpan.GetEnumerator();
-                int index = 0;
-                while (uEnumerator.MoveNext())
+                Span<T> span = new Span<T>(t, guardLength, length);
+                fixed (byte* bytePtr = DrNetMarshal.UnsafeCastBytes(span))
                 {
-                    T newItem = NextT(rnd);
-                    uEnumerator.Current = newItem;
-                    Assert.Equal(newItem, span[index++]);
-                }
+                    UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
 
-                span.EqualsToSeq<T, T>(uSpan.AsSpan());
-            }
-            finally
-            {
-                gch.Free();
+                    UnsafeSpan<T>.Enumerator uEnumerator = uSpan.GetEnumerator();
+                    int index = 0;
+                    while (uEnumerator.MoveNext())
+                    {
+                        T newItem = NextT(rnd);
+                        uEnumerator.Current = newItem;
+                        Assert.Equal(newItem, span[index++]);
+                    }
+                }
             }
 
             Assert.True(t2.AsReadOnlySpan(0, guardLength).EqualsToSeq(t.AsReadOnlySpan(0, guardLength)));
@@ -350,8 +328,20 @@ namespace DrNet.Tests.UnsafeSpan
         protected override int NewT(int value) => value;
     }
 
-    public sealed class Enumerator_intE : Enumerator<TEquatableInt>
+    public sealed class Enumerator_string : Enumerator<string>
     {
-        protected override TEquatableInt NewT(int value) => new TEquatableInt(value, 0);
+        protected override string NewT(int value) => value.ToString();
+    }
+
+    public sealed class Enumerator_Tuple : Enumerator<Tuple<byte, char, int, string>>
+    {
+        protected override Tuple<byte, char, int, string> NewT(int value) => 
+            new Tuple<byte, char, int, string>(unchecked((byte)value), unchecked((char)value), value, value.ToString());
+    }
+
+    public sealed class Enumerator_ValueTuple : Enumerator<(byte, char, int, string)>
+    {
+        protected override (byte, char, int, string) NewT(int value) => 
+            (unchecked((byte)value), unchecked((char)value), value, value.ToString());
     }
 }

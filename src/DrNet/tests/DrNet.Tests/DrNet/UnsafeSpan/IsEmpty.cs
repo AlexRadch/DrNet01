@@ -65,8 +65,20 @@ namespace DrNet.Tests.UnsafeSpan
         protected override int NewT(int value) => value;
     }
 
-    public sealed class IsEmpty_intE : IsEmpty<TEquatableInt>
+    public sealed class IsEmpty_string : IsEmpty<string>
     {
-        protected override TEquatableInt NewT(int value) => new TEquatableInt(value, 0);
+        protected override string NewT(int value) => value.ToString();
+    }
+
+    public sealed class IsEmpty_Tuple : IsEmpty<Tuple<byte, char, int, string>>
+    {
+        protected override Tuple<byte, char, int, string> NewT(int value) => 
+            new Tuple<byte, char, int, string>(unchecked((byte)value), unchecked((char)value), value, value.ToString());
+    }
+
+    public sealed class IsEmpty_ValueTuple : IsEmpty<(byte, char, int, string)>
+    {
+        protected override (byte, char, int, string) NewT(int value) => 
+            (unchecked((byte)value), unchecked((char)value), value, value.ToString());
     }
 }

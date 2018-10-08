@@ -91,21 +91,17 @@ namespace DrNet.Tests.UnsafeSpan
 
             T[] d = new T[guardLength + length - 1 + guardLength];
 
-            Span<T> span = new Span<T>(t, guardLength, length);
-            ReadOnlySpan<T> rspan = new ReadOnlySpan<T>(t, guardLength, length);
-
-            GCHandle gch = GCHandle.Alloc(t, GCHandleType.Pinned);
-            try
+            unsafe
             {
-                UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
-                UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(rspan);
+                Span<T> span = new Span<T>(t, guardLength, length);
+                fixed (byte* bytePtr = DrNetMarshal.UnsafeCastBytes(span))
+                {
+                    UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
+                    UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
 
-                Assert.Throws<ArgumentException>(() => uSpan.CopyTo(new Span<T>(d, guardLength, length - 1)));
-                Assert.Throws<ArgumentException>(() => urSpan.CopyTo(new Span<T>(d, guardLength, length - 1)));
-            }
-            finally
-            {
-                gch.Free();
+                    Assert.Throws<ArgumentException>(() => uSpan.CopyTo(new Span<T>(d, guardLength, length - 1)));
+                    Assert.Throws<ArgumentException>(() => urSpan.CopyTo(new Span<T>(d, guardLength, length - 1)));
+                }
             }
         }
 
@@ -123,29 +119,29 @@ namespace DrNet.Tests.UnsafeSpan
                 t[i] = NewT(rnd.Next());
             T[] t2 = t.AsReadOnlySpan().ToArray();
 
-            Span<T> span = new Span<T>(t, guardLength, length);
-            ReadOnlySpan<T> rspan = new ReadOnlySpan<T>(t, guardLength, length);
-            Span<T> dspan = new Span<T>(t, guardLength + 1, length);
-
-            GCHandle gch = GCHandle.Alloc(t, GCHandleType.Pinned);
-            try
             {
-                UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
-                UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(rspan);
+                Span<T> span = new Span<T>(t2, guardLength, length);
+                ReadOnlySpan<T> rspan = new ReadOnlySpan<T>(t2, guardLength, length);
+                Span<T> dspan = new Span<T>(t2, guardLength + 1, length);
 
-                uSpan.CopyTo(dspan);
-                urSpan.CopyTo(dspan);
-            }
-            finally
-            {
-                gch.Free();
+                span.CopyTo(dspan);
+                rspan.CopyTo(dspan);
             }
 
-            span = new Span<T>(t2, guardLength, length);
-            rspan = new ReadOnlySpan<T>(t2, guardLength, length);
-            dspan = new Span<T>(t2, guardLength + 1, length);
-            span.CopyTo(dspan);
-            rspan.CopyTo(dspan);
+            unsafe
+            {
+                Span<T> span = new Span<T>(t, guardLength, length);
+                Span<T> dspan = new Span<T>(t, guardLength + 1, length);
+
+                fixed (byte* bytePtr = DrNetMarshal.UnsafeCastBytes(span))
+                {
+                    UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
+                    UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
+
+                    uSpan.CopyTo(dspan);
+                    urSpan.CopyTo(dspan);
+                }
+            }
 
             Assert.True(t2.AsReadOnlySpan().EqualsToSeq(t.AsReadOnlySpan()));
         }
@@ -164,29 +160,29 @@ namespace DrNet.Tests.UnsafeSpan
                 t[i] = NewT(rnd.Next());
             T[] t2 = t.AsReadOnlySpan().ToArray();
 
-            Span<T> span = new Span<T>(t, guardLength, length);
-            ReadOnlySpan<T> rspan = new ReadOnlySpan<T>(t, guardLength, length);
-            Span<T> dspan = new Span<T>(t, guardLength - 1, length);
-
-            GCHandle gch = GCHandle.Alloc(t, GCHandleType.Pinned);
-            try
             {
-                UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
-                UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(rspan);
+                Span<T> span = new Span<T>(t2, guardLength, length);
+                ReadOnlySpan<T> rspan = new ReadOnlySpan<T>(t2, guardLength, length);
+                Span<T> dspan = new Span<T>(t2, guardLength - 1, length);
 
-                uSpan.CopyTo(dspan);
-                urSpan.CopyTo(dspan);
-            }
-            finally
-            {
-                gch.Free();
+                span.CopyTo(dspan);
+                rspan.CopyTo(dspan);
             }
 
-            span = new Span<T>(t2, guardLength, length);
-            rspan = new ReadOnlySpan<T>(t2, guardLength, length);
-            dspan = new Span<T>(t2, guardLength - 1, length);
-            span.CopyTo(dspan);
-            rspan.CopyTo(dspan);
+            unsafe
+            {
+                Span<T> span = new Span<T>(t, guardLength, length);
+                Span<T> dspan = new Span<T>(t, guardLength - 1, length);
+
+                fixed (byte* bytePtr = DrNetMarshal.UnsafeCastBytes(span))
+                {
+                    UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
+                    UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
+
+                    uSpan.CopyTo(dspan);
+                    urSpan.CopyTo(dspan);
+                }
+            }
 
             Assert.True(t2.AsReadOnlySpan().EqualsToSeq(t.AsReadOnlySpan()));
         }
@@ -207,8 +203,20 @@ namespace DrNet.Tests.UnsafeSpan
         protected override int NewT(int value) => value;
     }
 
-    public sealed class CopyTo_intE : CopyTo<TEquatableInt>
+    public sealed class CopyTo_string : CopyTo<string>
     {
-        protected override TEquatableInt NewT(int value) => new TEquatableInt(value, 0);
+        protected override string NewT(int value) => value.ToString();
+    }
+
+    public sealed class CopyTo_Tuple : CopyTo<Tuple<byte, char, int, string>>
+    {
+        protected override Tuple<byte, char, int, string> NewT(int value) => 
+            new Tuple<byte, char, int, string>(unchecked((byte)value), unchecked((char)value), value, value.ToString());
+    }
+
+    public sealed class CopyTo_ValueTuple : CopyTo<(byte, char, int, string)>
+    {
+        protected override (byte, char, int, string) NewT(int value) => 
+            (unchecked((byte)value), unchecked((char)value), value, value.ToString());
     }
 }
