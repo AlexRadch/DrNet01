@@ -17,6 +17,9 @@ namespace DrNet.UnSafe
         IEquatable<UnsafeSpan<T>>, IEquatable<UnsafeReadOnlySpan<T>>
         //IComparable<UnsafeSpan<T>>, IComparable<UnsafeReadOnlySpan<T>>
     {
+        // NOTE: With the current implementation, UnsafeSpan<T> and UnsafeReadOnlySpan<T> must have the same layout,
+        // as code uses Unsafe.As to cast between them.
+
         [EditorBrowsable(EditorBrowsableState.Never)]
         public readonly void* _pointer;
 
@@ -92,6 +95,7 @@ namespace DrNet.UnSafe
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Enumerator GetEnumerator() => new Enumerator(this);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override int GetHashCode() =>
             DrNetFastHashCode.CombineHashCodes(((IntPtr)_pointer).GetHashCode(), _length.GetHashCode());
 
@@ -122,6 +126,7 @@ namespace DrNet.UnSafe
             return new UnsafeSpan<T>(ref Unsafe.Add(ref Unsafe.AsRef<T>(_pointer), start), length);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T[] ToArray() => AsSpan().ToArray();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -135,15 +140,51 @@ namespace DrNet.UnSafe
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryCopyTo(Span<T> destination) => AsSpan().TryCopyTo(destination);
 
+        #region operator == !=
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(UnsafeSpan<T> left, UnsafeSpan<T> right) => left.Equals(right);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(UnsafeSpan<T> left, UnsafeSpan<T> right) => !left.Equals(right);
+        public static bool operator ==(UnsafeSpan<T> left, UnsafeReadOnlySpan<T> right) => left.Equals(right);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator UnsafeReadOnlySpan<T>(UnsafeSpan<T> span) => 
-            new UnsafeReadOnlySpan<T>(span._pointer, span._length);
+        public static bool operator ==(UnsafeSpan<T> left, Span<T> right) =>
+            left._pointer == UnsafeIn.AsPointer(in DrNetMarshal.GetReference(right)) && left._length == right.Length;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator ==(UnsafeSpan<T> left, ReadOnlySpan<T> right) =>
+            left._pointer == UnsafeIn.AsPointer(in DrNetMarshal.GetReference(right)) && left._length == right.Length;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator ==(Span<T> left, UnsafeSpan<T> right) => right == left;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator ==(ReadOnlySpan<T> left, UnsafeSpan<T> right) => right == left;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(UnsafeSpan<T> left, UnsafeSpan<T> right) => !(left == right);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(UnsafeSpan<T> left, UnsafeReadOnlySpan<T> right) => !(left == right);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(UnsafeSpan<T> left, Span<T> right) => !(left == right);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(UnsafeSpan<T> left, ReadOnlySpan<T> right) => !(left == right);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(Span<T> left, UnsafeSpan<T> right) => !(left == right);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(ReadOnlySpan<T> left, UnsafeSpan<T> right) => !(left == right);
+
+        #endregion
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator UnsafeReadOnlySpan<T>(UnsafeSpan<T> span) =>
+            UnsafeIn.As<UnsafeSpan<T>, UnsafeReadOnlySpan<T>>(in span);
 
         T IList<T>.this[int index] { get => this[index]; set => this[index] = value; }
 

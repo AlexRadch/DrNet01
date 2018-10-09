@@ -8,6 +8,67 @@ namespace DrNet.Tests.UnsafeSpan
 {
     public abstract class Slice<T> : SpanTest<T>
     {
+        [Fact]
+        public void Default()
+        {
+            UnsafeSpan<T> uSpan = default;
+            UnsafeReadOnlySpan<T> urSpan = default;
+
+            unsafe
+            {
+                uSpan = uSpan.Slice(0);
+                urSpan = urSpan.Slice(0);
+
+                Assert.Equal(0, uSpan.Length);
+                Assert.Equal(0, urSpan.Length);
+
+                ref readonly T expected = ref UnsafeIn.AsRef<T>(null);
+                Assert.True(UnsafeIn.AreSame(expected, in DrNetMarshal.GetReference(uSpan)));
+                Assert.True(UnsafeIn.AreSame(expected, in DrNetMarshal.GetReference(uSpan)));
+
+                uSpan = uSpan.Slice(0, 0);
+                urSpan = urSpan.Slice(0, 0);
+
+                Assert.Equal(0, uSpan.Length);
+                Assert.Equal(0, urSpan.Length);
+
+                expected = ref UnsafeIn.AsRef<T>(null);
+                Assert.True(UnsafeIn.AreSame(expected, in DrNetMarshal.GetReference(uSpan)));
+                Assert.True(UnsafeIn.AreSame(expected, in DrNetMarshal.GetReference(uSpan)));
+            }
+        }
+
+        [Fact]
+        public void FromDefault()
+        {
+            Span<T> span = default;
+            UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
+            UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
+
+            unsafe
+            {
+                uSpan = uSpan.Slice(0);
+                urSpan = urSpan.Slice(0);
+
+                Assert.Equal(0, uSpan.Length);
+                Assert.Equal(0, urSpan.Length);
+
+                ref readonly T expected = ref UnsafeIn.AsRef<T>(null);
+                Assert.True(UnsafeIn.AreSame(expected, in DrNetMarshal.GetReference(uSpan)));
+                Assert.True(UnsafeIn.AreSame(expected, in DrNetMarshal.GetReference(uSpan)));
+
+                uSpan = uSpan.Slice(0, 0);
+                urSpan = urSpan.Slice(0, 0);
+
+                Assert.Equal(0, uSpan.Length);
+                Assert.Equal(0, urSpan.Length);
+
+                expected = ref UnsafeIn.AsRef<T>(null);
+                Assert.True(UnsafeIn.AreSame(expected, in DrNetMarshal.GetReference(uSpan)));
+                Assert.True(UnsafeIn.AreSame(expected, in DrNetMarshal.GetReference(uSpan)));
+            }
+        }
+
         [Theory]
         [InlineData(1)]
         [InlineData(10)]

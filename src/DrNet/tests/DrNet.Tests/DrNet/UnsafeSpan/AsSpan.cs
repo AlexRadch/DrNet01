@@ -32,7 +32,6 @@ namespace DrNet.Tests.UnsafeSpan
         }
 
         [Theory]
-        [InlineData(0)]
         [InlineData(1)]
         [InlineData(10)]
         [InlineData(100)]

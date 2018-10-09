@@ -15,9 +15,12 @@ namespace DrNet.UnSafe
     [DebuggerDisplay("{ToString(),raw}")]
     public readonly unsafe struct UnsafeReadOnlySpan<T> :
         IList<T>, IReadOnlyList<T>, ICollection<T>, IReadOnlyCollection<T>, IEnumerable<T>, IEnumerable,
-        IEquatable<UnsafeSpan<T>>, IEquatable<UnsafeReadOnlySpan<T>>//,
+        IEquatable<UnsafeSpan<T>>, IEquatable<UnsafeReadOnlySpan<T>>
         //IComparable<UnsafeSpan<T>>, IComparable<UnsafeReadOnlySpan<T>>
     {
+        // NOTE: With the current implementation, UnsafeSpan<T> and UnsafeReadOnlySpan<T> must have the same layout,
+        // as code uses Unsafe.As to cast between them.
+
         [EditorBrowsable(EditorBrowsableState.Never)]
         public readonly void* _pointer;
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -138,15 +141,51 @@ namespace DrNet.UnSafe
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryCopyTo(Span<T> destination) => AsSpan().TryCopyTo(destination);
 
+        #region operator == !=
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(UnsafeReadOnlySpan<T> left, UnsafeReadOnlySpan<T> right) => left.Equals(right);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(UnsafeReadOnlySpan<T> left, UnsafeReadOnlySpan<T> right) => !left.Equals(right);
+        public static bool operator ==(UnsafeReadOnlySpan<T> left, UnsafeSpan<T> right) => left.Equals(right);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator UnsafeReadOnlySpan<T>(UnsafeSpan<T> span) => 
-            new UnsafeReadOnlySpan<T>(span._pointer, span._length);
+        public static bool operator ==(UnsafeReadOnlySpan<T> left, Span<T> right) =>
+            left._pointer == UnsafeIn.AsPointer(in DrNetMarshal.GetReference(right)) && left._length == right.Length;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator ==(UnsafeReadOnlySpan<T> left, ReadOnlySpan<T> right) =>
+            left._pointer == UnsafeIn.AsPointer(in DrNetMarshal.GetReference(right)) && left._length == right.Length;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator ==(Span<T> left, UnsafeReadOnlySpan<T> right) => right == left;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator ==(ReadOnlySpan<T> left, UnsafeReadOnlySpan<T> right) => right == left;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(UnsafeReadOnlySpan<T> left, UnsafeReadOnlySpan<T> right) => !(left == right);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(UnsafeReadOnlySpan<T> left, UnsafeSpan<T> right) => !(left == right);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(UnsafeReadOnlySpan<T> left, Span<T> right) => !(left == right);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(UnsafeReadOnlySpan<T> left, ReadOnlySpan<T> right) => !(left == right);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(Span<T> left, UnsafeReadOnlySpan<T> right) => !(left == right);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(ReadOnlySpan<T> left, UnsafeReadOnlySpan<T> right) => !(left == right);
+
+        #endregion
+
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public static implicit operator UnsafeReadOnlySpan<T>(UnsafeSpan<T> span) => 
+        //    new UnsafeReadOnlySpan<T>(span._pointer, span._length);
 
         T IList<T>.this[int index] { get => this[index]; set => throw new InvalidOperationException(); }
 
