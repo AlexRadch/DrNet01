@@ -297,12 +297,12 @@ namespace DrNet
         {
             if (equalityComparer == null)
             {
-                if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte) || 
-                    typeof(TSource) == typeof(char) && typeof(TValue) == typeof(char))
-                {
-                    return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.LastIndexOf(span, 
-                        Unsafe.As<TValue, TSource>(ref value));
-                }
+                if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte))
+                    return MemoryExtensions.LastIndexOf(DrNetMarshal.UnsafeAs<TSource, byte>(span), 
+                        UnsafeIn.As<TValue, byte>(in value));
+                if (typeof(TSource) == typeof(char) && typeof(TValue) == typeof(char))
+                    return MemoryExtensions.LastIndexOf(DrNetMarshal.UnsafeAs<TSource, char>(span),
+                        UnsafeIn.As<TValue, char>(in value));
                 if (value is IEquatable<TSource> vEquatable)
                     return DrNetSpanHelpers.LastIndexOfEqualValueComparer(in DrNetMarshal.GetReference(span),
                         span.Length, vEquatable, (eValue, sValue) => eValue.Equals(sValue));
@@ -331,12 +331,12 @@ namespace DrNet
         {
             if (equalityComparer == null)
             {
-                if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte) || 
-                    typeof(TSource) == typeof(char) && typeof(TValue) == typeof(char))
-                {
-                    return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.LastIndexOf(span, 
-                        Unsafe.As<TValue, TSource>(ref value));
-                }
+                if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte))
+                    return MemoryExtensions.LastIndexOf(DrNetMarshal.UnsafeAs<TSource, byte>(span), 
+                        UnsafeIn.As<TValue, byte>(in value));
+                if (typeof(TSource) == typeof(char) && typeof(TValue) == typeof(char))
+                    return MemoryExtensions.LastIndexOf(DrNetMarshal.UnsafeAs<TSource, char>(span),
+                        UnsafeIn.As<TValue, char>(in value));
                 if (value is IEquatable<TSource> vEquatable)
                     return DrNetSpanHelpers.LastIndexOfEqualValueComparer(in DrNetMarshal.GetReference(span),
                         span.Length, vEquatable, (eValue, sValue) => eValue.Equals(sValue));
@@ -365,12 +365,12 @@ namespace DrNet
         {
             if (equalityComparer == null)
             {
-                if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte) || 
-                    typeof(TSource) == typeof(char) && typeof(TValue) == typeof(char))
-                {
-                    return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.LastIndexOf(span, 
-                        Unsafe.As<TValue, TSource>(ref value));
-                }
+                if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte))
+                    return MemoryExtensions.LastIndexOf(DrNetMarshal.UnsafeAs<TSource, byte>(span), 
+                        UnsafeIn.As<TValue, byte>(in value));
+                if (typeof(TSource) == typeof(char) && typeof(TValue) == typeof(char))
+                    return MemoryExtensions.LastIndexOf(DrNetMarshal.UnsafeAs<TSource, char>(span),
+                        UnsafeIn.As<TValue, char>(in value));
                 if (value is IEquatable<TSource> vEquatable)
                     return DrNetSpanHelpers.LastIndexOfEqualValueComparer(in DrNetMarshal.GetReference(span),
                         span.Length, vEquatable, (eValue, sValue) => eValue.Equals(sValue));
@@ -399,12 +399,12 @@ namespace DrNet
         {
             if (equalityComparer == null)
             {
-                if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte) || 
-                    typeof(TSource) == typeof(char) && typeof(TValue) == typeof(char))
-                {
-                    return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.LastIndexOf(span, 
-                        Unsafe.As<TValue, TSource>(ref value));
-                }
+                if (typeof(TSource) == typeof(byte) && typeof(TValue) == typeof(byte))
+                    return MemoryExtensions.LastIndexOf(DrNetMarshal.UnsafeAs<TSource, byte>(span), 
+                        UnsafeIn.As<TValue, byte>(in value));
+                if (typeof(TSource) == typeof(char) && typeof(TValue) == typeof(char))
+                    return MemoryExtensions.LastIndexOf(DrNetMarshal.UnsafeAs<TSource, char>(span),
+                        UnsafeIn.As<TValue, char>(in value));
                 if (value is IEquatable<TSource> vEquatable)
                     return DrNetSpanHelpers.LastIndexOfEqualValueComparer(in DrNetMarshal.GetReference(span),
                         span.Length, vEquatable, (eValue, sValue) => eValue.Equals(sValue));
@@ -485,8 +485,7 @@ namespace DrNet
                     // Work around https://github.com/dotnet/corefx/issues/32334 issue
                     if (values.Length == 0)
                         return -1;
-                    return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.IndexOfAny(span, 
-                        DrNetMarshal.UnsafeAs<TValue, TSource>(values));
+                    DrNetMarshal.UnsafeCastBytes(span).IndexOfAny(DrNetMarshal.UnsafeCastBytes(values));
                 }
                 if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
                     return DrNetSpanHelpers.IndexOfEqualAnyValueComparer(in DrNetMarshal.GetReference(span),
@@ -524,8 +523,7 @@ namespace DrNet
                     // Work around https://github.com/dotnet/corefx/issues/32334 issue
                     if (values.Length == 0)
                         return -1;
-                    return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.IndexOfAny(span, 
-                        DrNetMarshal.UnsafeAs<TValue, TSource>(values));
+                    DrNetMarshal.UnsafeCastBytes(span).IndexOfAny(DrNetMarshal.UnsafeCastBytes(values));
                 }
                 if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
                     return DrNetSpanHelpers.IndexOfEqualAnyValueComparer(in DrNetMarshal.GetReference(span),
@@ -563,8 +561,7 @@ namespace DrNet
                     // Work around https://github.com/dotnet/corefx/issues/32334 issue
                     if (values.Length == 0)
                         return -1;
-                    return MemoryExtensionsEquatablePatternMatching<TSource>.Instance.IndexOfAny(span,
-                        DrNetMarshal.UnsafeAs<TValue, TSource>(values));
+                    DrNetMarshal.UnsafeCastBytes(span).IndexOfAny(DrNetMarshal.UnsafeCastBytes(values));
                 }
                 if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
                     return DrNetSpanHelpers.IndexOfEqualAnyValueComparer(in DrNetMarshal.GetReference(span),
@@ -602,8 +599,7 @@ namespace DrNet
                     // Work around https://github.com/dotnet/corefx/issues/32334 issue
                     if (values.Length == 0)
                         return -1;
-                    return MemoryExtensions.IndexOfAny(DrNetMarshal.UnsafeAs<TSource, byte>(span), 
-                        DrNetMarshal.UnsafeAs<TValue, byte>(values));
+                    DrNetMarshal.UnsafeCastBytes(span).IndexOfAny(DrNetMarshal.UnsafeCastBytes(values));
                 }
                 if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
                     return DrNetSpanHelpers.IndexOfEqualAnyValueComparer(in DrNetMarshal.GetReference(span),

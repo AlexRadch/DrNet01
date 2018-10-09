@@ -12,8 +12,10 @@ namespace DrNet.UnSafe
 {
     [DebuggerTypeProxy(typeof(UnsafeSpanDebugView<>))]
     [DebuggerDisplay("{ToString(),raw}")]
-    public readonly unsafe struct UnsafeSpan<T>: IList<T>, IReadOnlyList<T>, ICollection<T>, IReadOnlyCollection<T>,
-        IEnumerable<T>, IEnumerable
+    public readonly unsafe struct UnsafeSpan<T> :
+        IList<T>, IReadOnlyList<T>, ICollection<T>, IReadOnlyCollection<T>, IEnumerable<T>, IEnumerable,
+        IEquatable<UnsafeSpan<T>>, IEquatable<UnsafeReadOnlySpan<T>>
+        //IComparable<UnsafeSpan<T>>, IComparable<UnsafeReadOnlySpan<T>>
     {
         [EditorBrowsable(EditorBrowsableState.Never)]
         public readonly void* _pointer;
@@ -68,11 +70,21 @@ namespace DrNet.UnSafe
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void CopyTo(Span<T> destination) => AsSpan().CopyTo(destination);
 
-#pragma warning disable CS0809 // Obsolete member 'memberA' overrides non-obsolete member 'memberB'.
-        [Obsolete("Equals() on UnsafeSpan will always throw an exception. Use == instead.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(UnsafeSpan<T> other) => _pointer == other._pointer && _length == other.Length;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(UnsafeReadOnlySpan<T> other) => _pointer == other._pointer && _length == other.Length;
+
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object obj) => throw new NotSupportedException();
-#pragma warning restore CS0809 // Obsolete member 'memberA' overrides non-obsolete member 'memberB'.
+        public override bool Equals(object obj)
+        {
+            if (obj is UnsafeSpan<T> oSpan)
+                return Equals(oSpan);
+            if (obj is UnsafeReadOnlySpan<T> orSpan)
+                return Equals(orSpan);
+            return false;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Fill(T value) => AsSpan().Fill(value);
@@ -80,11 +92,8 @@ namespace DrNet.UnSafe
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Enumerator GetEnumerator() => new Enumerator(this);
 
-#pragma warning disable CS0809 // Obsolete member 'memberA' overrides non-obsolete member 'memberB'.
-        [Obsolete("GetHashCode() on UnsafeSpan will always throw an exception.")]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => throw new NotSupportedException();
-#pragma warning restore CS0809 // Obsolete member 'memberA' overrides non-obsolete member 'memberB'.
+        public override int GetHashCode() =>
+            DrNetFastHashCode.CombineHashCodes(((IntPtr)_pointer).GetHashCode(), _length.GetHashCode());
 
         /// <summary>
         /// Returns a reference to the 0th element of the UnsafeSpan. If the Span is empty, returns null reference.
@@ -127,15 +136,14 @@ namespace DrNet.UnSafe
         public bool TryCopyTo(Span<T> destination) => AsSpan().TryCopyTo(destination);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(UnsafeSpan<T> left, UnsafeSpan<T> right) =>
-            left._length == right._length && left._pointer == right._pointer;
+        public static bool operator ==(UnsafeSpan<T> left, UnsafeSpan<T> right) => left.Equals(right);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(UnsafeSpan<T> left, UnsafeSpan<T> right) => !(left == right);
+        public static bool operator !=(UnsafeSpan<T> left, UnsafeSpan<T> right) => !left.Equals(right);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator UnsafeReadOnlySpan<T>(UnsafeSpan<T> span) =>
-            new UnsafeReadOnlySpan<T>(in UnsafeIn.AsRef<T>(span._pointer), span._length);
+        public static implicit operator UnsafeReadOnlySpan<T>(UnsafeSpan<T> span) => 
+            new UnsafeReadOnlySpan<T>(span._pointer, span._length);
 
         T IList<T>.this[int index] { get => this[index]; set => this[index] = value; }
 
