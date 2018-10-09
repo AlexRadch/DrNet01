@@ -67,10 +67,8 @@ namespace DrNet.UnSafe
             get => 0 >= (uint)_length; // Workaround for https://github.com/dotnet/coreclr/issues/19620
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Clear() => AsSpan().Clear();
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void CopyTo(Span<T> destination) => AsSpan().CopyTo(destination);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -89,7 +87,6 @@ namespace DrNet.UnSafe
             return false;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Fill(T value) => AsSpan().Fill(value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -126,10 +123,8 @@ namespace DrNet.UnSafe
             return new UnsafeSpan<T>(ref Unsafe.Add(ref Unsafe.AsRef<T>(_pointer), start), length);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T[] ToArray() => AsSpan().ToArray();
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override string ToString()
         {
             if (typeof(T) == typeof(char))
@@ -137,7 +132,6 @@ namespace DrNet.UnSafe
             return string.Format("DrNet.UnsafeSpan<{0}>[{1}]", typeof(T).Name, _length);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryCopyTo(Span<T> destination) => AsSpan().TryCopyTo(destination);
 
         #region operator == !=
@@ -218,10 +212,8 @@ namespace DrNet.UnSafe
 
         void ICollection<T>.Clear() => throw new InvalidOperationException();
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Contains(T item) => IndexOf(item) >= 0;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void CopyTo(T[] array, int arrayIndex) => CopyTo(array.AsSpan(arrayIndex));
 
         bool ICollection<T>.Remove(T item) => throw new InvalidOperationException();

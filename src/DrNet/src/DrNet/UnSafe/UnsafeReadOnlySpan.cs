@@ -70,7 +70,6 @@ namespace DrNet.UnSafe
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         //public void Clear() => AsSpan().Clear();
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void CopyTo(Span<T> destination) => AsSpan().CopyTo(destination);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -96,6 +95,7 @@ namespace DrNet.UnSafe
         public Enumerator GetEnumerator() => new Enumerator(this);
 
         [EditorBrowsable(EditorBrowsableState.Never)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override int GetHashCode() => 
             DrNetFastHashCode.CombineHashCodes(((IntPtr)_pointer).GetHashCode(), _length.GetHashCode());
 
@@ -127,10 +127,8 @@ namespace DrNet.UnSafe
             return new UnsafeReadOnlySpan<T>(in Unsafe.Add(ref Unsafe.AsRef<T>(_pointer), start), length);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T[] ToArray() => AsSpan().ToArray();
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override string ToString()
         {
             if (typeof(T) == typeof(char))
@@ -138,7 +136,6 @@ namespace DrNet.UnSafe
             return string.Format("DrNet.UnsafeReadOnlySpan<{0}>[{1}]", typeof(T).Name, _length);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryCopyTo(Span<T> destination) => AsSpan().TryCopyTo(destination);
 
         #region operator == !=
@@ -189,7 +186,6 @@ namespace DrNet.UnSafe
 
         T IList<T>.this[int index] { get => this[index]; set => throw new InvalidOperationException(); }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int IndexOf(T item)
         {
             if (typeof(T) == typeof(byte))
@@ -219,10 +215,8 @@ namespace DrNet.UnSafe
 
         void ICollection<T>.Clear() => throw new InvalidOperationException();
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Contains(T item) => IndexOf(item) >= 0;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void CopyTo(T[] array, int arrayIndex) => CopyTo(array.AsSpan(arrayIndex));
 
         bool ICollection<T>.Remove(T item) => throw new InvalidOperationException();
