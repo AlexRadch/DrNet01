@@ -78,7 +78,7 @@ namespace DrNet.Tests.Span
                 return;
             }
 
-            var rnd = new Random(41);
+            var rnd = new Random(41 * (length + 1));
 
             TSource[] s = new TSource[length];
             Span<TSource> span = new Span<TSource>(s);
@@ -140,17 +140,12 @@ namespace DrNet.Tests.Span
         public void TestMatch(int length)
         {
             var rnd = new Random(42 * (length + 1));
-            T[] targets = new T[] { NextT(rnd), NextT(rnd), NextT(rnd), NextT(rnd) };
+            T[] targets = RepeatT(rnd).Take(4).ToArray();
 
             TSource[] s = new TSource[length];
             for (int i = 0; i < length; i++)
             {
-                T item;
-                do
-                {
-                    item = NextT(rnd);
-                } while (targets.AsSpan().IndexOfEqual(item) >= 0);
-
+                T item = RepeatT(rnd).Where(tItem => targets.AsSpan().IndexOfEqual(tItem) < 0).First();
                 s[i] = NewTSource(item);
             }
             Span<TSource> span = new Span<TSource>(s);
@@ -189,17 +184,12 @@ namespace DrNet.Tests.Span
         public void TestMatchValuesLarger(int length)
         {
             var rnd = new Random(47 * (length + 1));
-            T[] targets = new T[] { NextT(rnd), NextT(rnd), NextT(rnd), NextT(rnd) };
+            T[] targets = RepeatT(rnd).Take(4).ToArray();
 
             TSource[] s = new TSource[length];
             for (int i = 0; i < length; i++)
             {
-                T item;
-                do
-                {
-                    item = NextT(rnd);
-                } while (targets.AsSpan().IndexOfEqual(item) >= 0);
-
+                T item = RepeatT(rnd).Where(tItem => targets.AsSpan().IndexOfEqual(tItem) < 0).First();
                 s[i] = NewTSource(item);
             }
             Span<TSource> span = new Span<TSource>(s);
@@ -248,17 +238,12 @@ namespace DrNet.Tests.Span
         public void TestNoMatch(int length)
         {
             var rnd = new Random(43 * (length + 1));
-            T[] targets = new T[] { NextT(rnd), NextT(rnd), NextT(rnd), NextT(rnd) };
+            T[] targets = RepeatT(rnd).Take(4).ToArray();
 
             TSource[] s = new TSource[length];
             for (int i = 0; i < length; i++)
             {
-                T item;
-                do
-                {
-                    item = NextT(rnd);
-                } while (targets.AsSpan().IndexOfEqual(item) >= 0);
-
+                T item = RepeatT(rnd).Where(tItem => targets.AsSpan().IndexOfEqual(tItem) < 0).First();
                 s[i] = NewTSource(item);
             }
             Span<TSource> span = new Span<TSource>(s);
@@ -302,17 +287,12 @@ namespace DrNet.Tests.Span
         public void TestNoMatchValuesLarger(int length)
         {
             var rnd = new Random(48 * (length + 1));
-            T[] targets = new T[] { NextT(rnd), NextT(rnd), NextT(rnd), NextT(rnd) };
+            T[] targets = RepeatT(rnd).Take(4).ToArray();
 
             TSource[] s = new TSource[length];
             for (int i = 0; i < length; i++)
             {
-                T item;
-                do
-                {
-                    item = NextT(rnd);
-                } while (targets.AsSpan().IndexOfEqual(item) >= 0);
-
+                T item = RepeatT(rnd).Where(tItem => targets.AsSpan().IndexOfEqual(tItem) < 0).First();
                 s[i] = NewTSource(item);
             }
             Span<TSource> span = new Span<TSource>(s);

@@ -400,12 +400,7 @@ namespace DrNet.Tests.Span
             var rnd = new Random(47 * (length + 1));
             T target = NextT(rnd);
             const int guardLength = 50;
-
-            T guard;
-            do
-            {
-                guard = NextT(rnd);
-            } while (EqualityCompareT(guard, target, true) || EqualityCompareT(target, guard, true));
+            T guard = NextNotEqualT(rnd, target);
 
             void checkForOutOfRangeAccess(T x, T y)
             {

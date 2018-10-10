@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using Xunit;
 
 using DrNet.UnSafe;
-
+using System.Linq;
 
 namespace DrNet.Tests.UnsafeSpan
 {
@@ -44,13 +44,10 @@ namespace DrNet.Tests.UnsafeSpan
         [InlineData(100)]
         public void Test(int length)
         {
-            var rnd = new Random(41);
+            var rnd = new Random(41 * (length + 1));
             const int guardLength = 50;
 
-            T[] t = new T[guardLength + length + guardLength];
-            for (var i = 0; i < t.Length; i++)
-                t[i] = NextT(rnd);
-
+            T[] t = RepeatT(rnd).Take(guardLength + length + guardLength).ToArray();
             T[] copy;
 
             unsafe
@@ -73,18 +70,14 @@ namespace DrNet.Tests.UnsafeSpan
         }
 
         [Theory]
-        [InlineData(0)]
         [InlineData(1)]
         [InlineData(10)]
         [InlineData(100)]
         public void NotSame(int length)
         {
-            var rnd = new Random(42);
+            var rnd = new Random(42 * (length + 1));
 
-            T[] t = new T[length];
-            for (var i = 0; i < t.Length; i++)
-                t[i] = NextT(rnd);
-
+            T[] t = RepeatT(rnd).Take(length).ToArray();
             T[] copy;
 
             unsafe

@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using System.Linq;
 
 using Xunit;
 
 using DrNet.UnSafe;
-
 
 namespace DrNet.Tests.UnsafeSpan
 {
@@ -24,8 +23,8 @@ namespace DrNet.Tests.UnsafeSpan
             urSpan.CopyTo(default);
             Assert.True(urSpan.TryCopyTo(default));
 
-            T[] d = new T[] { NextT(rnd), NextT(rnd), NextT(rnd) };
-            T[] d2 = d.AsReadOnlySpan().ToArray();
+            T[] d = RepeatT(rnd).Take(3).ToArray();
+            T[] d2 = d.ToArray();
 
             uSpan.CopyTo(d);
             Assert.Equal(d, d2);
@@ -72,8 +71,8 @@ namespace DrNet.Tests.UnsafeSpan
             urSpan.CopyTo(default);
             Assert.True(urSpan.TryCopyTo(default));
 
-            T[] d = new T[] { NextT(rnd), NextT(rnd), NextT(rnd) };
-            T[] d2 = d.AsReadOnlySpan().ToArray();
+            T[] d = RepeatT(rnd).Take(3).ToArray();
+            T[] d2 = d.ToArray();
 
             uSpan.CopyTo(d);
             Assert.Equal(d, d2);
@@ -112,7 +111,7 @@ namespace DrNet.Tests.UnsafeSpan
         [InlineData(100)]
         public void Shorter(int length)
         {
-            var rnd = new Random(42);
+            var rnd = new Random(42 * (length + 1));
             const int guardLength = 50;
 
             T[] t = new T[guardLength + length + guardLength];
@@ -138,18 +137,18 @@ namespace DrNet.Tests.UnsafeSpan
         }
 
         [Theory]
-        [InlineData(3)]
+        [InlineData(2)]
         [InlineData(10)]
         [InlineData(100)]
         public void OverlappingP1(int length)
         {
-            var rnd = new Random(43);
+            var rnd = new Random(43 * (length + 1));
             const int guardLength = 50;
 
             T[] t = new T[guardLength + length + guardLength];
             for (var i = 0; i < t.Length; i++)
                 t[i] = NextT(rnd);
-            T[] t2 = t.AsReadOnlySpan().ToArray();
+            T[] t2 = t.ToArray();
 
             {
                 Span<T> span = new Span<T>(t2, guardLength, length);
@@ -157,6 +156,8 @@ namespace DrNet.Tests.UnsafeSpan
                 Span<T> dspan = new Span<T>(t2, guardLength + 1, length);
 
                 span.CopyTo(dspan);
+                span.CopyTo(dspan);
+                rspan.CopyTo(dspan);
                 rspan.CopyTo(dspan);
             }
 
@@ -171,7 +172,9 @@ namespace DrNet.Tests.UnsafeSpan
                     UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
 
                     uSpan.CopyTo(dspan);
+                    Assert.True(uSpan.TryCopyTo(dspan));
                     urSpan.CopyTo(dspan);
+                    Assert.True(urSpan.TryCopyTo(dspan));
                 }
             }
 
@@ -179,18 +182,18 @@ namespace DrNet.Tests.UnsafeSpan
         }
 
         [Theory]
-        [InlineData(3)]
+        [InlineData(2)]
         [InlineData(10)]
         [InlineData(100)]
         public void OverlappingM1(int length)
         {
-            var rnd = new Random(44);
+            var rnd = new Random(44 * (length + 1));
             const int guardLength = 50;
 
             T[] t = new T[guardLength + length + guardLength];
             for (var i = 0; i < t.Length; i++)
                 t[i] = NextT(rnd);
-            T[] t2 = t.AsReadOnlySpan().ToArray();
+            T[] t2 = t.ToArray();
 
             {
                 Span<T> span = new Span<T>(t2, guardLength, length);
@@ -198,6 +201,8 @@ namespace DrNet.Tests.UnsafeSpan
                 Span<T> dspan = new Span<T>(t2, guardLength - 1, length);
 
                 span.CopyTo(dspan);
+                span.CopyTo(dspan);
+                rspan.CopyTo(dspan);
                 rspan.CopyTo(dspan);
             }
 
@@ -212,7 +217,9 @@ namespace DrNet.Tests.UnsafeSpan
                     UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
 
                     uSpan.CopyTo(dspan);
+                    Assert.True(uSpan.TryCopyTo(dspan));
                     urSpan.CopyTo(dspan);
+                    Assert.True(urSpan.TryCopyTo(dspan));
                 }
             }
 

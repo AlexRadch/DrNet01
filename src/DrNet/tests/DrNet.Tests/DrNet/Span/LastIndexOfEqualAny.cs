@@ -80,7 +80,7 @@ namespace DrNet.Tests.Span
                 return;
             }
 
-            var rnd = new Random(41);
+            var rnd = new Random(41 * (length + 1));
 
             TSource[] s = new TSource[length];
             Span<TSource> span = new Span<TSource>(s);
@@ -142,7 +142,7 @@ namespace DrNet.Tests.Span
         public void TestMatch(int length)
         {
             var rnd = new Random(42 * (length + 1));
-            T[] targets = new T[] { NextT(rnd), NextT(rnd), NextT(rnd), NextT(rnd) };
+            T[] targets = RepeatT(rnd).Take(4).ToArray();
 
             TSource[] s = new TSource[length];
             for (int i = 0; i < length; i++)
@@ -191,7 +191,7 @@ namespace DrNet.Tests.Span
         public void TestMatchValuesLarger(int length)
         {
             var rnd = new Random(47 * (length + 1));
-            T[] targets = new T[] { NextT(rnd), NextT(rnd), NextT(rnd), NextT(rnd) };
+            T[] targets = RepeatT(rnd).Take(4).ToArray();
 
             TSource[] s = new TSource[length];
             for (int i = 0; i < length; i++)
@@ -250,7 +250,7 @@ namespace DrNet.Tests.Span
         public void TestNoMatch(int length)
         {
             var rnd = new Random(43 * (length + 1));
-            T[] targets = new T[] { NextT(rnd), NextT(rnd), NextT(rnd), NextT(rnd) };
+            T[] targets = RepeatT(rnd).Take(4).ToArray();
 
             TSource[] s = new TSource[length];
             for (int i = 0; i < length; i++)
@@ -304,7 +304,7 @@ namespace DrNet.Tests.Span
         public void TestNoMatchValuesLarger(int length)
         {
             var rnd = new Random(48 * (length + 1));
-            T[] targets = new T[] { NextT(rnd), NextT(rnd), NextT(rnd), NextT(rnd) };
+            T[] targets = RepeatT(rnd).Take(4).ToArray();
 
             TSource[] s = new TSource[length];
             for (int i = 0; i < length; i++)
@@ -346,7 +346,7 @@ namespace DrNet.Tests.Span
         public void TestMultipleMatch(int length)
         {
             var rnd = new Random(44 * (length + 1));
-            T[] targets = new T[] { NextT(rnd), NextT(rnd), NextT(rnd), NextT(rnd) };
+            T[] targets = RepeatT(rnd).Take(4).ToArray();
 
             TSource[] s = new TSource[length];
             for (int i = 0; i < length; i++)
@@ -400,7 +400,7 @@ namespace DrNet.Tests.Span
             TLog<T> log = new TLog<T>(handle);
 
             var rnd = new Random(45 * (length + 1));
-            T[] targets = new T[] { NextT(rnd), NextT(rnd), NextT(rnd), NextT(rnd) };
+            T[] targets = RepeatT(rnd).Take(4).ToArray();
 
             T[] t = new T[length];
             TSource[] s = new TSource[length];
@@ -495,7 +495,7 @@ namespace DrNet.Tests.Span
             handle = OnCompareActions<T>.CreateHandler(null);
 
             var rnd = new Random(46 * (length + 1));
-            T[] targets = new T[] { NextT(rnd), NextT(rnd), NextT(rnd), NextT(rnd) };
+            T[] targets = RepeatT(rnd).Take(4).ToArray();
             const int guardLength = 50;
 
             T guard;

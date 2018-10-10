@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using Xunit;
 
 using DrNet.UnSafe;
+using System.Linq;
 
 namespace DrNet.Tests.UnsafeSpan
 {
@@ -50,12 +51,10 @@ namespace DrNet.Tests.UnsafeSpan
         [InlineData(100)]
         public void FromSpan(int length)
         {
-            var rnd = new Random(41);
+            var rnd = new Random(41 * (length + 1));
             const int guardLength = 50;
-            
-            T[] t = new T[guardLength + length + guardLength];
-            foreach (ref T item in t.AsSpan())
-                item = NextT(rnd);
+
+            T[] t = RepeatT(rnd).Take(guardLength + length + guardLength).ToArray();
 
             unsafe
             {

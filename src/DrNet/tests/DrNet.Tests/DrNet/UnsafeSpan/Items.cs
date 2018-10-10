@@ -1,11 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 using Xunit;
 
 using DrNet.UnSafe;
-
 
 namespace DrNet.Tests.UnsafeSpan
 {
@@ -18,12 +17,10 @@ namespace DrNet.Tests.UnsafeSpan
         [InlineData(100)]
         public void Read(int length)
         {
-            var rnd = new Random(40);
+            var rnd = new Random(40 * (length + 1));
             const int guardLength = 50;
 
-            T[] t = new T[guardLength + length + guardLength];
-            for (var i = 0; i < t.Length; i++)
-                t[i] = NextT(rnd);
+            T[] t = RepeatT(rnd).Take(guardLength + length + guardLength).ToArray();
 
             unsafe
             {
@@ -52,12 +49,10 @@ namespace DrNet.Tests.UnsafeSpan
         [InlineData(100)]
         public void ReadWrited(int length)
         {
-            var rnd = new Random(41);
+            var rnd = new Random(41 * (length + 1));
             const int guardLength = 50;
 
-            T[] t = new T[guardLength + length + guardLength];
-            for (var i = 0; i < t.Length; i++)
-                t[i] = NextT(rnd);
+            T[] t = RepeatT(rnd).Take(guardLength + length + guardLength).ToArray();
 
             unsafe
             {
@@ -85,13 +80,11 @@ namespace DrNet.Tests.UnsafeSpan
         [InlineData(100)]
         public void Write(int length)
         {
-            var rnd = new Random(42);
+            var rnd = new Random(42 * (length + 1));
             const int guardLength = 50;
 
-            T[] t = new T[guardLength + length + guardLength];
-            for (var i = 0; i < t.Length; i++)
-                t[i] = NextT(rnd);
-            T[] t2 = t.AsSpan().ToArray();
+            T[] t = RepeatT(rnd).Take(guardLength + length + guardLength).ToArray();
+            T[] t2 = t.ToArray();
 
             unsafe
             {
@@ -113,6 +106,34 @@ namespace DrNet.Tests.UnsafeSpan
             Assert.True(t2.AsReadOnlySpan(0, guardLength).EqualsToSeq(t2.AsReadOnlySpan(0, guardLength)));
             Assert.True(t2.AsReadOnlySpan(guardLength + length, guardLength).EqualsToSeq(
                 t2.AsReadOnlySpan(guardLength + length, guardLength)));
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(10)]
+        [InlineData(100)]
+        public void RangeCheck(int length)
+        {
+            const int guardLength = 50;
+
+            T[] t = new T[guardLength + length + guardLength];
+
+            unsafe
+            {
+                Span<T> span = new Span<T>(t, guardLength, length);
+                fixed (byte* bytePtr = DrNetMarshal.UnsafeCastBytes(span))
+                {
+                    UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
+                    UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
+
+                    Assert.Throws<ArgumentOutOfRangeException>(() => uSpan[-1]);
+                    Assert.Throws<ArgumentOutOfRangeException>(() => urSpan[-1]);
+
+                    Assert.Throws<ArgumentOutOfRangeException>(() => uSpan[length]);
+                    Assert.Throws<ArgumentOutOfRangeException>(() => urSpan[length]);
+                }
+            }
         }
     }
 

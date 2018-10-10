@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Linq;
+
 using Xunit;
+
+using DrNet.Linq;
 
 namespace DrNet.Tests.Span
 {
@@ -61,7 +64,7 @@ namespace DrNet.Tests.Span
                 return;
             }
 
-            var rnd = new Random(41);
+            var rnd = new Random(41 * (length + 1));
 
             TSource[] s = new TSource[length];
             Span<TSource> span = new Span<TSource>(s);
@@ -105,17 +108,8 @@ namespace DrNet.Tests.Span
             var rnd = new Random(42 * (length + 1));
             T target = NextT(rnd);
 
-            TSource[] s = new TSource[length];
-            for (int i = 0; i < length; i++)
-            {
-                T item;
-                do
-                {
-                    item = NextT(rnd);
-                } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true));
+            TSource[] s = DrNetEnumerable.Repeat(() => NewTSource(NextNotEqualT(rnd, target))).Take(length).ToArray();
 
-                s[i] = NewTSource(item);
-            }
             Span<TSource> span = new Span<TSource>(s);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
 
@@ -152,17 +146,7 @@ namespace DrNet.Tests.Span
             var rnd = new Random(43 * (length + 1));
             T target = NextT(rnd);
 
-            TSource[] s = new TSource[length];
-            for (int i = 0; i < length; i++)
-            {
-                T item;
-                do
-                {
-                    item = NextT(rnd);
-                } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true));
-
-                s[i] = NewTSource(item);
-            }
+            TSource[] s = DrNetEnumerable.Repeat(() => NewTSource(NextNotEqualT(rnd, target))).Take(length).ToArray(); 
 
             Span<TSource> span = new Span<TSource>(s);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
@@ -191,17 +175,8 @@ namespace DrNet.Tests.Span
             var rnd = new Random(44 * (length + 1));
             T target = NextT(rnd);
 
-            TSource[] s = new TSource[length];
-            for (int i = 0; i < length; i++)
-            {
-                T item;
-                do
-                {
-                    item = NextT(rnd);
-                } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true));
+            TSource[] s = DrNetEnumerable.Repeat(() => NewTSource(NextNotEqualT(rnd, target))).Take(length).ToArray();
 
-                s[i] = NewTSource(item);
-            }
             Span<TSource> span = new Span<TSource>(s);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
 
@@ -247,12 +222,7 @@ namespace DrNet.Tests.Span
             TSource[] s = new TSource[length];
             for (int i = 0; i < length; i++)
             {
-                T item;
-                do
-                {
-                    item = NextT(rnd);
-                } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true));
-
+                T item = NextNotEqualT(rnd, target);
                 t[i] = item;
                 s[i] = NewTSource(item, handle);
             }
@@ -329,12 +299,7 @@ namespace DrNet.Tests.Span
             var rnd = new Random(46 * (length + 1));
             T target = NextT(rnd);
             const int guardLength = 50;
-
-            T guard;
-            do
-            {
-                guard = NextT(rnd);
-            } while (EqualityCompareT(guard, target, true) || EqualityCompareT(target, guard, true));
+            T guard = NextNotEqualT(rnd, target);
 
             void checkForOutOfRangeAccess(T x, T y)
             {

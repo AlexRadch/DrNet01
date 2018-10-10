@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using System.Linq;
+
 using Xunit;
 
 using DrNet.UnSafe;
@@ -54,12 +54,10 @@ namespace DrNet.Tests.UnsafeSpan
         [InlineData(100)]
         public void ForEachRead(int length)
         {
-            var rnd = new Random(42);
+            var rnd = new Random(42 * (length + 1));
             const int guardLength = 50;
 
-            T[] t = new T[guardLength + length + guardLength];
-            for (var i = 0; i < t.Length; i++)
-                t[i] = NextT(rnd);
+            T[] t = RepeatT(rnd).Take(guardLength + length + guardLength).ToArray();
 
             unsafe
             {
@@ -95,12 +93,10 @@ namespace DrNet.Tests.UnsafeSpan
         [InlineData(100)]
         public void ManualRead(int length)
         {
-            var rnd = new Random(43);
+            var rnd = new Random(43 * (length + 1));
             const int guardLength = 50;
 
-            T[] t = new T[guardLength + length + guardLength];
-            for (var i = 0; i < t.Length; i++)
-                t[i] = NextT(rnd);
+            T[] t = RepeatT(rnd).Take(guardLength + length + guardLength).ToArray();
 
             unsafe
             {
@@ -160,12 +156,10 @@ namespace DrNet.Tests.UnsafeSpan
         [InlineData(100)]
         public void ForEachReadWrited(int length)
         {
-            var rnd = new Random(44);
+            var rnd = new Random(44 * (length + 1));
             const int guardLength = 50;
 
-            T[] t = new T[guardLength + length + guardLength];
-            for (var i = 0; i < t.Length; i++)
-                t[i] = NextT(rnd);
+            T[] t = RepeatT(rnd).Take(guardLength + length + guardLength).ToArray();
 
             unsafe
             {
@@ -201,12 +195,10 @@ namespace DrNet.Tests.UnsafeSpan
         [InlineData(100)]
         public void ManualReadWrited(int length)
         {
-            var rnd = new Random(45);
+            var rnd = new Random(45 * (length + 1));
             const int guardLength = 50;
 
-            T[] t = new T[guardLength + length + guardLength];
-            for (var i = 0; i < t.Length; i++)
-                t[i] = NextT(rnd);
+            T[] t = RepeatT(rnd).Take(guardLength + length + guardLength).ToArray();
 
             unsafe
             {
@@ -244,13 +236,11 @@ namespace DrNet.Tests.UnsafeSpan
         [InlineData(100)]
         public void ForEachWrite(int length)
         {
-            var rnd = new Random(46);
+            var rnd = new Random(46 * (length + 1));
             const int guardLength = 50;
 
-            T[] t = new T[guardLength + length + guardLength];
-            for (var i = 0; i < t.Length; i++)
-                t[i] = NextT(rnd);
-            T[] t2 = t.AsSpan().ToArray();
+            T[] t = RepeatT(rnd).Take(guardLength + length + guardLength).ToArray();
+            T[] t2 = t.ToArray();
 
             unsafe
             {
@@ -281,13 +271,11 @@ namespace DrNet.Tests.UnsafeSpan
         [InlineData(100)]
         public void ManualWrite(int length)
         {
-            var rnd = new Random(47);
+            var rnd = new Random(47 * (length + 1));
             const int guardLength = 50;
 
-            T[] t = new T[guardLength + length + guardLength];
-            for (var i = 0; i < t.Length; i++)
-                t[i] = NextT(rnd);
-            T[] t2 = t.AsSpan().ToArray();
+            T[] t = RepeatT(rnd).Take(guardLength + length + guardLength).ToArray();
+            T[] t2 = t.ToArray();
 
             unsafe
             {

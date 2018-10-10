@@ -1,40 +1,43 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
+
 using Xunit;
 
 using DrNet.UnSafe;
-using System.Linq;
 
 namespace DrNet.Tests.UnsafeSpan
 {
-    public abstract class Clear<T> : SpanTest<T>
+    public abstract class ImplicitUnsafeReadOnlySpan<T> : SpanTest<T>
     {
         [Fact]
         public void Default()
         {
             UnsafeSpan<T> uSpan = default;
-            uSpan.Clear();
+            UnsafeReadOnlySpan<T> urSpan = uSpan;
+
+            Assert.Equal(default, urSpan);
         }
 
         [Fact]
         public void FromDefault()
         {
-            Span<T> span = default;
-            UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
-            uSpan.Clear();
+            UnsafeSpan<T> uSpan = new UnsafeSpan<T>(default);
+            UnsafeReadOnlySpan<T> urSpan = uSpan;
+
+            Assert.Equal(default, urSpan);
         }
 
         [Theory]
+        [InlineData(0)]
         [InlineData(1)]
         [InlineData(10)]
         [InlineData(100)]
         public void FromSpan(int length)
         {
-            var rnd = new Random(42 * (length + 1));
+            var rnd = new Random(41 * (length + 1));
             const int guardLength = 50;
-
-            T[] t = RepeatT(rnd).Take(guardLength + length + guardLength).ToArray();
-            T[] t2 = t.ToArray();
+            
+            T[] t = new T[guardLength + length + guardLength];
 
             unsafe
             {
@@ -42,50 +45,42 @@ namespace DrNet.Tests.UnsafeSpan
                 fixed (byte* bytePtr = DrNetMarshal.UnsafeCastBytes(span))
                 {
                     UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
-                    uSpan.Clear();
+                    UnsafeReadOnlySpan<T> urSpan = uSpan;
 
-                    for (var i = 0; i < length; i++)
-                    {
-                        Assert.Equal(default, span[i]);
-                        Assert.Equal(default, uSpan[i]);
-                    }
-
+                    Assert.Equal(uSpan, urSpan);
                 }
             }
-
-            Assert.True(t2.AsReadOnlySpan(0, guardLength).EqualsToSeq(t.AsReadOnlySpan(0, guardLength)));
-            Assert.True(t2.AsReadOnlySpan(guardLength + length, guardLength).EqualsToSeq(
-                t.AsReadOnlySpan(guardLength + length, guardLength)));
         }
     }
 
-    public sealed class Clear_byte : Clear<byte>
+    public sealed class ImplicitUnsafeReadOnlySpan_byte : ImplicitUnsafeReadOnlySpan<byte>
     {
         protected override byte NewT(int value) => unchecked((byte)value);
     }
 
-    public sealed class Clear_char : Clear<char>
+    public sealed class ImplicitUnsafeReadOnlySpan_char : ImplicitUnsafeReadOnlySpan<char>
     {
         protected override char NewT(int value) => unchecked((char)value);
     }
 
-    public sealed class Clear_int : Clear<int>
+    public sealed class ImplicitUnsafeReadOnlySpan_int : ImplicitUnsafeReadOnlySpan<int>
     {
         protected override int NewT(int value) => value;
+
     }
 
-    public sealed class Clear_string : Clear<string>
+    public sealed class ImplicitUnsafeReadOnlySpan_string : ImplicitUnsafeReadOnlySpan<string>
     {
         protected override string NewT(int value) => value.ToString();
     }
 
-    public sealed class Clear_Tuple : Clear<Tuple<byte, char, int, string>>
+    public sealed class ImplicitUnsafeReadOnlySpan_Tuple : ImplicitUnsafeReadOnlySpan<Tuple<byte, char, int, string>>
     {
         protected override Tuple<byte, char, int, string> NewT(int value) => 
             new Tuple<byte, char, int, string>(unchecked((byte)value), unchecked((char)value), value, value.ToString());
     }
 
-    public sealed class Clear_ValueTuple : Clear<(byte, char, int, string)>
+    public sealed class ImplicitUnsafeReadOnlySpan_ValueTuple : ImplicitUnsafeReadOnlySpan<(byte, char, int, string)>
     {
         protected override (byte, char, int, string) NewT(int value) => 
             (unchecked((byte)value), unchecked((char)value), value, value.ToString());

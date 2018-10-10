@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using System.Linq;
 
 using Xunit;
 
@@ -30,13 +30,11 @@ namespace DrNet.Tests.UnsafeSpan
         [InlineData(100)]
         public void FromSpan(int length)
         {
-            var rnd = new Random(42);
+            var rnd = new Random(42 * (length + 1));
             const int guardLength = 50;
 
-            T[] t = new T[guardLength + length + guardLength];
-            for (var i = 0; i < t.Length; i++)
-                t[i] = NextT(rnd);
-            T[] t2 = t.AsSpan().ToArray();
+            T[] t = RepeatT(rnd).Take(guardLength + length + guardLength).ToArray();
+            T[] t2 = t.ToArray();
 
             unsafe
             {
@@ -52,9 +50,8 @@ namespace DrNet.Tests.UnsafeSpan
                         Assert.Equal(default, uSpan[i]);
                     }
 
-                    T item = NextT(rnd);
+                    T item = NextNotDefaultT(rnd);
                     uSpan.Fill(item);
-
                     for (var i = 0; i < length; i++)
                     {
                         Assert.Equal(item, span[i]);

@@ -61,7 +61,7 @@ namespace DrNet.Tests.Span
                 return;
             }
 
-            var rnd = new Random(41);
+            var rnd = new Random(41 * (length + 1));
 
             TSource[] s = new TSource[length];
             Span<TSource> span = new Span<TSource>(s);
@@ -108,11 +108,7 @@ namespace DrNet.Tests.Span
             TSource[] s = new TSource[length];
             Array.Fill(s, NewTSource(target));
 
-            T item;
-            do
-            {
-                item = NextT(rnd);
-            } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true));
+            T item = NextNotEqualT(rnd, target);
 
             Span<TSource> span = new Span<TSource>(s);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
@@ -183,11 +179,7 @@ namespace DrNet.Tests.Span
             TSource[] s = new TSource[length];
             Array.Fill(s, NewTSource(target));
 
-            T item;
-            do
-            {
-                item = NextT(rnd);
-            } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true));
+            T item = NextNotEqualT(rnd, target);
 
             Span<TSource> span = new Span<TSource>(s);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);

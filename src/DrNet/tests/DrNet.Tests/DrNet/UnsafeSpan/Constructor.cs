@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using Xunit;
 
 using DrNet.UnSafe;
+using System.Linq;
 
 namespace DrNet.Tests.UnsafeSpan
 {
@@ -144,7 +145,7 @@ namespace DrNet.Tests.UnsafeSpan
         }
 
         [Fact]
-        public void WrongLength()
+        public void RangeCheck()
         {
             unsafe
             {
@@ -164,7 +165,7 @@ namespace DrNet.Tests.UnsafeSpan
             }
 
             var rnd = new Random(40);
-            T[] t = new T[] { NextT(rnd), NextT(rnd), NextT(rnd) };
+            T[] t = RepeatT(rnd).Take(3).ToArray();
 
             Span<T> span = new Span<T>(t, 1, 1);
             ReadOnlySpan<T> rspan = new ReadOnlySpan<T>(t, 1, 1);

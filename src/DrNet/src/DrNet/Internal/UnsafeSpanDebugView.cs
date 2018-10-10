@@ -19,12 +19,12 @@ namespace DrNet.Internal
 
         public UnsafeSpanDebugView(UnsafeSpan<T> span)
         {
-            Items = span.AsSpan().ToArray();
+            Items = span.ToArray();
         }
 
         public UnsafeSpanDebugView(UnsafeReadOnlySpan<T> span)
         {
-            Items = span.AsSpan().ToArray();
+            Items = span.ToArray();
         }
 
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]

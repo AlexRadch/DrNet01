@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using DrNet.Linq;
 
 namespace DrNet.Tests
 {
@@ -28,6 +32,8 @@ namespace DrNet.Tests
             t == typeof(TEquatableInt);
 
         protected T NextT(Random random) => NewT(random.Next());
+
+        protected IEnumerable<T> RepeatT(Random random) => DrNetEnumerable.Repeat(() => NextT(random));
 
         protected T NextNotDefaultT(Random random)
         {
