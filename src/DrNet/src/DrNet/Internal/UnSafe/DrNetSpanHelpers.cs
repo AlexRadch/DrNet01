@@ -502,7 +502,7 @@ namespace DrNet.Internal.UnSafe
             int valueTailLength = valueLength - 1;
 
             int index = 0;
-            for (; ; )
+            for (;;)
             {
                 // Ensures no deceptive underflows in the computation of "remainingSearchSpaceLength".
                 Debug.Assert(0 <= index && index <= searchSpaceLength); 
@@ -546,7 +546,7 @@ namespace DrNet.Internal.UnSafe
             int valueTailLength = valueLength - 1;
 
             int index = 0;
-            for (; ; )
+            for (;;)
             {
                 // Ensures no deceptive underflows in the computation of "remainingSearchSpaceLength".
                 Debug.Assert(0 <= index && index <= searchSpaceLength); 
@@ -590,7 +590,7 @@ namespace DrNet.Internal.UnSafe
             int valueTailLength = valueLength - 1;
 
             int index = 0;
-            for (; ; )
+            for (;;)
             {
                 // Ensures no deceptive underflows in the computation of "remainingSearchSpaceLength".
                 Debug.Assert(0 <= index && index <= searchSpaceLength);
@@ -632,7 +632,7 @@ namespace DrNet.Internal.UnSafe
             int valueTailLength = valueLength - 1;
 
             int index = 0;
-            for (; ; )
+            for (;;)
             {
                 // Ensures no deceptive underflows in the computation of "remainingSearchSpaceLength".
                 Debug.Assert(0 <= index && index <= searchSpaceLength);

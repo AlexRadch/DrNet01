@@ -35,32 +35,19 @@ namespace DrNet.Tests
 
         protected IEnumerable<T> RepeatT(Random random) => DrNetEnumerable.Repeat(() => NextT(random));
 
-        protected T NextNotDefaultT(Random random)
-        {
-            for (; ; )
+        protected IEnumerable<T> WhereNotEqualT(IEnumerable<T> source, T value) => source.Where(t => 
             {
-                T result = NextT(random);
                 try
                 {
-                    if (!EqualityCompareT(result, default, true))
-                        return result;
+                    return !EqualityCompareT(value, t, true);
                 }
                 catch
                 {
-                    return result;
+                    return true;
                 }
-            }
-        }
+            });
 
-        protected T NextNotEqualT(Random random, T value, int handle = int.MaxValue)
-        {
-            T result;
-            do
-            {
-                result = NextT(random);
-            } while (EqualityCompareT(value, result, true));
-            return result;
-        }
+        protected T NextNotEqualT(Random random, T value) => WhereNotEqualT(RepeatT(random), value).First();
 
         #region IDisposable Support
 
@@ -130,22 +117,8 @@ namespace DrNet.Tests
         protected TSource NextS(Random random, int handle = int.MaxValue) => 
             NewTSource(NextT(random), GetHandle(handle));
 
-        protected TSource NextNotDefaultS(Random random, int handle = int.MaxValue)
-        {
-            for (;;)
-            {
-                TSource result = NextS(random, handle);
-                try
-                {
-                    if (!EqualityCompareS(result, default, true))
-                        return result;
-                }
-                catch
-                {
-                    return result;
-                }
-            }
-        }
+        protected TSource NextNotDefaultS(Random random, int handle = int.MaxValue) =>
+            NewTSource(NextNotEqualT(random, default), GetHandle(handle));
     }
 
     public abstract class SpanTest<T, TSource, TValue> : SpanTest<T, TSource>
@@ -182,21 +155,7 @@ namespace DrNet.Tests
 
         protected TValue NextV(Random random, int handle = int.MaxValue) => NewTValue(NextT(random), GetHandle(handle));
 
-        protected TValue NextNotDefaultV(Random random, int handle = int.MaxValue)
-        {
-            for (; ; )
-            {
-                TValue result = NextV(random, handle);
-                try
-                {
-                    if (!EqualityCompareV(result, default, true))
-                        return result;
-                }
-                catch
-                {
-                    return result;
-                }
-            }
-        }
+        protected TValue NextNotDefaultV(Random random, int handle = int.MaxValue) =>
+            NewTValue(NextNotEqualT(random, default), GetHandle(handle)); 
     }
 }

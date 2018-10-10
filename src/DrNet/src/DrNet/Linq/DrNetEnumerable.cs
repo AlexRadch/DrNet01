@@ -9,26 +9,25 @@ namespace DrNet.Linq
         public static IEnumerable<(TSource Item, int Index)> WithIndex<TSource>(this IEnumerable<TSource> source)
             => source.Select((item, index) => (item, index));
 
-
         public static IEnumerable<TResult> Repeat<TResult>(TResult value)
         {
-            for (; ; )
+            for (;;)
                 yield return value;
         }
 
         public static IEnumerable<TResult> Repeat<TResult>(Func<TResult> generator)
         {
-            for (; ; )
+            for (;;)
                 yield return generator();
         }
 
-        public static IEnumerable<TResult> Repeat<TResult>(TResult seed, Func<TResult, TResult> generator,
-            bool withSeed = false)
+        public static IEnumerable<TResult> Repeat<TResult>(TResult seed, Func<TResult, TResult> generator, 
+            bool fromSeed = false)
         {
             TResult value = seed;
-            if (withSeed)
+            if (fromSeed)
                 yield return value;
-            for (; ; )
+            for (;;)
             {
                 value = generator(value);
                 yield return value;
@@ -36,12 +35,12 @@ namespace DrNet.Linq
         }
 
         public static IEnumerable<TResult> Repeat<TAccumulate, TResult>(TAccumulate seed, 
-            Func<TAccumulate, TAccumulate> generator, Func<TAccumulate, TResult> resultSelector, bool withSeed = false)
+            Func<TAccumulate, TAccumulate> generator, Func<TAccumulate, TResult> resultSelector, bool fromSeed = false)
         {
             TAccumulate value = seed;
-            if (withSeed)
+            if (fromSeed)
                 yield return resultSelector(value);
-            for (; ; )
+            for (;;)
             {
                 value = generator(value);
                 yield return resultSelector(value);

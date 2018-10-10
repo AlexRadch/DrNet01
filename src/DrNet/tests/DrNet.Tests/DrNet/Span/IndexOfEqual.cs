@@ -141,19 +141,10 @@ namespace DrNet.Tests.Span
         public void TestMatch(int length)
         {
             var rnd = new Random(42 * (length + 1));
+            
             T target = NextT(rnd);
+            TSource[] s = WhereNotEqualT(RepeatT(rnd), target).Select(tItem => NewTSource(tItem)).Take(length).ToArray();
 
-            TSource[] s = new TSource[length];
-            for (int i = 0; i < length; i++)
-            {
-                T item;
-                do
-                {
-                    item = NextT(rnd);
-                } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true));
-
-                s[i] = NewTSource(item);
-            }
             Span<TSource> span = new Span<TSource>(s);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
 
@@ -188,19 +179,9 @@ namespace DrNet.Tests.Span
         public void TestNoMatch(int length)
         {
             var rnd = new Random(43 * (length + 1));
+            
             T target = NextT(rnd);
-
-            TSource[] s = new TSource[length];
-            for (int i = 0; i < length; i++)
-            {
-                T item;
-                do
-                {
-                    item = NextT(rnd);
-                } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true));
-
-                s[i] = NewTSource(item);
-            }
+            TSource[] s = WhereNotEqualT(RepeatT(rnd), target).Select(tItem => NewTSource(tItem)).Take(length).ToArray();
 
             Span<TSource> span = new Span<TSource>(s);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
@@ -227,19 +208,10 @@ namespace DrNet.Tests.Span
         public void TestMultipleMatch(int length)
         {
             var rnd = new Random(44 * (length + 1));
+
             T target = NextT(rnd);
+            TSource[] s = WhereNotEqualT(RepeatT(rnd), target).Select(tItem => NewTSource(tItem)).Take(length).ToArray();
 
-            TSource[] s = new TSource[length];
-            for (int i = 0; i < length; i++)
-            {
-                T item;
-                do
-                {
-                    item = NextT(rnd);
-                } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true));
-
-                s[i] = NewTSource(item);
-            }
             Span<TSource> span = new Span<TSource>(s);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
 
@@ -277,23 +249,11 @@ namespace DrNet.Tests.Span
         {
             handle = OnCompareActions<T>.CreateHandler(null);
             TLog<T> log = new TLog<T>(handle);
-
             var rnd = new Random(45 * (length + 1));
+            
             T target = NextT(rnd);
-
-            T[] t = new T[length];
-            TSource[] s = new TSource[length];
-            for (int i = 0; i < length; i++)
-            {
-                T item;
-                do
-                {
-                    item = NextT(rnd);
-                } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true));
-
-                t[i] = item;
-                s[i] = NewTSource(item, handle);
-            }
+            T[] t = WhereNotEqualT(RepeatT(rnd), target).Take(length).ToArray();
+            TSource[] s = t.Select(tItem => NewTSource(tItem, handle)).ToArray();
 
             // Since we asked for a non-existent value, make sure each element of the array was compared once.
             // (Strictly speaking, it would not be illegal for IndexOfEqual to compare an element more than once but
@@ -379,17 +339,9 @@ namespace DrNet.Tests.Span
 
             TSource[] s = new TSource[guardLength + length + guardLength];
             Array.Fill(s, NewTSource(guard, handle));
-            for (int i = 0; i < length; i++)
-            {
-                T item;
-                do
-                {
-                    item = NextT(rnd);
-                } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true) ||
-                    EqualityCompareT(item, guard, true) || EqualityCompareT(guard, item, true));
+            WhereNotEqualT(WhereNotEqualT(RepeatT(rnd), target), guard).Select(tItem => NewTSource(tItem)).Take(length).
+                ToArray().CopyTo(s.AsSpan(guardLength, length));
 
-                s[i + guardLength] = NewTSource(item, handle);
-            }
             Span<TSource> span = new Span<TSource>(s, guardLength, length);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s, guardLength, length);
 

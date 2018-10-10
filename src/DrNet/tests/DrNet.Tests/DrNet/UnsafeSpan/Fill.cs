@@ -50,7 +50,7 @@ namespace DrNet.Tests.UnsafeSpan
                         Assert.Equal(default, uSpan[i]);
                     }
 
-                    T item = NextNotDefaultT(rnd);
+                    T item = NextNotEqualT(rnd, default);
                     uSpan.Fill(item);
                     for (var i = 0; i < length; i++)
                     {

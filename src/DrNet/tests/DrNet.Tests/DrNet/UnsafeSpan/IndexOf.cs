@@ -20,8 +20,8 @@ namespace DrNet.Tests.UnsafeSpan
             Assert.Equal(-1, uSpan.IndexOf(default));
             Assert.Equal(-1, urSpan.IndexOf(default));
 
-            Assert.Equal(-1, uSpan.IndexOf(NextNotDefaultT(rnd)));
-            Assert.Equal(-1, urSpan.IndexOf(NextNotDefaultT(rnd)));
+            Assert.Equal(-1, uSpan.IndexOf(NextNotEqualT(rnd, default)));
+            Assert.Equal(-1, urSpan.IndexOf(NextNotEqualT(rnd, default)));
 
             uSpan = new UnsafeSpan<T>(default);
             urSpan = new UnsafeReadOnlySpan<T>(default);
@@ -29,8 +29,8 @@ namespace DrNet.Tests.UnsafeSpan
             Assert.Equal(-1, uSpan.IndexOf(default));
             Assert.Equal(-1, urSpan.IndexOf(default));
 
-            Assert.Equal(-1, uSpan.IndexOf(NextNotDefaultT(rnd)));
-            Assert.Equal(-1, urSpan.IndexOf(NextNotDefaultT(rnd)));
+            Assert.Equal(-1, uSpan.IndexOf(NextNotEqualT(rnd, default)));
+            Assert.Equal(-1, urSpan.IndexOf(NextNotEqualT(rnd, default)));
 
             T[] targets = RepeatT(rnd).Take(4).ToArray();
 
@@ -81,8 +81,45 @@ namespace DrNet.Tests.UnsafeSpan
                     Assert.Equal(0, uSpan.IndexOf(default));
                     Assert.Equal(0, urSpan.IndexOf(default));
 
-                    Assert.Equal(-1, uSpan.IndexOf(NextNotDefaultT(rnd)));
-                    Assert.Equal(-1, urSpan.IndexOf(NextNotDefaultT(rnd)));
+                    Assert.Equal(-1, uSpan.IndexOf(NextNotEqualT(rnd, default)));
+                    Assert.Equal(-1, urSpan.IndexOf(NextNotEqualT(rnd, default)));
+                }
+            }
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(10)]
+        [InlineData(100)]
+        public void TestMatch(int length)
+        {
+            var rnd = new Random(43 * (length + 1));
+            const int guardLength = 50;
+
+            T target = NextT(rnd);
+            T[] t = Enumerable.Repeat(target, guardLength + length + guardLength).ToArray();
+            WhereNotEqualT(RepeatT(rnd), target).Take(length).ToArray().AsSpan().CopyTo(t.AsSpan(guardLength, length));
+
+            unsafe
+            {
+                Span<T> span = new Span<T>(t, guardLength, length);
+                fixed (byte* bytePtr = DrNetMarshal.UnsafeCastBytes(span))
+                {
+                    UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
+                    UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
+
+                    for (int targetIndex = 0; targetIndex < length; targetIndex++)
+                    {
+                        T temp = urSpan[targetIndex];
+                        uSpan[targetIndex] = target;
+
+                        int idx = uSpan.IndexOf(target);
+                        Assert.Equal(targetIndex, idx);
+                        idx = urSpan.IndexOf(target);
+                        Assert.Equal(targetIndex, idx);
+
+                        uSpan[targetIndex] = temp;
+                    }
                 }
             }
         }

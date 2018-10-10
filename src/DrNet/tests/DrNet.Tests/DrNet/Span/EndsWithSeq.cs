@@ -280,7 +280,7 @@ namespace DrNet.Tests.Span
             s[0] = NewTSource(target, handle);
             for (int i = 0; i < length; i++)
             {
-                T item =  NextNotEqualT(rnd, target, 0);
+                T item =  NextNotEqualT(rnd, target);
                 s[i + 1] = NewTSource(item, handle);
                 v[i] = NewTValue(item, handle);
             }
