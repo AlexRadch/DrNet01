@@ -23,7 +23,7 @@ namespace DrNet.Tests.UnsafeSpan
 
             T[] t = new T[guardLength + length + guardLength];
             for (var i = 0; i < t.Length; i++)
-                t[i] = NewT(rnd.Next());
+                t[i] = NextT(rnd);
 
             unsafe
             {
@@ -57,7 +57,7 @@ namespace DrNet.Tests.UnsafeSpan
 
             T[] t = new T[guardLength + length + guardLength];
             for (var i = 0; i < t.Length; i++)
-                t[i] = NewT(rnd.Next());
+                t[i] = NextT(rnd);
 
             unsafe
             {
@@ -69,7 +69,7 @@ namespace DrNet.Tests.UnsafeSpan
 
                     for (var i = 0; i < length; i++)
                     {
-                        T item = NewT(rnd.Next());
+                        T item = NextT(rnd);
                         span[i] = item;
                         Assert.Equal(item, uSpan[i]);
                         Assert.Equal(item, urSpan[i]);
@@ -90,7 +90,7 @@ namespace DrNet.Tests.UnsafeSpan
 
             T[] t = new T[guardLength + length + guardLength];
             for (var i = 0; i < t.Length; i++)
-                t[i] = NewT(rnd.Next());
+                t[i] = NextT(rnd);
             T[] t2 = t.AsSpan().ToArray();
 
             unsafe
@@ -103,7 +103,7 @@ namespace DrNet.Tests.UnsafeSpan
 
                     for (var i = 0; i < length; i++)
                     {
-                        T item = NewT(rnd.Next());
+                        T item = NextT(rnd);
                         uSpan[i] = item;
                         Assert.Equal(item, span[i]);
                     }

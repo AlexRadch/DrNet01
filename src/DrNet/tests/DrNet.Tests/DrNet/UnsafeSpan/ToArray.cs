@@ -49,7 +49,7 @@ namespace DrNet.Tests.UnsafeSpan
 
             T[] t = new T[guardLength + length + guardLength];
             for (var i = 0; i < t.Length; i++)
-                t[i] = NewT(rnd.Next());
+                t[i] = NextT(rnd);
 
             T[] copy;
 
@@ -83,7 +83,7 @@ namespace DrNet.Tests.UnsafeSpan
 
             T[] t = new T[length];
             for (var i = 0; i < t.Length; i++)
-                t[i] = NewT(rnd.Next());
+                t[i] = NextT(rnd);
 
             T[] copy;
 

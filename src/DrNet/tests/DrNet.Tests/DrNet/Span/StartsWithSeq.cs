@@ -12,12 +12,9 @@ namespace DrNet.Tests.Span
         {
             var rnd = new Random(40);
 
-            Span<TSource> span = new TSource[] { NewTSource(NewT(rnd.Next())), NewTSource(NewT(rnd.Next())),
-                NewTSource(NewT(rnd.Next())) }.AsSpan(1, 0);
-            ReadOnlySpan<TSource> rspan = new TSource[] { NewTSource(NewT(rnd.Next())),
-                NewTSource(NewT(rnd.Next())), NewTSource(NewT(rnd.Next())) }.AsReadOnlySpan(2, 0);
-            ReadOnlySpan<TValue> values = new TValue[] { NewTValue(NewT(rnd.Next())),
-                NewTValue(NewT(rnd.Next())), NewTValue(NewT(rnd.Next())) }.AsReadOnlySpan(3, 0);
+            Span<TSource> span = new TSource[] { NextS(rnd), NextS(rnd), NextS(rnd) }.AsSpan(1, 0);
+            ReadOnlySpan<TSource> rspan = new TSource[] { NextS(rnd), NextS(rnd), NextS(rnd) }.AsReadOnlySpan(2, 0);
+            ReadOnlySpan<TValue> values = new TValue[] { NextV(rnd), NextV(rnd), NextV(rnd) }.AsReadOnlySpan(3, 0);
 
             bool b = DrNetMemoryExt.StartsWithSeq(span, values);
             Assert.True(b);
@@ -49,12 +46,12 @@ namespace DrNet.Tests.Span
             b = DrNetMemoryExt.StartsWithSeqFrom(rspan, values, EqualityCompareVS);
             Assert.True(b);
 
-            span = new TSource[] { NewTSource(NewT(rnd.Next())), NewTSource(NewT(rnd.Next())),
-                NewTSource(NewT(rnd.Next())) }.AsSpan(1, 1);
-            rspan = new TSource[] { NewTSource(NewT(rnd.Next())), NewTSource(NewT(rnd.Next())),
-                NewTSource(NewT(rnd.Next())) }.AsReadOnlySpan(2, 1);
-            values = new TValue[] { NewTValue(NewT(rnd.Next())), NewTValue(NewT(rnd.Next())),
-                NewTValue(NewT(rnd.Next())) }.AsReadOnlySpan(3, 0);
+            span = new TSource[] { NextS(rnd), NextS(rnd),
+                NextS(rnd) }.AsSpan(1, 1);
+            rspan = new TSource[] { NextS(rnd), NextS(rnd),
+                NextS(rnd) }.AsReadOnlySpan(2, 1);
+            values = new TValue[] { NextV(rnd), NextV(rnd),
+                NextV(rnd) }.AsReadOnlySpan(3, 0);
 
             b = DrNetMemoryExt.StartsWithSeq(span, values);
             Assert.True(b);
@@ -88,8 +85,8 @@ namespace DrNet.Tests.Span
 
             span = default;
             rspan = default;
-            values = new TValue[] { NewTValue(NewT(rnd.Next())), NewTValue(NewT(rnd.Next())),
-                NewTValue(NewT(rnd.Next())) }.AsReadOnlySpan(3, 0);
+            values = new TValue[] { NextV(rnd), NextV(rnd),
+                NextV(rnd) }.AsReadOnlySpan(3, 0);
 
             b = DrNetMemoryExt.StartsWithSeq(span, values);
             Assert.True(b);
@@ -134,7 +131,7 @@ namespace DrNet.Tests.Span
             TSource[] s = new TSource[length];
             for (int i = 0; i < length; i++)
             {
-                s[i] = NewTSource(NewT(rnd.Next()));
+                s[i] = NextS(rnd);
             }
             Span<TSource> span = new Span<TSource>(s);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
@@ -164,7 +161,7 @@ namespace DrNet.Tests.Span
             TValue[] v = new TValue[length + 1];
             for (int i = 0; i < length + 1; i++)
             {
-                T item = NewT(rnd.Next());
+                T item = NextT(rnd);
                 s[i] = NewTSource(item);
                 v[i] = NewTValue(item);
             }
@@ -203,10 +200,10 @@ namespace DrNet.Tests.Span
             T[] t = new T[length];
             TSource[] s = new TSource[length + 1];
             TValue[] v = new TValue[length];
-            s[length] = NewTSource(NewT(rnd.Next()), handle);
+            s[length] = NewTSource(NextT(rnd), handle);
             for (int i = 0; i < length; i++)
             {
-                t[i] = NewT(rnd.Next());
+                t[i] = NextT(rnd);
                 s[i] = NewTSource(t[i], handle);
                 v[i] = NewTValue(t[i], handle);
             }
@@ -281,7 +278,7 @@ namespace DrNet.Tests.Span
             TLog<T> log = new TLog<T>(handle);
 
             var rnd = new Random(46 * (length + 1));
-            T target = NewT(rnd.Next());
+            T target = NextT(rnd);
 
             TSource[] s = new TSource[length + 1];
             TValue[] v = new TValue[length];
@@ -291,7 +288,7 @@ namespace DrNet.Tests.Span
                 T item;
                 do
                 {
-                    item = NewT(rnd.Next());
+                    item = NextT(rnd);
                 } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true));
 
                 s[i] = NewTSource(item, handle);
@@ -410,13 +407,13 @@ namespace DrNet.Tests.Span
             handle = OnCompareActions<T>.CreateHandler(null);
 
             var rnd = new Random(47 * (length + 1));
-            T target = NewT(rnd.Next());
+            T target = NextT(rnd);
             const int guardLength = 50;
 
             T guard;
             do
             {
-                guard = NewT(rnd.Next());
+                guard = NextT(rnd);
             } while (EqualityCompareT(guard, target, true) || EqualityCompareT(target, guard, true));
 
             void checkForOutOfRangeAccess(T x, T y)
@@ -440,7 +437,7 @@ namespace DrNet.Tests.Span
                 T item;
                 do
                 {
-                    item = NewT(rnd.Next());
+                    item = NextT(rnd);
                 } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true) ||
                     EqualityCompareT(item, guard, true) || EqualityCompareT(guard, item, true));
 

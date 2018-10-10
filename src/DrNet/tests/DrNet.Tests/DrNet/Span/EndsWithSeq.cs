@@ -126,9 +126,8 @@ namespace DrNet.Tests.Span
 
             TSource[] s = new TSource[length];
             for (int i = 0; i < length; i++)
-            {
-                s[i] = NewTSource(NewT(rnd.Next()) );
-            }
+                s[i] = NextS(rnd);
+
             Span<TSource> span = new Span<TSource>(s);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
             ReadOnlySpan<TSource> values = new ReadOnlySpan<TSource>(s);
@@ -157,7 +156,7 @@ namespace DrNet.Tests.Span
             TValue[] v = new TValue[length + 1];
             for (int i = 0; i < length + 1; i++)
             {
-                T item = NewT(rnd.Next());
+                T item = NextT(rnd);
                 s[i] = NewTSource(item);
                 v[i] = NewTValue(item);
             }
@@ -399,13 +398,13 @@ namespace DrNet.Tests.Span
             TLog<T> log = new TLog<T>(handle);
 
             var rnd = new Random(47 * (length + 1));
-            T target = NewT(rnd.Next());
+            T target = NextT(rnd);
             const int guardLength = 50;
 
             T guard;
             do
             {
-                guard = NewT(rnd.Next());
+                guard = NextT(rnd);
             } while (EqualityCompareT(guard, target, true) || EqualityCompareT(target, guard, true));
 
             void checkForOutOfRangeAccess(T x, T y)
@@ -429,7 +428,7 @@ namespace DrNet.Tests.Span
                 T item;
                 do
                 {
-                    item = NewT(rnd.Next());
+                    item = NextT(rnd);
                 } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true) ||
                     EqualityCompareT(item, guard, true) || EqualityCompareT(guard, item, true));
 

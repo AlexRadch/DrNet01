@@ -10,15 +10,11 @@ namespace DrNet.Tests.Span
         public void ZeroLength()
         {
             var rnd = new Random(40);
-            TValue NextTValue() => NewTValue(NewT(rnd.Next(1, int.MaxValue)));
 
-            Span<TSource> span = new TSource[] { NewTSource(NewT(rnd.Next())), NewTSource(NewT(rnd.Next())),
-                NewTSource(NewT(rnd.Next())) }.AsSpan(1, 0);
-            ReadOnlySpan<TSource> rspan = new TSource[] { NewTSource(NewT(rnd.Next())),
-                NewTSource(NewT(rnd.Next())), NewTSource(NewT(rnd.Next())) }.AsReadOnlySpan(2, 0);
+            Span<TSource> span = new TSource[] { NextS(rnd), NextS(rnd), NextS(rnd) }.AsSpan(1, 0);
+            ReadOnlySpan<TSource> rspan = new TSource[] { NextS(rnd), NextS(rnd), NextS(rnd) }.AsReadOnlySpan(2, 0);
 
-            ReadOnlySpan<TValue> values = new TValue[] { NewTValue(NewT(rnd.Next())),
-                NewTValue(NewT(rnd.Next())), NewTValue(NewT(rnd.Next())) }.AsReadOnlySpan(3, 0);
+            ReadOnlySpan<TValue> values = new TValue[] { NextV(rnd), NextV(rnd), NextV(rnd) }.AsReadOnlySpan(3, 0);
             int idx = DrNetMemoryExt.IndexOfEqualAny(span, values);
             Assert.Equal(-1, idx);
             idx = DrNetMemoryExt.IndexOfEqualAny(span, values, EqualityCompareSV);
@@ -48,7 +44,7 @@ namespace DrNet.Tests.Span
             idx = DrNetMemoryExt.IndexOfEqualAnyFrom(rspan, values, EqualityCompareVS);
             Assert.Equal(-1, idx);
 
-            values = new ReadOnlySpan<TValue>(new TValue[] { NextTValue(), NextTValue(), NextTValue(), NextTValue() });
+            values = new ReadOnlySpan<TValue>(new TValue[] { NextV(rnd), NextV(rnd), NextV(rnd), NextV(rnd) });
             idx = DrNetMemoryExt.IndexOfEqualAny(span, values);
             Assert.Equal(-1, idx);
             idx = DrNetMemoryExt.IndexOfEqualAny(span, values, EqualityCompareSV);
@@ -83,14 +79,13 @@ namespace DrNet.Tests.Span
             }
 
             var rnd = new Random(41);
-            TValue NextTValue() => NewTValue(NewT(rnd.Next(1, int.MaxValue)));
 
             TSource[] s = new TSource[length];
             Span<TSource> span = new Span<TSource>(s);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
 
-            ReadOnlySpan<TValue> values = new TValue[] { NewTValue(NewT(rnd.Next())),
-                NewTValue(NewT(rnd.Next())), NewTValue(NewT(rnd.Next())) }.AsReadOnlySpan(3, 0);
+            ReadOnlySpan<TValue> values = new TValue[] { NextNotDefaultV(rnd), NextNotDefaultV(rnd),
+                NextNotDefaultV(rnd) }.AsReadOnlySpan(3, 0);
             int idx = DrNetMemoryExt.IndexOfEqualAny(span, values);
             Assert.Equal(-1, idx);
             idx = DrNetMemoryExt.IndexOfEqualAny(span, values, EqualityCompareSV);
@@ -105,7 +100,8 @@ namespace DrNet.Tests.Span
             idx = DrNetMemoryExt.IndexOfEqualAnyFrom(rspan, values, EqualityCompareVS);
             Assert.Equal(-1, idx);
 
-            values = new ReadOnlySpan<TValue>(new TValue[] { NextTValue(), NextTValue(), NextTValue(), default });
+            values = new ReadOnlySpan<TValue>(new TValue[] { NextNotDefaultV(rnd), NextNotDefaultV(rnd),
+                NextNotDefaultV(rnd), default });
             idx = DrNetMemoryExt.IndexOfEqualAny(span, values);
             Assert.Equal(0, idx);
             idx = DrNetMemoryExt.IndexOfEqualAny(span, values, EqualityCompareSV);
@@ -120,7 +116,8 @@ namespace DrNet.Tests.Span
             idx = DrNetMemoryExt.IndexOfEqualAnyFrom(rspan, values, EqualityCompareVS);
             Assert.Equal(0, idx);
 
-            values = new ReadOnlySpan<TValue>(new TValue[] { NextTValue(), NextTValue(), NextTValue(), NextTValue() });
+            values = new ReadOnlySpan<TValue>(new TValue[] { NextNotDefaultV(rnd), NextNotDefaultV(rnd),
+                NextNotDefaultV(rnd), NextNotDefaultV(rnd) });
             idx = DrNetMemoryExt.IndexOfEqualAny(span, values);
             Assert.Equal(-1, idx);
             idx = DrNetMemoryExt.IndexOfEqualAny(span, values, EqualityCompareSV);
@@ -143,7 +140,7 @@ namespace DrNet.Tests.Span
         public void TestMatch(int length)
         {
             var rnd = new Random(42 * (length + 1));
-            T[] targets = new T[] { NewT(rnd.Next()), NewT(rnd.Next()), NewT(rnd.Next()), NewT(rnd.Next()) };
+            T[] targets = new T[] { NextT(rnd), NextT(rnd), NextT(rnd), NextT(rnd) };
 
             TSource[] s = new TSource[length];
             for (int i = 0; i < length; i++)
@@ -151,7 +148,7 @@ namespace DrNet.Tests.Span
                 T item;
                 do
                 {
-                    item = NewT(rnd.Next());
+                    item = NextT(rnd);
                 } while (targets.AsSpan().IndexOfEqual(item) >= 0);
 
                 s[i] = NewTSource(item);
@@ -192,7 +189,7 @@ namespace DrNet.Tests.Span
         public void TestMatchValuesLarger(int length)
         {
             var rnd = new Random(47 * (length + 1));
-            T[] targets = new T[] { NewT(rnd.Next()), NewT(rnd.Next()), NewT(rnd.Next()), NewT(rnd.Next()) };
+            T[] targets = new T[] { NextT(rnd), NextT(rnd), NextT(rnd), NextT(rnd) };
 
             TSource[] s = new TSource[length];
             for (int i = 0; i < length; i++)
@@ -200,7 +197,7 @@ namespace DrNet.Tests.Span
                 T item;
                 do
                 {
-                    item = NewT(rnd.Next());
+                    item = NextT(rnd);
                 } while (targets.AsSpan().IndexOfEqual(item) >= 0);
 
                 s[i] = NewTSource(item);
@@ -251,7 +248,7 @@ namespace DrNet.Tests.Span
         public void TestNoMatch(int length)
         {
             var rnd = new Random(43 * (length + 1));
-            T[] targets = new T[] { NewT(rnd.Next()), NewT(rnd.Next()), NewT(rnd.Next()), NewT(rnd.Next()) };
+            T[] targets = new T[] { NextT(rnd), NextT(rnd), NextT(rnd), NextT(rnd) };
 
             TSource[] s = new TSource[length];
             for (int i = 0; i < length; i++)
@@ -259,7 +256,7 @@ namespace DrNet.Tests.Span
                 T item;
                 do
                 {
-                    item = NewT(rnd.Next());
+                    item = NextT(rnd);
                 } while (targets.AsSpan().IndexOfEqual(item) >= 0);
 
                 s[i] = NewTSource(item);
@@ -282,8 +279,7 @@ namespace DrNet.Tests.Span
             idx = DrNetMemoryExt.IndexOfEqualAnyFrom(rspan, values, EqualityCompareVS);
             Assert.Equal(-1, idx);
 
-            values = new TValue[] { NewTValue(NewT(rnd.Next())), NewTValue(NewT(rnd.Next())),
-                NewTValue(NewT(rnd.Next())) }.AsReadOnlySpan(3, 0);
+            values = new TValue[] { NextV(rnd), NextV(rnd), NextV(rnd) }.AsReadOnlySpan(3, 0);
             idx = DrNetMemoryExt.IndexOfEqualAny(span, values);
             Assert.Equal(-1, idx);
             idx = DrNetMemoryExt.IndexOfEqualAny(span, values, EqualityCompareSV);
@@ -306,7 +302,7 @@ namespace DrNet.Tests.Span
         public void TestNoMatchValuesLarger(int length)
         {
             var rnd = new Random(48 * (length + 1));
-            T[] targets = new T[] { NewT(rnd.Next()), NewT(rnd.Next()), NewT(rnd.Next()), NewT(rnd.Next()) };
+            T[] targets = new T[] { NextT(rnd), NextT(rnd), NextT(rnd), NextT(rnd) };
 
             TSource[] s = new TSource[length];
             for (int i = 0; i < length; i++)
@@ -314,7 +310,7 @@ namespace DrNet.Tests.Span
                 T item;
                 do
                 {
-                    item = NewT(rnd.Next());
+                    item = NextT(rnd);
                 } while (targets.AsSpan().IndexOfEqual(item) >= 0);
 
                 s[i] = NewTSource(item);
@@ -348,7 +344,7 @@ namespace DrNet.Tests.Span
         public void TestMultipleMatch(int length)
         {
             var rnd = new Random(44 * (length + 1));
-            T[] targets = new T[] { NewT(rnd.Next()), NewT(rnd.Next()), NewT(rnd.Next()), NewT(rnd.Next()) };
+            T[] targets = new T[] { NextT(rnd), NextT(rnd), NextT(rnd), NextT(rnd) };
 
             TSource[] s = new TSource[length];
             for (int i = 0; i < length; i++)
@@ -356,7 +352,7 @@ namespace DrNet.Tests.Span
                 T item;
                 do
                 {
-                    item = NewT(rnd.Next());
+                    item = NextT(rnd);
                 } while (targets.AsSpan().IndexOfEqual(item) >= 0);
 
                 s[i] = NewTSource(item);
@@ -402,7 +398,7 @@ namespace DrNet.Tests.Span
             TLog<T> log = new TLog<T>(handle);
 
             var rnd = new Random(45 * (length + 1));
-            T[] targets = new T[] { NewT(rnd.Next()), NewT(rnd.Next()), NewT(rnd.Next()), NewT(rnd.Next()) };
+            T[] targets = new T[] { NextT(rnd), NextT(rnd), NextT(rnd), NextT(rnd) };
 
             T[] t = new T[length];
             TSource[] s = new TSource[length];
@@ -411,7 +407,7 @@ namespace DrNet.Tests.Span
                 T item;
                 do
                 {
-                    item = NewT(rnd.Next());
+                    item = NextT(rnd);
                 } while (targets.AsSpan().IndexOfEqual(item) >= 0);
 
                 t[i] = item;
@@ -497,13 +493,13 @@ namespace DrNet.Tests.Span
             handle = OnCompareActions<T>.CreateHandler(null);
 
             var rnd = new Random(46 * (length + 1));
-            T[] targets = new T[] { NewT(rnd.Next()), NewT(rnd.Next()), NewT(rnd.Next()), NewT(rnd.Next()) };
+            T[] targets = new T[] { NextT(rnd), NextT(rnd), NextT(rnd), NextT(rnd) };
             const int guardLength = 50;
 
             T guard;
             do
             {
-                guard = NewT(rnd.Next());
+                guard = NextT(rnd);
             } while (targets.AsSpan().IndexOfEqual(guard) >= 0);
 
             void checkForOutOfRangeAccess(T x, T y)
@@ -521,7 +517,7 @@ namespace DrNet.Tests.Span
                 T item;
                 do
                 {
-                    item = NewT(rnd.Next());
+                    item = NextT(rnd);
                 } while (targets.AsSpan().IndexOfEqual(item) >= 0 ||
                     EqualityCompareT(item, guard, true) || EqualityCompareT(guard, item, true));
 

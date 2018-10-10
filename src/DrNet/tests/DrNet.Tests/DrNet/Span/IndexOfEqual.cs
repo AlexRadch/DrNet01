@@ -103,7 +103,7 @@ namespace DrNet.Tests.Span
         public void TestMatch(int length)
         {
             var rnd = new Random(42 * (length + 1));
-            T target = NewT(rnd.Next());
+            T target = NextT(rnd);
 
             TSource[] s = new TSource[length];
             for (int i = 0; i < length; i++)
@@ -111,7 +111,7 @@ namespace DrNet.Tests.Span
                 T item;
                 do
                 {
-                    item = NewT(rnd.Next());
+                    item = NextT(rnd);
                 } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true));
 
                 s[i] = NewTSource(item);
@@ -150,7 +150,7 @@ namespace DrNet.Tests.Span
         public void TestNoMatch(int length)
         {
             var rnd = new Random(43 * (length + 1));
-            T target = NewT(rnd.Next());
+            T target = NextT(rnd);
 
             TSource[] s = new TSource[length];
             for (int i = 0; i < length; i++)
@@ -158,7 +158,7 @@ namespace DrNet.Tests.Span
                 T item;
                 do
                 {
-                    item = NewT(rnd.Next());
+                    item = NextT(rnd);
                 } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true));
 
                 s[i] = NewTSource(item);
@@ -189,7 +189,7 @@ namespace DrNet.Tests.Span
         public void TestMultipleMatch(int length)
         {
             var rnd = new Random(44 * (length + 1));
-            T target = NewT(rnd.Next());
+            T target = NextT(rnd);
 
             TSource[] s = new TSource[length];
             for (int i = 0; i < length; i++)
@@ -197,7 +197,7 @@ namespace DrNet.Tests.Span
                 T item;
                 do
                 {
-                    item = NewT(rnd.Next());
+                    item = NextT(rnd);
                 } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true));
 
                 s[i] = NewTSource(item);
@@ -241,7 +241,7 @@ namespace DrNet.Tests.Span
             TLog<T> log = new TLog<T>(handle);
 
             var rnd = new Random(45 * (length + 1));
-            T target = NewT(rnd.Next());
+            T target = NextT(rnd);
 
             T[] t = new T[length];
             TSource[] s = new TSource[length];
@@ -250,7 +250,7 @@ namespace DrNet.Tests.Span
                 T item;
                 do
                 {
-                    item = NewT(rnd.Next());
+                    item = NextT(rnd);
                 } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true));
 
                 t[i] = item;
@@ -327,13 +327,13 @@ namespace DrNet.Tests.Span
             handle = OnCompareActions<T>.CreateHandler(null);
 
             var rnd = new Random(46 * (length + 1));
-            T target = NewT(rnd.Next());
+            T target = NextT(rnd);
             const int guardLength = 50;
 
             T guard;
             do
             {
-                guard = NewT(rnd.Next());
+                guard = NextT(rnd);
             } while (EqualityCompareT(guard, target, true) || EqualityCompareT(target, guard, true));
 
             void checkForOutOfRangeAccess(T x, T y)
@@ -351,7 +351,7 @@ namespace DrNet.Tests.Span
                 T item;
                 do
                 {
-                    item = NewT(rnd.Next());
+                    item = NextT(rnd);
                 } while (EqualityCompareT(item, target, true) || EqualityCompareT(target, item, true) ||
                     EqualityCompareT(item, guard, true) || EqualityCompareT(guard, item, true));
 

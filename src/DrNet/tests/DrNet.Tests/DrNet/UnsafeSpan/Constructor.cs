@@ -164,7 +164,7 @@ namespace DrNet.Tests.UnsafeSpan
             }
 
             var rnd = new Random(40);
-            T[] t = new T[] { NewT(rnd.Next()), NewT(rnd.Next()), NewT(rnd.Next()) };
+            T[] t = new T[] { NextT(rnd), NextT(rnd), NextT(rnd) };
 
             Span<T> span = new Span<T>(t, 1, 1);
             ReadOnlySpan<T> rspan = new ReadOnlySpan<T>(t, 1, 1);

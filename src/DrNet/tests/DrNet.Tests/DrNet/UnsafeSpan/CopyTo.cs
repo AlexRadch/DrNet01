@@ -17,28 +17,44 @@ namespace DrNet.Tests.UnsafeSpan
 
             UnsafeSpan<T> uSpan = default;
             UnsafeReadOnlySpan<T> urSpan = default;
+
             uSpan.CopyTo(default);
+            Assert.True(uSpan.TryCopyTo(default));
+
             urSpan.CopyTo(default);
+            Assert.True(urSpan.TryCopyTo(default));
 
             T[] d = new T[] { NextT(rnd), NextT(rnd), NextT(rnd) };
             T[] d2 = d.AsReadOnlySpan().ToArray();
 
             uSpan.CopyTo(d);
             Assert.Equal(d, d2);
+            Assert.True(uSpan.TryCopyTo(d));
+            Assert.Equal(d, d2);
 
             urSpan.CopyTo(d);
+            Assert.Equal(d, d2);
+            Assert.True(urSpan.TryCopyTo(d));
             Assert.Equal(d, d2);
 
             uSpan.CopyTo(d.AsSpan(2));
             Assert.Equal(d, d2);
+            Assert.True(uSpan.TryCopyTo(d.AsSpan(2)));
+            Assert.Equal(d, d2);
 
             urSpan.CopyTo(d.AsSpan(2));
+            Assert.Equal(d, d2);
+            Assert.True(urSpan.TryCopyTo(d.AsSpan(2)));
             Assert.Equal(d, d2);
 
             uSpan.CopyTo(d.AsSpan(3));
             Assert.Equal(d, d2);
+            Assert.True(uSpan.TryCopyTo(d.AsSpan(3)));
+            Assert.Equal(d, d2);
 
             urSpan.CopyTo(d.AsSpan(3));
+            Assert.Equal(d, d2);
+            Assert.True(urSpan.TryCopyTo(d.AsSpan(3)));
             Assert.Equal(d, d2);
         }
 
@@ -52,27 +68,41 @@ namespace DrNet.Tests.UnsafeSpan
             UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
 
             uSpan.CopyTo(default);
+            Assert.True(uSpan.TryCopyTo(default));
             urSpan.CopyTo(default);
+            Assert.True(urSpan.TryCopyTo(default));
 
             T[] d = new T[] { NextT(rnd), NextT(rnd), NextT(rnd) };
             T[] d2 = d.AsReadOnlySpan().ToArray();
 
             uSpan.CopyTo(d);
             Assert.Equal(d, d2);
+            Assert.True(uSpan.TryCopyTo(d));
+            Assert.Equal(d, d2);
 
             urSpan.CopyTo(d);
+            Assert.Equal(d, d2);
+            Assert.True(urSpan.TryCopyTo(d));
             Assert.Equal(d, d2);
 
             uSpan.CopyTo(d.AsSpan(2));
             Assert.Equal(d, d2);
+            Assert.True(uSpan.TryCopyTo(d.AsSpan(2)));
+            Assert.Equal(d, d2);
 
             urSpan.CopyTo(d.AsSpan(2));
+            Assert.Equal(d, d2);
+            Assert.True(urSpan.TryCopyTo(d.AsSpan(2)));
             Assert.Equal(d, d2);
 
             uSpan.CopyTo(d.AsSpan(3));
             Assert.Equal(d, d2);
+            Assert.True(uSpan.TryCopyTo(d.AsSpan(3)));
+            Assert.Equal(d, d2);
 
             urSpan.CopyTo(d.AsSpan(3));
+            Assert.Equal(d, d2);
+            Assert.True(urSpan.TryCopyTo(d.AsSpan(3)));
             Assert.Equal(d, d2);
         }
 
@@ -87,7 +117,7 @@ namespace DrNet.Tests.UnsafeSpan
 
             T[] t = new T[guardLength + length + guardLength];
             for (var i = 0; i < t.Length; i++)
-                t[i] = NewT(rnd.Next());
+                t[i] = NextT(rnd);
 
             T[] d = new T[guardLength + length - 1 + guardLength];
 
@@ -100,7 +130,9 @@ namespace DrNet.Tests.UnsafeSpan
                     UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
 
                     Assert.Throws<ArgumentException>(() => uSpan.CopyTo(new Span<T>(d, guardLength, length - 1)));
+                    Assert.False(uSpan.TryCopyTo(new Span<T>(d, guardLength, length - 1)));
                     Assert.Throws<ArgumentException>(() => urSpan.CopyTo(new Span<T>(d, guardLength, length - 1)));
+                    Assert.False(urSpan.TryCopyTo(new Span<T>(d, guardLength, length - 1)));
                 }
             }
         }
@@ -116,7 +148,7 @@ namespace DrNet.Tests.UnsafeSpan
 
             T[] t = new T[guardLength + length + guardLength];
             for (var i = 0; i < t.Length; i++)
-                t[i] = NewT(rnd.Next());
+                t[i] = NextT(rnd);
             T[] t2 = t.AsReadOnlySpan().ToArray();
 
             {
@@ -157,7 +189,7 @@ namespace DrNet.Tests.UnsafeSpan
 
             T[] t = new T[guardLength + length + guardLength];
             for (var i = 0; i < t.Length; i++)
-                t[i] = NewT(rnd.Next());
+                t[i] = NextT(rnd);
             T[] t2 = t.AsReadOnlySpan().ToArray();
 
             {
