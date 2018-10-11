@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using UnsafeRef = System.Runtime.CompilerServices.Unsafe;
 
 using DrNet.Internal;
-using DrNet.Internal.UnSafe;
-using DrNet.UnSafe;
+using DrNet.Internal.Unsafe;
+using DrNet.Unsafe;
 
 namespace DrNet                                                                                                         
 {
@@ -1611,23 +1612,23 @@ namespace DrNet
                     if (default(TSource) != null && DrNetTypeExt.IsTypeComparableAsBytes<TSource>())
                         return MemoryExtensions.EndsWith(DrNetMarshal.UnsafeCastBytes(span),
                             DrNetMarshal.UnsafeCastBytes(value));
-                    if (UnsafeIn.AreSame(in Unsafe.Add(ref DrNetMarshal.GetReference(span), start), 
+                    if (UnsafeIn.AreSame(in UnsafeRef.Add(ref DrNetMarshal.GetReference(span), start), 
                         in UnsafeIn.As<TValue, TSource>(in DrNetMarshal.GetReference(value))))
                         return true;
                 }
                 if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
                     return DrNetSpanHelpers.EqualsToSeq(in DrNetMarshal.GetReference(value),
-                        in Unsafe.Add(ref DrNetMarshal.GetReference(span), start), valueLength, (vValue, sValue) =>
+                        in UnsafeRef.Add(ref DrNetMarshal.GetReference(span), start), valueLength, (vValue, sValue) =>
                             ((IEquatable<TSource>)vValue).Equals(sValue));
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
-                    return DrNetSpanHelpers.EqualsToSeq(in Unsafe.Add(ref DrNetMarshal.GetReference(span), start),
+                    return DrNetSpanHelpers.EqualsToSeq(in UnsafeRef.Add(ref DrNetMarshal.GetReference(span), start),
                         in DrNetMarshal.GetReference(value), valueLength, (sValue, vValue) =>
                             ((IEquatable<TValue>)sValue).Equals(vValue));
-                return DrNetSpanHelpers.EqualsToSeq(in Unsafe.Add(ref DrNetMarshal.GetReference(span), start),
+                return DrNetSpanHelpers.EqualsToSeq(in UnsafeRef.Add(ref DrNetMarshal.GetReference(span), start),
                     in DrNetMarshal.GetReference(value), valueLength, (sValue, vValue) => sValue.Equals(vValue));
             }
 
-            return DrNetSpanHelpers.EqualsToSeq(in Unsafe.Add(ref DrNetMarshal.GetReference(span), start),
+            return DrNetSpanHelpers.EqualsToSeq(in UnsafeRef.Add(ref DrNetMarshal.GetReference(span), start),
                 in DrNetMarshal.GetReference(value), valueLength, equalityComparer);
         }
 
@@ -1705,18 +1706,18 @@ namespace DrNet
                 }
                 if (typeof(IEquatable<TSource>).IsAssignableFrom(typeof(TValue)))
                     return DrNetSpanHelpers.EqualsToSeq(in DrNetMarshal.GetReference(value),
-                        in Unsafe.Add(ref DrNetMarshal.GetReference(span), start), valueLength, (vValue, sValue) =>
+                        in UnsafeRef.Add(ref DrNetMarshal.GetReference(span), start), valueLength, (vValue, sValue) =>
                             ((IEquatable<TSource>)vValue).Equals(sValue));
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
-                    return DrNetSpanHelpers.EqualsToSeq(in Unsafe.Add(ref DrNetMarshal.GetReference(span), start),
+                    return DrNetSpanHelpers.EqualsToSeq(in UnsafeRef.Add(ref DrNetMarshal.GetReference(span), start),
                         in DrNetMarshal.GetReference(value), valueLength, (sValue, vValue) =>
                             ((IEquatable<TValue>)sValue).Equals(vValue));
-                return DrNetSpanHelpers.EqualsToSeq(in Unsafe.Add(ref DrNetMarshal.GetReference(span), start),
+                return DrNetSpanHelpers.EqualsToSeq(in UnsafeRef.Add(ref DrNetMarshal.GetReference(span), start),
                     in DrNetMarshal.GetReference(value), valueLength, (sValue, vValue) => sValue.Equals(vValue));
             }
 
             return DrNetSpanHelpers.EqualsToSeq(in DrNetMarshal.GetReference(value),
-                in Unsafe.Add(ref DrNetMarshal.GetReference(span), start), valueLength, equalityComparer);
+                in UnsafeRef.Add(ref DrNetMarshal.GetReference(span), start), valueLength, equalityComparer);
         }
 
         /// <summary>

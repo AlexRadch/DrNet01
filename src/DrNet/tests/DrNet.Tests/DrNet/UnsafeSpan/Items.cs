@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using UnsafeRef = System.Runtime.CompilerServices.Unsafe;
 
 using Xunit;
 
-using DrNet.UnSafe;
+using DrNet.Unsafe;
 
 namespace DrNet.Tests.UnsafeSpan
 {
@@ -32,7 +33,7 @@ namespace DrNet.Tests.UnsafeSpan
 
                     for (var i = 0; i < length; i++)
                     {
-                        Assert.True(Unsafe.AreSame(ref span[i], ref uSpan[i]));
+                        Assert.True(UnsafeRef.AreSame(ref span[i], ref uSpan[i]));
                         Assert.Equal(span[i], uSpan[i]);
 
                         Assert.True(UnsafeIn.AreSame(in span[i], in urSpan[i]));

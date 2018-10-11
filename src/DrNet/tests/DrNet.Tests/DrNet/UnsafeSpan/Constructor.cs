@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using UnsafeRef = System.Runtime.CompilerServices.Unsafe;
 
 using Xunit;
 
-using DrNet.UnSafe;
+using DrNet.Unsafe;
 using System.Linq;
 
 namespace DrNet.Tests.UnsafeSpan
@@ -35,8 +36,8 @@ namespace DrNet.Tests.UnsafeSpan
             {
                 fixed (byte* bytePtr = DrNetMarshal.UnsafeCastBytes(span))
                 {
-                    uSpan = new UnsafeSpan<T>(Unsafe.AsPointer(ref DrNetMarshal.GetReference(span)), 0);
-                    urSpan = new UnsafeReadOnlySpan<T>(Unsafe.AsPointer(ref DrNetMarshal.GetReference(span)), 0);
+                    uSpan = new UnsafeSpan<T>(UnsafeRef.AsPointer(ref DrNetMarshal.GetReference(span)), 0);
+                    urSpan = new UnsafeReadOnlySpan<T>(UnsafeRef.AsPointer(ref DrNetMarshal.GetReference(span)), 0);
 
                     Assert.True(null == uSpan._pointer);
                     Assert.True(null == urSpan._pointer);
@@ -109,7 +110,7 @@ namespace DrNet.Tests.UnsafeSpan
                     UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
                     UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
 
-                    Assert.True(Unsafe.AsPointer(ref DrNetMarshal.GetReference(span)) == uSpan._pointer);
+                    Assert.True(UnsafeRef.AsPointer(ref DrNetMarshal.GetReference(span)) == uSpan._pointer);
                     Assert.True(UnsafeIn.AsPointer(in DrNetMarshal.GetReference(span)) == urSpan._pointer);
                     Assert.Equal(length, uSpan.Length);
                     Assert.Equal(length, urSpan.Length);
@@ -136,7 +137,7 @@ namespace DrNet.Tests.UnsafeSpan
                     UnsafeSpan<T> uSpan = new UnsafeSpan<T>(ref DrNetMarshal.GetReference(span), length);
                     UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(in DrNetMarshal.GetReference(span), length);
 
-                    Assert.True(Unsafe.AsPointer(ref DrNetMarshal.GetReference(span)) == uSpan._pointer);
+                    Assert.True(UnsafeRef.AsPointer(ref DrNetMarshal.GetReference(span)) == uSpan._pointer);
                     Assert.True(UnsafeIn.AsPointer(in DrNetMarshal.GetReference(span)) == urSpan._pointer);
                     Assert.Equal(length, uSpan.Length);
                     Assert.Equal(length, urSpan.Length);
@@ -155,12 +156,12 @@ namespace DrNet.Tests.UnsafeSpan
                 Assert.Throws<ArgumentOutOfRangeException>(() => new UnsafeSpan<T>(null, 1));
                 Assert.Throws<ArgumentOutOfRangeException>(() => new UnsafeReadOnlySpan<T>(null, 1));
 
-                Assert.Throws<ArgumentOutOfRangeException>(() => new UnsafeSpan<T>(ref Unsafe.AsRef<T>(null), -1));
-                Assert.Throws<ArgumentOutOfRangeException>(() => new UnsafeReadOnlySpan<T>(in Unsafe.AsRef<T>(null),
+                Assert.Throws<ArgumentOutOfRangeException>(() => new UnsafeSpan<T>(ref UnsafeRef.AsRef<T>(null), -1));
+                Assert.Throws<ArgumentOutOfRangeException>(() => new UnsafeReadOnlySpan<T>(in UnsafeRef.AsRef<T>(null),
                     -1));
 
-                Assert.Throws<ArgumentOutOfRangeException>(() => new UnsafeSpan<T>(ref Unsafe.AsRef<T>(null), 1));
-                Assert.Throws<ArgumentOutOfRangeException>(() => new UnsafeReadOnlySpan<T>(in Unsafe.AsRef<T>(null), 
+                Assert.Throws<ArgumentOutOfRangeException>(() => new UnsafeSpan<T>(ref UnsafeRef.AsRef<T>(null), 1));
+                Assert.Throws<ArgumentOutOfRangeException>(() => new UnsafeReadOnlySpan<T>(in UnsafeRef.AsRef<T>(null), 
                     1));
             }
 
@@ -172,7 +173,7 @@ namespace DrNet.Tests.UnsafeSpan
             unsafe
             {
                 TestHelpers.AssertThrows<ArgumentOutOfRangeException, T>(span, (aSpan) => 
-                    new UnsafeSpan<T>(Unsafe.AsPointer(ref DrNetMarshal.GetReference(aSpan)), -1));
+                    new UnsafeSpan<T>(UnsafeRef.AsPointer(ref DrNetMarshal.GetReference(aSpan)), -1));
                 TestHelpers.AssertThrows<ArgumentOutOfRangeException, T>(rspan, (aSpan) => 
                     new UnsafeReadOnlySpan<T>(UnsafeIn.AsPointer(in DrNetMarshal.GetReference(aSpan)), -1));
 

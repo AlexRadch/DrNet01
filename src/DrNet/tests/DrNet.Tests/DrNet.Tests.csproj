@@ -25,17 +25,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="DrNet\Internal\**" />
-    <EmbeddedResource Remove="DrNet\Internal\**" />
-    <None Remove="DrNet\Internal\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="DrNet\MemoryExtensionsTests_IndexOfEqual.cs" />
-    <Compile Remove="DrNet\MemoryExtensionsTests_IndexOfEqual_IEquatable.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0">
@@ -46,6 +35,31 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\DrNet.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Common Collections tests -->
+    <Compile Include="$(CommonTestPath)\System\AssertExtensions.cs">
+      <Link>Common\System\AssertExtensions.cs </Link>
+    </Compile>
+    <Compile Include="$(CommonTestPath)\System\Collections\CollectionAsserts.cs">
+      <Link>Common\System\Collections\CollectionAsserts.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonTestPath)\System\Collections\TestBase.NonGeneric.cs">
+      <Link>Common\System\Collections\TestBase.NonGeneric.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonTestPath)\System\Collections\TestBase.Generic.cs">
+      <Link>Common\System\Collections\TestBase.Generic.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonTestPath)\System\Collections\IEnumerable.Generic.Tests.cs">
+      <Link>Common\System\Collections\IEnumerable.Generic.Tests.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonTestPath)\System\Collections\ICollection.Generic.Tests.cs">
+      <Link>Common\System\Collections\ICollection.Generic.Tests.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonTestPath)\System\Collections\IList.Generic.Tests.cs">
+      <Link>Common\System\Collections\IList.Generic.Tests.cs</Link>
+    </Compile>
   </ItemGroup>
 
 </Project>

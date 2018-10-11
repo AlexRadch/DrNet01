@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using UnsafeRef = System.Runtime.CompilerServices.Unsafe;
 using System.Runtime.InteropServices;
 
 using DrNet.Internal;
-using DrNet.Internal.UnSafe;
+using DrNet.Internal.Unsafe;
 
-namespace DrNet.UnSafe
+namespace DrNet.Unsafe
 {
     [DebuggerTypeProxy(typeof(UnsafeSpanDebugView<>))]
     [DebuggerDisplay("{ToString(),raw}")]
@@ -51,7 +52,7 @@ namespace DrNet.UnSafe
             {
                 if ((uint)index >= (uint)_length)
                     throw new ArgumentOutOfRangeException(nameof(index));
-                return ref Unsafe.Add(ref Unsafe.AsRef<T>(_pointer), index);
+                return ref UnsafeRef.Add(ref UnsafeRef.AsRef<T>(_pointer), index);
             }
         }
 
@@ -105,8 +106,8 @@ namespace DrNet.UnSafe
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe ref readonly T GetPinnableReference() => ref (_length != 0) ? ref Unsafe.AsRef<T>(_pointer) :
-            ref Unsafe.AsRef<T>(null);
+        public unsafe ref readonly T GetPinnableReference() => ref (_length != 0) ? ref UnsafeRef.AsRef<T>(_pointer) :
+            ref UnsafeRef.AsRef<T>(null);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public UnsafeReadOnlySpan<T> Slice(int start)
@@ -114,7 +115,7 @@ namespace DrNet.UnSafe
             if ((uint)start > (uint)_length)
                 throw new ArgumentOutOfRangeException(nameof(start));
 
-            return new UnsafeReadOnlySpan<T>(in Unsafe.Add(ref Unsafe.AsRef<T>(_pointer), start),
+            return new UnsafeReadOnlySpan<T>(in UnsafeRef.Add(ref UnsafeRef.AsRef<T>(_pointer), start),
                 _length - start);
         }
 
@@ -124,7 +125,7 @@ namespace DrNet.UnSafe
             if ((uint)start > (uint)_length || (uint)length > (uint)(_length - start))
                 throw new ArgumentOutOfRangeException(nameof(start));
 
-            return new UnsafeReadOnlySpan<T>(in Unsafe.Add(ref Unsafe.AsRef<T>(_pointer), start), length);
+            return new UnsafeReadOnlySpan<T>(in UnsafeRef.Add(ref UnsafeRef.AsRef<T>(_pointer), start), length);
         }
 
         public T[] ToArray() => AsSpan().ToArray();

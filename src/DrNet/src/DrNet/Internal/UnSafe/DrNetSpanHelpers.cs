@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-using DrNet.UnSafe;
+using DrNet.Unsafe;
 
-namespace DrNet.Internal.UnSafe
+namespace DrNet.Internal.Unsafe
 {
     public static class DrNetSpanHelpers
     {

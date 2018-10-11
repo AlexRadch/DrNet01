@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using UnsafeRef = System.Runtime.CompilerServices.Unsafe;
 using System.Runtime.InteropServices;
 
 using Xunit;
 
-using DrNet.UnSafe;
+using DrNet.Unsafe;
 
 namespace DrNet.Tests.UnsafeSpan
 {
@@ -123,7 +124,7 @@ namespace DrNet.Tests.UnsafeSpan
 
                     fixed (byte* ptr = DrNetMarshal.UnsafeCastBytes(uSpan))
                     {
-                        void* spanPtr = Unsafe.AsPointer(ref span[0]);
+                        void* spanPtr = UnsafeRef.AsPointer(ref span[0]);
                         Assert.True(spanPtr == ptr);
                     }
                     fixed (byte* ptr = DrNetMarshal.UnsafeCastBytes(urSpan))

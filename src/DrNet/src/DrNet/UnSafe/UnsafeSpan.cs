@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using UnsafeRef = System.Runtime.CompilerServices.Unsafe;
 
 using DrNet.Internal;
-using DrNet.Internal.UnSafe;
+using DrNet.Internal.Unsafe;
 
-namespace DrNet.UnSafe
+namespace DrNet.Unsafe
 {
     [DebuggerTypeProxy(typeof(UnsafeSpanDebugView<>))]
     [DebuggerDisplay("{ToString(),raw}")]
@@ -39,10 +40,10 @@ namespace DrNet.UnSafe
         public UnsafeSpan(Span<T> span) : this(ref DrNetMarshal.GetReference(span), span.Length) { }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public UnsafeSpan(ref T reference, int length) : this(Unsafe.AsPointer(ref reference), length) { }
+        public UnsafeSpan(ref T reference, int length) : this(UnsafeRef.AsPointer(ref reference), length) { }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Span<T> AsSpan() => DrNetMarshal.CreateSpan(ref Unsafe.AsRef<T>(_pointer), _length);
+        public Span<T> AsSpan() => DrNetMarshal.CreateSpan(ref UnsafeRef.AsRef<T>(_pointer), _length);
 
         public ref T this[int index]
         {
@@ -51,7 +52,7 @@ namespace DrNet.UnSafe
             {
                 if ((uint)index >= (uint)_length)
                     throw new ArgumentOutOfRangeException(nameof(index));
-                return ref Unsafe.Add(ref Unsafe.AsRef<T>(_pointer), index);
+                return ref UnsafeRef.Add(ref UnsafeRef.AsRef<T>(_pointer), index);
             }
         }
 
@@ -102,8 +103,8 @@ namespace DrNet.UnSafe
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe ref T GetPinnableReference() => ref (_length != 0) ? ref Unsafe.AsRef<T>(_pointer) :
-            ref Unsafe.AsRef<T>(null);
+        public unsafe ref T GetPinnableReference() => ref (_length != 0) ? ref UnsafeRef.AsRef<T>(_pointer) :
+            ref UnsafeRef.AsRef<T>(null);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public UnsafeSpan<T> Slice(int start)
@@ -111,7 +112,7 @@ namespace DrNet.UnSafe
             if ((uint)start > (uint)_length)
                 throw new ArgumentOutOfRangeException(nameof(start));
 
-            return new UnsafeSpan<T>(ref Unsafe.Add(ref Unsafe.AsRef<T>(_pointer), start), _length - start);
+            return new UnsafeSpan<T>(ref UnsafeRef.Add(ref UnsafeRef.AsRef<T>(_pointer), start), _length - start);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -120,7 +121,7 @@ namespace DrNet.UnSafe
             if ((uint)start > (uint)_length || (uint)length > (uint)(_length - start))
                 throw new ArgumentOutOfRangeException(nameof(start));
 
-            return new UnsafeSpan<T>(ref Unsafe.Add(ref Unsafe.AsRef<T>(_pointer), start), length);
+            return new UnsafeSpan<T>(ref UnsafeRef.Add(ref UnsafeRef.AsRef<T>(_pointer), start), length);
         }
 
         public T[] ToArray() => AsSpan().ToArray();
@@ -186,10 +187,10 @@ namespace DrNet.UnSafe
         public int IndexOf(T item)
         {
             if (typeof(T) == typeof(byte))
-                return MemoryExtensions.IndexOf(DrNetMarshal.CreateSpan(ref Unsafe.AsRef<byte>(_pointer), _length),
+                return MemoryExtensions.IndexOf(DrNetMarshal.CreateSpan(ref UnsafeRef.AsRef<byte>(_pointer), _length),
                     UnsafeIn.As<T, byte>(in item));
             if (typeof(T) == typeof(char) )
-                return MemoryExtensions.IndexOf(DrNetMarshal.CreateSpan(ref Unsafe.AsRef<char>(_pointer), _length),
+                return MemoryExtensions.IndexOf(DrNetMarshal.CreateSpan(ref UnsafeRef.AsRef<char>(_pointer), _length),
                     UnsafeIn.As<T, char>(in item));
             if (item is IEquatable<T> vEquatable)
                 return DrNetSpanHelpers.IndexOfEqualValueComparer(in UnsafeIn.AsRef<T>(_pointer), _length,

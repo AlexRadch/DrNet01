@@ -3,7 +3,7 @@ using System.Linq;
 
 using Xunit;
 
-using DrNet.UnSafe;
+using DrNet.Unsafe;
 
 namespace DrNet.Tests.UnsafeSpan
 {

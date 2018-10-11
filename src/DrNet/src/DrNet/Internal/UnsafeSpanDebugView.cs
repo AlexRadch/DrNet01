@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-using DrNet.UnSafe;
+using DrNet.Unsafe;
 
 namespace DrNet.Internal
 {

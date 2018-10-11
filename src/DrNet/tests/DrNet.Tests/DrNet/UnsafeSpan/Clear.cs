@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using Xunit;
 
-using DrNet.UnSafe;
+using DrNet.Unsafe;
 using System.Linq;
 
 namespace DrNet.Tests.UnsafeSpan
