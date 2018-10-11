@@ -210,7 +210,8 @@ namespace DrNet.Tests.Span
             var rnd = new Random(44 * (length + 1));
 
             T target = NextT(rnd);
-            TSource[] s = WhereNotEqualT(RepeatT(rnd), target).Select(tItem => NewTSource(tItem)).Take(length).ToArray();
+            TSource[] s = WhereNotEqualT(RepeatT(rnd), target).Select(tItem => NewTSource(tItem)).Take(length).
+                ToArray();
 
             Span<TSource> span = new Span<TSource>(s);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);

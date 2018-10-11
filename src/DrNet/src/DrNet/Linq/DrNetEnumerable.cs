@@ -6,25 +6,25 @@ namespace DrNet.Linq
 {
     public static class DrNetEnumerable
     {
-        public static void CheckOperationAll(this (bool All, int Count) operationResult)
+        public static void CheckOperationAll(this (bool All, bool ToEnd) operationResult)
         {
             if (!operationResult.All)
                 throw new InvalidOperationException();
         }
 
-        public static void CheckOperationToEnd(this (bool All, int Count) operationResult, int length)
+        public static void CheckOperationToEnd(this (bool All, bool ToEnd) operationResult)
         {
-            if (operationResult.Count != length)
+            if (!operationResult.ToEnd)
                 throw new InvalidOperationException();
         }
 
-        public static void CheckOperationAllToEnd(this (bool All, int Count) operationResult, int length)
+        public static void CheckOperationAllToEnd(this (bool All, bool ToEnd) operationResult)
         {
             CheckOperationAll(operationResult);
-            CheckOperationToEnd(operationResult, length);
+            CheckOperationToEnd(operationResult);
         }
 
-        public static (bool All, int Count) CopyTo<TSource>(this IEnumerable<TSource> source, Span<TSource> dest)
+        public static (bool All, bool ToEnd) CopyTo<TSource>(this IEnumerable<TSource> source, Span<TSource> dest)
         {
             using (IEnumerator<TSource> e = source.GetEnumerator())
             {
@@ -33,10 +33,10 @@ namespace DrNet.Linq
                 while (index < length)
                 {
                     if (!e.MoveNext())
-                        return (false, index);
+                        return (true, false);
                     dest[index++] = e.Current;
                 }
-                return (!e.MoveNext(), index);
+                return (!e.MoveNext(), true);
             }
         }
 
