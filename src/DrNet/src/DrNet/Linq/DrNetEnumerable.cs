@@ -6,8 +6,39 @@ namespace DrNet.Linq
 {
     public static class DrNetEnumerable
     {
-        public static IEnumerable<(TSource Item, int Index)> WithIndex<TSource>(this IEnumerable<TSource> source)
-            => source.Select((item, index) => (item, index));
+        public static void CheckOperationAll(this (bool All, int Count) operationResult)
+        {
+            if (!operationResult.All)
+                throw new InvalidOperationException();
+        }
+
+        public static void CheckOperationToEnd(this (bool All, int Count) operationResult, int length)
+        {
+            if (operationResult.Count != length)
+                throw new InvalidOperationException();
+        }
+
+        public static void CheckOperationAllToEnd(this (bool All, int Count) operationResult, int length)
+        {
+            CheckOperationAll(operationResult);
+            CheckOperationToEnd(operationResult, length);
+        }
+
+        public static (bool All, int Count) CopyTo<TSource>(this IEnumerable<TSource> source, Span<TSource> dest)
+        {
+            using (IEnumerator<TSource> e = source.GetEnumerator())
+            {
+                int length = dest.Length;
+                int index = 0;
+                while (index < length)
+                {
+                    if (!e.MoveNext())
+                        return (false, index);
+                    dest[index++] = e.Current;
+                }
+                return (!e.MoveNext(), index);
+            }
+        }
 
         public static IEnumerable<TResult> Repeat<TResult>(TResult value)
         {
@@ -46,5 +77,8 @@ namespace DrNet.Linq
                 yield return resultSelector(value);
             }
         }
+
+        public static IEnumerable<(TSource Item, int Index)> WithIndex<TSource>(this IEnumerable<TSource> source)
+            => source.Select((item, index) => (item, index));
     }
 }

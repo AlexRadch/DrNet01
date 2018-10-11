@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using System.Linq;
+
 using Xunit;
 
+using DrNet.Linq;
 using DrNet.UnSafe;
-using System.Linq;
 
 namespace DrNet.Tests.UnsafeSpan
 {
@@ -98,7 +99,47 @@ namespace DrNet.Tests.UnsafeSpan
 
             T target = NextT(rnd);
             T[] t = Enumerable.Repeat(target, guardLength + length + guardLength).ToArray();
-            WhereNotEqualT(RepeatT(rnd), target).Take(length).ToArray().AsSpan().CopyTo(t.AsSpan(guardLength, length));
+            WhereNotEqualT(RepeatT(rnd), target).Take(length).CopyTo(t.AsSpan(guardLength, length)).
+                CheckOperationAllToEnd(length);
+
+            unsafe
+            {
+                Span<T> span = new Span<T>(t, guardLength, length);
+                fixed (byte* bytePtr = DrNetMarshal.UnsafeCastBytes(span))
+                {
+                    UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
+                    UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
+
+                    for (int targetIndex = 0; targetIndex < length; targetIndex++)
+                    {
+                        T temp = urSpan[targetIndex];
+                        uSpan[targetIndex] = target;
+
+                        int idx = uSpan.IndexOf(target);
+                        Assert.Equal(targetIndex, idx);
+                        idx = urSpan.IndexOf(target);
+                        Assert.Equal(targetIndex, idx);
+
+                        uSpan[targetIndex] = temp;
+                    }
+                }
+            }
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(10)]
+        [InlineData(100)]
+        public void TestNoMatch(int length)
+        {
+            var rnd = new Random(44 * (length + 1));
+            const int guardLength = 50;
+
+            T target = NextT(rnd);
+            T[] t = Enumerable.Repeat(target, guardLength + length + guardLength).ToArray();
+            WhereNotEqualT(RepeatT(rnd), target).Take(length).CopyTo(t.AsSpan(guardLength, length)).
+                CheckOperationAllToEnd(length);
 
             unsafe
             {
