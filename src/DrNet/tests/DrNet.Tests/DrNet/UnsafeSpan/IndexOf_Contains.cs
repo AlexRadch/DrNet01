@@ -8,7 +8,7 @@ using DrNet.UnSafe;
 
 namespace DrNet.Tests.UnsafeSpan
 {
-    public abstract class IndexOf<T> : SpanTest<T>
+    public abstract class IndexOf_Contains<T> : SpanTest<T>
     {
         [Fact]
         public void ZeroLength()
@@ -80,10 +80,14 @@ namespace DrNet.Tests.UnsafeSpan
                     UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
 
                     Assert.Equal(0, uSpan.IndexOf(default));
+                    Assert.Contains(default, uSpan);
                     Assert.Equal(0, urSpan.IndexOf(default));
+                    Assert.Contains(default, urSpan);
 
                     Assert.Equal(-1, uSpan.IndexOf(NextNotEqualT(rnd, default)));
+                    Assert.DoesNotContain(NextNotEqualT(rnd, default), uSpan);
                     Assert.Equal(-1, urSpan.IndexOf(NextNotEqualT(rnd, default)));
+                    Assert.DoesNotContain(NextNotEqualT(rnd, default), urSpan);
                 }
             }
         }
@@ -117,8 +121,10 @@ namespace DrNet.Tests.UnsafeSpan
 
                         int idx = uSpan.IndexOf(target);
                         Assert.Equal(targetIndex, idx);
+                        Assert.Contains(target, uSpan);
                         idx = urSpan.IndexOf(target);
                         Assert.Equal(targetIndex, idx);
+                        Assert.Contains(target, urSpan);
 
                         uSpan[targetIndex] = temp;
                     }
@@ -151,8 +157,10 @@ namespace DrNet.Tests.UnsafeSpan
 
                     int idx = uSpan.IndexOf(target);
                     Assert.Equal(-1, idx);
+                    Assert.DoesNotContain(target, uSpan);
                     idx = urSpan.IndexOf(target);
                     Assert.Equal(-1, idx);
+                    Assert.DoesNotContain(target, urSpan);
                 }
             }
         }
@@ -188,8 +196,10 @@ namespace DrNet.Tests.UnsafeSpan
 
                         int idx = uSpan.IndexOf(target);
                         Assert.Equal(targetIndex, idx);
+                        Assert.Contains(target, uSpan);
                         idx = urSpan.IndexOf(target);
                         Assert.Equal(targetIndex, idx);
+                        Assert.Contains(target, urSpan);
 
                         uSpan[targetIndex + 0] = temp0;
                         uSpan[targetIndex + 1] = temp1;
@@ -199,33 +209,33 @@ namespace DrNet.Tests.UnsafeSpan
         }
     }
 
-    public sealed class IndexOf_byte : IndexOf<byte>
+    public sealed class IndexOf_Contains_byte : IndexOf_Contains<byte>
     {
         protected override byte NewT(int value) => unchecked((byte)value);
     }
 
-    public sealed class IndexOf_char : IndexOf<char>
+    public sealed class IndexOf_Contains_char : IndexOf_Contains<char>
     {
         protected override char NewT(int value) => unchecked((char)value);
     }
 
-    public sealed class IndexOf_int : IndexOf<int>
+    public sealed class IndexOf_Contains_int : IndexOf_Contains<int>
     {
         protected override int NewT(int value) => value;
     }
 
-    public sealed class IndexOf_string : IndexOf<string>
+    public sealed class IndexOf_Contains_string : IndexOf_Contains<string>
     {
         protected override string NewT(int value) => value.ToString();
     }
 
-    public sealed class IndexOf_Tuple : IndexOf<Tuple<byte, char, int, string>>
+    public sealed class IndexOf_Contains_Tuple : IndexOf_Contains<Tuple<byte, char, int, string>>
     {
         protected override Tuple<byte, char, int, string> NewT(int value) => 
             new Tuple<byte, char, int, string>(unchecked((byte)value), unchecked((char)value), value, value.ToString());
     }
 
-    public sealed class IndexOf_ValueTuple : IndexOf<(byte, char, int, string)>
+    public sealed class IndexOf_Contains_ValueTuple : IndexOf_Contains<(byte, char, int, string)>
     {
         protected override (byte, char, int, string) NewT(int value) => 
             (unchecked((byte)value), unchecked((char)value), value, value.ToString());
