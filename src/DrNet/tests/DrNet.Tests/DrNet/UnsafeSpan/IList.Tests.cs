@@ -10,6 +10,7 @@ namespace DrNet.Tests.UnsafeSpan
     {
         #region IEnumerable<T> Helper Methods
 
+        protected override bool Enumerator_Current_UndefinedOperation_Throws => true;
         protected override bool Enumerator_ModifiedDuringEnumeration_ThrowsInvalidOperationException => false;
 
         #endregion
@@ -17,6 +18,9 @@ namespace DrNet.Tests.UnsafeSpan
         #region ICollection<T> Helper Methods
 
         protected override bool AddRemoveClear_ThrowsNotSupported => true;
+
+        protected override Type ICollection_Generic_CopyTo_IndexLargerThanArrayCount_ThrowType => 
+            typeof(ArgumentOutOfRangeException);
 
         #endregion
 

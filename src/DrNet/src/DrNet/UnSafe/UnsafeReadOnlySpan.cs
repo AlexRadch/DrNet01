@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using UnsafeRef = System.Runtime.CompilerServices.Unsafe;
-using System.Runtime.InteropServices;
 
 using DrNet.Internal;
 using DrNet.Internal.Unsafe;
@@ -210,7 +209,7 @@ namespace DrNet.Unsafe
 
         int ICollection<T>.Count { get => _length; }
 
-        bool ICollection<T>.IsReadOnly { get => false; }
+        bool ICollection<T>.IsReadOnly { get => true; }
 
         void ICollection<T>.Add(T item) => throw new NotSupportedException();
 
@@ -218,7 +217,12 @@ namespace DrNet.Unsafe
 
         public bool Contains(T item) => IndexOf(item) >= 0;
 
-        public void CopyTo(T[] array, int arrayIndex) => CopyTo(array.AsSpan(arrayIndex));
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            if (array == null)
+                throw new ArgumentNullException(nameof(array));
+            CopyTo(array.AsSpan(arrayIndex));
+        }
 
         bool ICollection<T>.Remove(T item) => throw new NotSupportedException();
 
@@ -243,22 +247,17 @@ namespace DrNet.Unsafe
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool MoveNext()
-            {
-                int index = _index + 1;
-                if (index < _span.Length)
-                {
-                    _index = index;
-                    return true;
-                }
-
-                return false;
-            }
+            public bool MoveNext() => _index < _span.Length && ++_index < _span.Length;
 
             public ref readonly T Current
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                get => ref _span[_index];
+                get
+                {
+                    if ((uint)_index >= (uint)_span.Length)
+                        throw new InvalidOperationException();
+                    return ref _span[_index];
+                }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

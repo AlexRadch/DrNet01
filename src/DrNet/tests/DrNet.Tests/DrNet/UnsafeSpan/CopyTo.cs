@@ -19,9 +19,11 @@ namespace DrNet.Tests.UnsafeSpan
 
             uSpan.CopyTo(default);
             Assert.True(uSpan.TryCopyTo(default));
+            Assert.Throws<ArgumentNullException>(() => uSpan.CopyTo(default, 0));
 
             urSpan.CopyTo(default);
             Assert.True(urSpan.TryCopyTo(default));
+            Assert.Throws<ArgumentNullException>(() => urSpan.CopyTo(default, 0));
 
             T[] d = RepeatT(rnd).Take(3).ToArray();
             T[] d2 = d.ToArray();
