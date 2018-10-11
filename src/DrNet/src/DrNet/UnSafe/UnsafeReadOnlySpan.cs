@@ -185,7 +185,7 @@ namespace DrNet.Unsafe
         //public static implicit operator UnsafeReadOnlySpan<T>(UnsafeSpan<T> span) => 
         //    new UnsafeReadOnlySpan<T>(span._pointer, span._length);
 
-        T IList<T>.this[int index] { get => this[index]; set => throw new InvalidOperationException(); }
+        T IList<T>.this[int index] { get => this[index]; set => throw new NotSupportedException(); }
 
         public int IndexOf(T item)
         {
@@ -202,9 +202,9 @@ namespace DrNet.Unsafe
                 (vValue, sValue) => vValue.Equals(sValue));
         }
 
-        void IList<T>.Insert(int index, T item) => throw new InvalidOperationException();
+        void IList<T>.Insert(int index, T item) => throw new NotSupportedException();
 
-        void IList<T>.RemoveAt(int index) => throw new InvalidOperationException();
+        void IList<T>.RemoveAt(int index) => throw new NotSupportedException();
 
         T IReadOnlyList<T>.this[int index] => this[index];
 
@@ -212,15 +212,15 @@ namespace DrNet.Unsafe
 
         bool ICollection<T>.IsReadOnly { get => false; }
 
-        void ICollection<T>.Add(T item) => throw new InvalidOperationException();
+        void ICollection<T>.Add(T item) => throw new NotSupportedException();
 
-        void ICollection<T>.Clear() => throw new InvalidOperationException();
+        void ICollection<T>.Clear() => throw new NotSupportedException();
 
         public bool Contains(T item) => IndexOf(item) >= 0;
 
         public void CopyTo(T[] array, int arrayIndex) => CopyTo(array.AsSpan(arrayIndex));
 
-        bool ICollection<T>.Remove(T item) => throw new InvalidOperationException();
+        bool ICollection<T>.Remove(T item) => throw new NotSupportedException();
 
         int IReadOnlyCollection<T>.Count { get => _length; }
 
