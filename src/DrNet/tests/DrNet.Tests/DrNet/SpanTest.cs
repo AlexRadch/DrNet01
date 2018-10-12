@@ -31,7 +31,7 @@ namespace DrNet.Tests
         protected static bool IsLogSupported(Type t) => t == typeof(TObject<T>) || t == typeof(TEquatable<T>) || 
             t == typeof(TEquatableInt);
 
-        protected T NextT(Random random) => NewT(random.Next());
+        protected T NextT(Random random) => NewT(random.Next(int.MinValue, int.MaxValue));
 
         protected IEnumerable<T> RepeatT(Random random) => DrNetEnumerable.Repeat(() => NextT(random));
 

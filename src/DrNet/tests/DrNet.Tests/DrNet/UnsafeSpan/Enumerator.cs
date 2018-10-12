@@ -15,18 +15,22 @@ namespace DrNet.Tests.UnsafeSpan
             UnsafeSpan<T>.Enumerator uEnumerator = default;
             UnsafeReadOnlySpan<T>.Enumerator urEnumerator = default;
 
+            Assert.Throws<InvalidOperationException>(() => uEnumerator.Current);
+            Assert.Throws<InvalidOperationException>(() => urEnumerator.Current);
             Assert.False(uEnumerator.MoveNext());
             Assert.False(urEnumerator.MoveNext());
-            Assert.Throws<ArgumentOutOfRangeException>(() => uEnumerator.Current);
-            Assert.Throws<ArgumentOutOfRangeException>(() => urEnumerator.Current);
+            Assert.Throws<InvalidOperationException>(() => uEnumerator.Current);
+            Assert.Throws<InvalidOperationException>(() => urEnumerator.Current);
 
             uEnumerator = default(UnsafeSpan<T>).GetEnumerator();
             urEnumerator = default(UnsafeReadOnlySpan<T>).GetEnumerator();
 
+            Assert.Throws<InvalidOperationException>(() => uEnumerator.Current);
+            Assert.Throws<InvalidOperationException>(() => urEnumerator.Current);
             Assert.False(uEnumerator.MoveNext());
             Assert.False(urEnumerator.MoveNext());
-            Assert.Throws<ArgumentOutOfRangeException>(() => uEnumerator.Current);
-            Assert.Throws<ArgumentOutOfRangeException>(() => urEnumerator.Current);
+            Assert.Throws<InvalidOperationException>(() => uEnumerator.Current);
+            Assert.Throws<InvalidOperationException>(() => urEnumerator.Current);
         }
 
         [Fact]
@@ -41,10 +45,12 @@ namespace DrNet.Tests.UnsafeSpan
             UnsafeSpan<T>.Enumerator uEnumerator = uSpan.GetEnumerator();
             UnsafeReadOnlySpan<T>.Enumerator urEnumerator = urSpan.GetEnumerator();
 
+            Assert.Throws<InvalidOperationException>(() => uEnumerator.Current);
+            Assert.Throws<InvalidOperationException>(() => urEnumerator.Current);
             Assert.False(uEnumerator.MoveNext());
             Assert.False(urEnumerator.MoveNext());
-            Assert.Throws<ArgumentOutOfRangeException>(() => uEnumerator.Current);
-            Assert.Throws<ArgumentOutOfRangeException>(() => urEnumerator.Current);
+            Assert.Throws<InvalidOperationException>(() => uEnumerator.Current);
+            Assert.Throws<InvalidOperationException>(() => urEnumerator.Current);
         }
 
         [Theory]
@@ -106,45 +112,61 @@ namespace DrNet.Tests.UnsafeSpan
                     UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
                     UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
 
-                UnsafeSpan<T>.Enumerator uEnumerator = uSpan.GetEnumerator();
-                int index = 0;
-                while (uEnumerator.MoveNext())
-                    Assert.True(UnsafeIn.AreSame(in span[index++], in uEnumerator.Current));
+                    UnsafeSpan<T>.Enumerator uEnumerator = uSpan.GetEnumerator();
+                    Assert.Throws<InvalidOperationException>(() => uEnumerator.Current);
+                    int index = 0;
+                    while (uEnumerator.MoveNext())
+                        Assert.True(UnsafeIn.AreSame(in span[index++], in uEnumerator.Current));
+                    Assert.Throws<InvalidOperationException>(() => uEnumerator.Current);
 
-                uEnumerator.Reset();
-                index = 0;
-                while (uEnumerator.MoveNext())
-                    Assert.True(UnsafeIn.AreSame(in span[index++], in uEnumerator.Current));
+                    uEnumerator.Reset();
+                    Assert.Throws<InvalidOperationException>(() => uEnumerator.Current);
+                    index = 0;
+                    while (uEnumerator.MoveNext())
+                        Assert.True(UnsafeIn.AreSame(in span[index++], in uEnumerator.Current));
+                    Assert.Throws<InvalidOperationException>(() => uEnumerator.Current);
 
-                UnsafeReadOnlySpan<T>.Enumerator urEnumerator = urSpan.GetEnumerator();
-                index = 0;
-                while (urEnumerator.MoveNext())
-                    Assert.True(UnsafeIn.AreSame(in span[index++], in urEnumerator.Current));
+                    UnsafeReadOnlySpan<T>.Enumerator urEnumerator = urSpan.GetEnumerator();
+                    Assert.Throws<InvalidOperationException>(() => urEnumerator.Current);
+                    index = 0;
+                    while (urEnumerator.MoveNext())
+                        Assert.True(UnsafeIn.AreSame(in span[index++], in urEnumerator.Current));
+                    Assert.Throws<InvalidOperationException>(() => urEnumerator.Current);
 
-                urEnumerator.Reset();
-                index = 0;
-                while (urEnumerator.MoveNext())
-                    Assert.True(UnsafeIn.AreSame(in span[index++], in urEnumerator.Current));
+                    urEnumerator.Reset();
+                    Assert.Throws<InvalidOperationException>(() => urEnumerator.Current);
+                    index = 0;
+                    while (urEnumerator.MoveNext())
+                        Assert.True(UnsafeIn.AreSame(in span[index++], in urEnumerator.Current));
+                    Assert.Throws<InvalidOperationException>(() => urEnumerator.Current);
 
-                uEnumerator = uSpan.GetEnumerator();
-                index = 0;
-                while (uEnumerator.MoveNext())
-                    Assert.Equal(span[index++], uEnumerator.Current);
+                    uEnumerator = uSpan.GetEnumerator();
+                    Assert.Throws<InvalidOperationException>(() => uEnumerator.Current);
+                    index = 0;
+                    while (uEnumerator.MoveNext())
+                        Assert.Equal(span[index++], uEnumerator.Current);
+                    Assert.Throws<InvalidOperationException>(() => uEnumerator.Current);
 
-                uEnumerator.Reset();
-                index = 0;
-                while (uEnumerator.MoveNext())
-                    Assert.Equal(span[index++], uEnumerator.Current);
+                    uEnumerator.Reset();
+                    Assert.Throws<InvalidOperationException>(() => uEnumerator.Current);
+                    index = 0;
+                    while (uEnumerator.MoveNext())
+                        Assert.Equal(span[index++], uEnumerator.Current);
+                    Assert.Throws<InvalidOperationException>(() => uEnumerator.Current);
 
-                urEnumerator = urSpan.GetEnumerator();
-                index = 0;
-                while (urEnumerator.MoveNext())
-                    Assert.Equal(span[index++], urEnumerator.Current);
+                    urEnumerator = urSpan.GetEnumerator();
+                    Assert.Throws<InvalidOperationException>(() => urEnumerator.Current);
+                    index = 0;
+                    while (urEnumerator.MoveNext())
+                        Assert.Equal(span[index++], urEnumerator.Current);
+                    Assert.Throws<InvalidOperationException>(() => urEnumerator.Current);
 
-                urEnumerator.Reset();
-                index = 0;
-                while (urEnumerator.MoveNext())
-                    Assert.Equal(span[index++], urEnumerator.Current);
+                    urEnumerator.Reset();
+                    Assert.Throws<InvalidOperationException>(() => urEnumerator.Current);
+                    index = 0;
+                    while (urEnumerator.MoveNext())
+                        Assert.Equal(span[index++], urEnumerator.Current);
+                    Assert.Throws<InvalidOperationException>(() => urEnumerator.Current);
                 }
             }
         }
@@ -209,6 +231,7 @@ namespace DrNet.Tests.UnsafeSpan
                     UnsafeReadOnlySpan<T> urSpan = new UnsafeReadOnlySpan<T>(span);
 
                     UnsafeSpan<T>.Enumerator uEnumerator = uSpan.GetEnumerator();
+                    Assert.Throws<InvalidOperationException>(() => uEnumerator.Current);
                     int index = 0;
                     while (uEnumerator.MoveNext())
                     {
@@ -216,8 +239,10 @@ namespace DrNet.Tests.UnsafeSpan
                         span[index++] = newItem;
                         Assert.Equal(newItem, uEnumerator.Current);
                     }
+                    Assert.Throws<InvalidOperationException>(() => uEnumerator.Current);
 
                     UnsafeReadOnlySpan<T>.Enumerator urEnumerator = urSpan.GetEnumerator();
+                    Assert.Throws<InvalidOperationException>(() => urEnumerator.Current);
                     index = 0;
                     while (urEnumerator.MoveNext())
                     {
@@ -225,6 +250,7 @@ namespace DrNet.Tests.UnsafeSpan
                         span[index++] = newItem;
                         Assert.Equal(newItem, urEnumerator.Current);
                     }
+                    Assert.Throws<InvalidOperationException>(() => urEnumerator.Current);
                 }
             }
         }
@@ -285,6 +311,7 @@ namespace DrNet.Tests.UnsafeSpan
                     UnsafeSpan<T> uSpan = new UnsafeSpan<T>(span);
 
                     UnsafeSpan<T>.Enumerator uEnumerator = uSpan.GetEnumerator();
+                    Assert.Throws<InvalidOperationException>(() => uEnumerator.Current = NextT(rnd));
                     int index = 0;
                     while (uEnumerator.MoveNext())
                     {
@@ -292,6 +319,7 @@ namespace DrNet.Tests.UnsafeSpan
                         uEnumerator.Current = newItem;
                         Assert.Equal(newItem, span[index++]);
                     }
+                    Assert.Throws<InvalidOperationException>(() => uEnumerator.Current = NextT(rnd));
                 }
             }
 

@@ -272,10 +272,8 @@ namespace DrNet.Tests.Span
 
             Span<TSource> span = new Span<TSource>(s);
             ReadOnlySpan<TSource> rspan = new ReadOnlySpan<TSource>(s);
-            ReadOnlySpan<TValue> values = Enumerable.Range(1, Math.Max(length * 2, targets.Length)).
-                Select(i => targets[rnd.Next(0, targets.Length)]).
-                Select(temp => NewTValue(temp)).
-                ToArray().AsReadOnlySpan();
+            ReadOnlySpan<TValue> values = targets.Select(temp => NewTValue(temp)).
+                Repeat(Math.Max(targets.Length, length * 2)).ToArray().AsReadOnlySpan();
 
             int idx = DrNetMemoryExt.IndexOfNotEqualAll(span, values);
             Assert.Equal(-1, idx);
