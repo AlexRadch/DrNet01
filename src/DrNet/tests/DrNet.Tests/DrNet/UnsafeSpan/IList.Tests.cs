@@ -10,8 +10,6 @@ namespace DrNet.Tests.UnsafeSpan
     {
         #region IEnumerable<T> Helper Methods
 
-        protected override ModifyOperation ModifyEnumeratorThrows => ModifyOperation.None;
-        //protected override ModifyOperation ModifyEnumeratorAllowed => ModifyOperation.None;
         protected override bool Enumerator_Current_UndefinedOperation_Throws => true;
         protected override bool Enumerator_ModifiedDuringEnumeration_ThrowsInvalidOperationException => false;
 
