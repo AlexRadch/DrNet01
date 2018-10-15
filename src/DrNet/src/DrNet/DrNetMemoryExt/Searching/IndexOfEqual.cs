@@ -35,8 +35,8 @@ namespace DrNet
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
                     return DrNetSpanHelpers.IndexOfEqualSourceComparer(in DrNetMarshal.GetReference(span), span.Length,
                         value, (sValue, vValue) => ((IEquatable<TValue>)sValue).Equals(vValue));
-                return DrNetSpanHelpers.IndexOfEqualSourceComparer(in DrNetMarshal.GetReference(span), span.Length,
-                    value, (sValue, vValue) => sValue.Equals(vValue));
+                return DrNetSpanHelpers.IndexOfEqualValueComparer(in DrNetMarshal.GetReference(span), span.Length,
+                    value, (vValue, sValue) => vValue.Equals(sValue));
             }
 
             return DrNetSpanHelpers.IndexOfEqualSourceComparer(in DrNetMarshal.GetReference(span), span.Length, value,
@@ -69,8 +69,8 @@ namespace DrNet
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
                     return DrNetSpanHelpers.IndexOfEqualSourceComparer(in DrNetMarshal.GetReference(span), span.Length,
                         value, (sValue, vValue) => ((IEquatable<TValue>)sValue).Equals(vValue));
-                return DrNetSpanHelpers.IndexOfEqualSourceComparer(in DrNetMarshal.GetReference(span), span.Length,
-                    value, (sValue, vValue) => sValue.Equals(vValue));
+                return DrNetSpanHelpers.IndexOfEqualValueComparer(in DrNetMarshal.GetReference(span), span.Length,
+                    value, (vValue, sValue) => vValue.Equals(sValue));
             }
 
             return DrNetSpanHelpers.IndexOfEqualSourceComparer(in DrNetMarshal.GetReference(span), span.Length, value,
@@ -103,8 +103,8 @@ namespace DrNet
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
                     return DrNetSpanHelpers.IndexOfEqualSourceComparer(in DrNetMarshal.GetReference(span), span.Length,
                         value, (sValue, vValue) => ((IEquatable<TValue>)sValue).Equals(vValue));
-                return DrNetSpanHelpers.IndexOfEqualSourceComparer(in DrNetMarshal.GetReference(span), span.Length,
-                    value, (sValue, vValue) => sValue.Equals(vValue));
+                return DrNetSpanHelpers.IndexOfEqualValueComparer(in DrNetMarshal.GetReference(span), span.Length,
+                    value, (vValue, sValue) => vValue.Equals(sValue));
             }
 
             return DrNetSpanHelpers.IndexOfEqualValueComparer(in DrNetMarshal.GetReference(span), span.Length, value,
@@ -137,8 +137,8 @@ namespace DrNet
                 if (typeof(IEquatable<TValue>).IsAssignableFrom(typeof(TSource)))
                     return DrNetSpanHelpers.IndexOfEqualSourceComparer(in DrNetMarshal.GetReference(span), span.Length,
                         value, (sValue, vValue) => ((IEquatable<TValue>)sValue).Equals(vValue));
-                return DrNetSpanHelpers.IndexOfEqualSourceComparer(in DrNetMarshal.GetReference(span), span.Length,
-                    value, (sValue, vValue) => sValue.Equals(vValue));
+                return DrNetSpanHelpers.IndexOfEqualValueComparer(in DrNetMarshal.GetReference(span), span.Length,
+                    value, (vValue, sValue) => vValue.Equals(sValue));
             }
 
             return DrNetSpanHelpers.IndexOfEqualValueComparer(in DrNetMarshal.GetReference(span), span.Length, value,

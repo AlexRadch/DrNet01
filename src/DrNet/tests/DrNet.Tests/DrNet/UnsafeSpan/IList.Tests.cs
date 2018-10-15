@@ -42,10 +42,10 @@ namespace DrNet.Tests.UnsafeSpan
         protected readonly List<GCHandle> PinnedHandles = new List<GCHandle>();
 
         /// <summary>
-        /// Creates an instance of an Memory{T} that can be used for testing.
+        /// Creates an instance of an Span{T} that can be used for testing.
         /// </summary>
-        /// <param name="count">The number of unique items that the returned Memory{T} contains.</param>
-        /// <returns>An instance of an Memory{T} that can be used for testing.</returns>
+        /// <param name="count">The number of unique items that the returned Span{T} contains.</param>
+        /// <returns>An instance of an Span{T} that can be used for testing.</returns>
         protected virtual Span<T> GenericPinnedFactory(int count)
         {
             List<T> collection = new List<T>(count);

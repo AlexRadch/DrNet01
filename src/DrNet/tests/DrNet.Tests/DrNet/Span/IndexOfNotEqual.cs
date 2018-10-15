@@ -16,31 +16,31 @@ namespace DrNet.Tests.Span
 
             int idx = DrNetMemoryExt.IndexOfNotEqual(span, default(TValue));
             Assert.Equal(-1, idx);
-            //idx = MemoryExt.IndexOfNotEqual(span, default(TValue), EqualityCompare);
-            //Assert.Equal(-1, idx);
-            //idx = MemoryExt.IndexOfNotEqualFrom(span, default(TValue), EqualityCompareFrom);
-            //Assert.Equal(-1, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqual(span, default(TValue), EqualityCompareSV);
+            Assert.Equal(-1, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqualFrom(span, default(TValue), EqualityCompareVS);
+            Assert.Equal(-1, idx);
 
             idx = DrNetMemoryExt.IndexOfNotEqual(rspan, default(TValue));
             Assert.Equal(-1, idx);
-            //idx = MemoryExt.IndexOfNotEqual(rspan, default(TValue), EqualityCompare);
-            //Assert.Equal(-1, idx);
-            //idx = MemoryExt.IndexOfNotEqualFrom(rspan, default(TValue), EqualityCompareFrom);
-            //Assert.Equal(-1, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqual(rspan, default(TValue), EqualityCompareSV);
+            Assert.Equal(-1, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqualFrom(rspan, default(TValue), EqualityCompareVS);
+            Assert.Equal(-1, idx);
 
             idx = DrNetMemoryExt.IndexOfNotEqual(span, NextNotDefaultV(rnd));
             Assert.Equal(-1, idx);
-            //idx = MemoryExt.IndexOfNotEqual(span, NextV(rnd), EqualityCompare);
-            //Assert.Equal(-1, idx);
-            //idx = MemoryExt.IndexOfNotEqualFrom(span, NextV(rnd), EqualityCompareFrom);
-            //Assert.Equal(-1, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqual(span, NextV(rnd), EqualityCompareSV);
+            Assert.Equal(-1, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqualFrom(span, NextV(rnd), EqualityCompareVS);
+            Assert.Equal(-1, idx);
 
             idx = DrNetMemoryExt.IndexOfNotEqual(rspan, NextNotDefaultV(rnd));
             Assert.Equal(-1, idx);
-            //idx = MemoryExt.IndexOfNotEqual(rspan, NextV(rnd), EqualityCompare);
-            //Assert.Equal(-1, idx);
-            //idx = MemoryExt.IndexOfNotEqualFrom(rspan, NextV(rnd), EqualityCompareFrom);
-            //Assert.Equal(-1, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqual(rspan, NextV(rnd), EqualityCompareSV);
+            Assert.Equal(-1, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqualFrom(rspan, NextV(rnd), EqualityCompareVS);
+            Assert.Equal(-1, idx);
         }
 
         [Theory]
@@ -69,31 +69,31 @@ namespace DrNet.Tests.Span
 
             int idx = DrNetMemoryExt.IndexOfNotEqual(span, default(TValue));
             Assert.Equal(-1, idx);
-            //idx = MemoryExt.IndexOfNotEqual(span, default(TValue), EqualityCompare);
-            //Assert.Equal(-1, idx);
-            //idx = MemoryExt.IndexOfNotEqualFrom(span, default(TValue), EqualityCompareFrom);
-            //Assert.Equal(-1, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqual(span, default(TValue), EqualityCompareSV);
+            Assert.Equal(-1, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqualFrom(span, default(TValue), EqualityCompareVS);
+            Assert.Equal(-1, idx);
 
             idx = DrNetMemoryExt.IndexOfNotEqual(rspan, default(TValue));
             Assert.Equal(-1, idx);
-            //idx = MemoryExt.IndexOfNotEqual(rspan, default(TValue), EqualityCompare);
-            //Assert.Equal(-1, idx);
-            //idx = MemoryExt.IndexOfNotEqualFrom(rspan, default(TValue), EqualityCompareFrom);
-            //Assert.Equal(-1, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqual(rspan, default(TValue), EqualityCompareSV);
+            Assert.Equal(-1, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqualFrom(rspan, default(TValue), EqualityCompareVS);
+            Assert.Equal(-1, idx);
 
             idx = DrNetMemoryExt.IndexOfNotEqual(span, NextNotDefaultV(rnd));
             Assert.Equal(0, idx);
-            //idx = MemoryExt.IndexOfNotEqual(span, NextV(rnd), EqualityCompare);
-            //Assert.Equal(0, idx);
-            //idx = MemoryExt.IndexOfNotEqualFrom(span, NextV(rnd), EqualityCompareFrom);
-            //Assert.Equal(0, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqual(span, NextV(rnd), EqualityCompareSV);
+            Assert.Equal(0, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqualFrom(span, NextV(rnd), EqualityCompareVS);
+            Assert.Equal(0, idx);
 
             idx = DrNetMemoryExt.IndexOfNotEqual(rspan, NextNotDefaultV(rnd));
             Assert.Equal(0, idx);
-            //idx = MemoryExt.IndexOfNotEqual(rspan, NextV(rnd), EqualityCompare);
-            //Assert.Equal(0, idx);
-            //idx = MemoryExt.IndexOfNotEqualFrom(rspan, NextV(rnd), EqualityCompareFrom);
-            //Assert.Equal(0, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqual(rspan, NextV(rnd), EqualityCompareSV);
+            Assert.Equal(0, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqualFrom(rspan, NextV(rnd), EqualityCompareVS);
+            Assert.Equal(0, idx);
         }
 
         [Theory]
@@ -120,17 +120,17 @@ namespace DrNet.Tests.Span
 
                 int idx = DrNetMemoryExt.IndexOfNotEqual(span, NewTValue(target));
                 Assert.Equal(targetIndex, idx);
-                //idx = MemoryExt.IndexOfNotEqual(span, NewTValue(target), EqualityCompare);
-                //Assert.Equal(targetIndex, idx);
-                //idx = MemoryExt.IndexOfNotEqualFrom(span, NewTValue(target), EqualityCompareFrom);
-                //Assert.Equal(targetIndex, idx);
+                idx = DrNetMemoryExt.IndexOfNotEqual(span, NewTValue(target), EqualityCompareSV);
+                Assert.Equal(targetIndex, idx);
+                idx = DrNetMemoryExt.IndexOfNotEqualFrom(span, NewTValue(target), EqualityCompareVS);
+                Assert.Equal(targetIndex, idx);
 
                 idx = DrNetMemoryExt.IndexOfNotEqual(rspan, NewTValue(target));
                 Assert.Equal(targetIndex, idx);
-                //idx = MemoryExt.IndexOfNotEqual(rspan, NewTValue(target), EqualityCompare);
-                //Assert.Equal(targetIndex, idx);
-                //idx = MemoryExt.IndexOfNotEqualFrom(rspan, NewTValue(target), EqualityCompareFrom);
-                //Assert.Equal(targetIndex, idx);
+                idx = DrNetMemoryExt.IndexOfNotEqual(rspan, NewTValue(target), EqualityCompareSV);
+                Assert.Equal(targetIndex, idx);
+                idx = DrNetMemoryExt.IndexOfNotEqualFrom(rspan, NewTValue(target), EqualityCompareVS);
+                Assert.Equal(targetIndex, idx);
 
                 s[targetIndex] = temp;
             }
@@ -154,17 +154,17 @@ namespace DrNet.Tests.Span
 
             int idx = DrNetMemoryExt.IndexOfNotEqual(span, NewTValue(target));
             Assert.Equal(-1, idx);
-            //idx = MemoryExt.IndexOfNotEqual(span, NewTValue(target), EqualityCompare);
-            //Assert.Equal(-1, idx);
-            //idx = MemoryExt.IndexOfNotEqualFrom(span, NewTValue(target), EqualityCompareFrom);
-            //Assert.Equal(-1, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqual(span, NewTValue(target), EqualityCompareSV);
+            Assert.Equal(-1, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqualFrom(span, NewTValue(target), EqualityCompareVS);
+            Assert.Equal(-1, idx);
 
             idx = DrNetMemoryExt.IndexOfNotEqual(rspan, NewTValue(target));
             Assert.Equal(-1, idx);
-            //idx = MemoryExt.IndexOfNotEqual(rspan, NewTValue(target), EqualityCompare);
-            //Assert.Equal(-1, idx);
-            //idx = MemoryExt.IndexOfNotEqualFrom(rspan, NewTValue(target), EqualityCompareFrom);
-            //Assert.Equal(-1, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqual(rspan, NewTValue(target), EqualityCompareSV);
+            Assert.Equal(-1, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqualFrom(rspan, NewTValue(target), EqualityCompareVS);
+            Assert.Equal(-1, idx);
         }
 
         [Theory]
@@ -192,17 +192,17 @@ namespace DrNet.Tests.Span
 
                 int idx = DrNetMemoryExt.IndexOfNotEqual(span, NewTValue(target));
                 Assert.Equal(targetIndex, idx);
-                //idx = MemoryExt.IndexOfNotEqual(span, NewTValue(target), EqualityCompare);
-                //Assert.Equal(targetIndex, idx);
-                //idx = MemoryExt.IndexOfNotEqualFrom(span, NewTValue(target), EqualityCompareFrom);
-                //Assert.Equal(targetIndex, idx);
+                idx = DrNetMemoryExt.IndexOfNotEqual(span, NewTValue(target), EqualityCompareSV);
+                Assert.Equal(targetIndex, idx);
+                idx = DrNetMemoryExt.IndexOfNotEqualFrom(span, NewTValue(target), EqualityCompareVS);
+                Assert.Equal(targetIndex, idx);
 
                 idx = DrNetMemoryExt.IndexOfNotEqual(rspan, NewTValue(target));
                 Assert.Equal(targetIndex, idx);
-                //idx = MemoryExt.IndexOfNotEqual(rspan, NewTValue(target), EqualityCompare);
-                //Assert.Equal(targetIndex, idx);
-                //idx = MemoryExt.IndexOfNotEqualFrom(rspan, NewTValue(target), EqualityCompareFrom);
-                //Assert.Equal(targetIndex, idx);
+                idx = DrNetMemoryExt.IndexOfNotEqual(rspan, NewTValue(target), EqualityCompareSV);
+                Assert.Equal(targetIndex, idx);
+                idx = DrNetMemoryExt.IndexOfNotEqualFrom(rspan, NewTValue(target), EqualityCompareVS);
+                Assert.Equal(targetIndex, idx);
 
                 s[targetIndex + 0] = temp0;
                 s[targetIndex + 1] = temp1;
@@ -256,25 +256,25 @@ namespace DrNet.Tests.Span
             //if (!logSupported)
             //    OnCompare += log.Add;
 
-            //log.Clear();
-            //idx = MemoryExt.IndexOfNotEqual(span, NewTValue(target, log.Add), EqualityCompare);
-            //Assert.Equal(-1, idx);
-            //CheckCompares();
+            log.Clear();
+            idx = DrNetMemoryExt.IndexOfNotEqual(span, NewTValue(target, handle), EqualityCompareSV);
+            Assert.Equal(-1, idx);
+            CheckCompares();
 
-            //log.Clear();
-            //idx = MemoryExt.IndexOfNotEqualFrom(span, NewTValue(target, log.Add), EqualityCompareFrom);
-            //Assert.Equal(-1, idx);
-            //CheckCompares();
+            log.Clear();
+            idx = DrNetMemoryExt.IndexOfNotEqualFrom(span, NewTValue(target, handle), EqualityCompareVS);
+            Assert.Equal(-1, idx);
+            CheckCompares();
 
-            //log.Clear();
-            //idx = MemoryExt.IndexOfNotEqual(rspan, NewTValue(target, log.Add), EqualityCompare);
-            //Assert.Equal(-1, idx);
-            //CheckCompares();
+            log.Clear();
+            idx = DrNetMemoryExt.IndexOfNotEqual(rspan, NewTValue(target, handle), EqualityCompareSV);
+            Assert.Equal(-1, idx);
+            CheckCompares();
 
-            //log.Clear();
-            //idx = MemoryExt.IndexOfNotEqualFrom(rspan, NewTValue(target, log.Add), EqualityCompareFrom);
-            //Assert.Equal(-1, idx);
-            //CheckCompares();
+            log.Clear();
+            idx = DrNetMemoryExt.IndexOfNotEqualFrom(rspan, NewTValue(target, handle), EqualityCompareVS);
+            Assert.Equal(-1, idx);
+            CheckCompares();
 
             log.Dispose();
             OnCompareActions<T>.RemoveHandler(handle);
@@ -323,15 +323,15 @@ namespace DrNet.Tests.Span
 
             //OnCompare += checkForOutOfRangeAccess;
 
-            //idx = MemoryExt.IndexOfNotEqual(span, NewTValue(target, checkForOutOfRangeAccess), EqualityCompare);
-            //Assert.Equal(-1, idx);
-            //idx = MemoryExt.IndexOfNotEqualFrom(span, NewTValue(target, checkForOutOfRangeAccess), EqualityCompareFrom);
-            //Assert.Equal(-1, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqual(span, NewTValue(target, handle), EqualityCompareSV);
+            Assert.Equal(-1, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqualFrom(span, NewTValue(target, handle), EqualityCompareVS);
+            Assert.Equal(-1, idx);
 
-            //idx = MemoryExt.IndexOfNotEqual(rspan, NewTValue(target, checkForOutOfRangeAccess), EqualityCompare);
-            //Assert.Equal(-1, idx);
-            //idx = MemoryExt.IndexOfNotEqualFrom(rspan, NewTValue(target, checkForOutOfRangeAccess), EqualityCompareFrom);
-            //Assert.Equal(-1, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqual(rspan, NewTValue(target, handle), EqualityCompareSV);
+            Assert.Equal(-1, idx);
+            idx = DrNetMemoryExt.IndexOfNotEqualFrom(rspan, NewTValue(target, handle), EqualityCompareVS);
+            Assert.Equal(-1, idx);
 
             OnCompareActions<T>.RemoveHandler(handle);
             handle = 0;
