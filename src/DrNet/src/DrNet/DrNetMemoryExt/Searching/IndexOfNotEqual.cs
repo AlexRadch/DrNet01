@@ -12,11 +12,12 @@ namespace DrNet
         /// <summary>
         /// Searches for a value that not equal to the specified value and returns the index of its first occurrence.
         /// If not found, returns -1.
-        /// Elements are compared using IEquatable{TSource}.Equals(TSource) or IEquatable{TValue}.Equals(TValue) or 
-        /// TValue.Equals(TSource).
+        /// Elements are compared using the specified equality comparer or use IEquatable{TSource}.Equals(TSource) or
+        /// IEquatable{TValue}.Equals(TValue) or TValue.Equals(TSource).
         /// </summary>
         /// <param name="span">The span to search.</param>
-        /// <param name="value">The value to search for not equal value</param>
+        /// <param name="value">The value to search for.</param>
+        /// <param name="equalityComparer">The function to test each element for a equality.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfNotEqual<TSource, TValue>(this Span<TSource> span, TValue value)
         {
