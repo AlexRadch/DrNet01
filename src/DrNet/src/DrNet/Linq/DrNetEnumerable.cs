@@ -6,6 +6,8 @@ namespace DrNet.Linq
 {
     public static class DrNetEnumerable
     {
+        #region CopyTo
+
         public static void CheckOperationAll(this (bool All, bool ToEnd) operationResult)
         {
             if (!operationResult.All)
@@ -39,6 +41,8 @@ namespace DrNet.Linq
                 return (!e.MoveNext(), true);
             }
         }
+
+        #endregion
 
         #region Repeat
 
@@ -170,7 +174,11 @@ namespace DrNet.Linq
 
         #endregion
 
+        #region WithIndex
+
         public static IEnumerable<(TSource Item, int Index)> WithIndex<TSource>(this IEnumerable<TSource> source)
             => source.Select((item, index) => (item, index));
+
+        #endregion
     }
 }
