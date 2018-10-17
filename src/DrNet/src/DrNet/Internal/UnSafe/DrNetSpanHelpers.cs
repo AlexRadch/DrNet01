@@ -8,6 +8,300 @@ namespace DrNet.Internal.Unsafe
 {
     public static class DrNetSpanHelpers
     {
+        #region IndexOf LastIndexOf
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe int IndexOf<TSource>(in TSource searchSpace, int length, Func<TSource, bool> predicate)
+        {
+            Debug.Assert(length >= 0);
+            Debug.Assert(predicate != null);
+
+            IntPtr index = (IntPtr)0; // Use IntPtr for arithmetic to avoid unnecessary 64->32->64 truncations
+            while (length >= 8)
+            {
+                length -= 8;
+                if (predicate(UnsafeIn.Add(in searchSpace, index)))
+                    goto Found;
+                if (predicate(UnsafeIn.Add(in searchSpace, index + 1)))
+                    goto Found1;
+                if (predicate(UnsafeIn.Add(in searchSpace, index + 2)))
+                    goto Found2;
+                if (predicate(UnsafeIn.Add(in searchSpace, index + 3)))
+                    goto Found3;
+                if (predicate(UnsafeIn.Add(in searchSpace, index + 4)))
+                    goto Found4;
+                if (predicate(UnsafeIn.Add(in searchSpace, index + 5)))
+                    goto Found5;
+                if (predicate(UnsafeIn.Add(in searchSpace, index + 6)))
+                    goto Found6;
+                if (predicate(UnsafeIn.Add(in searchSpace, index + 7)))
+                    goto Found7;
+
+                index += 8;
+            }
+
+            if (length >= 4)
+            {
+                length -= 4;
+
+                if (predicate(UnsafeIn.Add(in searchSpace, index)))
+                    goto Found;
+                if (predicate(UnsafeIn.Add(in searchSpace, index + 1)))
+                    goto Found1;
+                if (predicate(UnsafeIn.Add(in searchSpace, index + 2)))
+                    goto Found2;
+                if (predicate(UnsafeIn.Add(in searchSpace, index + 3)))
+                    goto Found3;
+
+                index += 4;
+            }
+
+            while (length > 0)
+            {
+                if (predicate(UnsafeIn.Add(in searchSpace, index)))
+                    goto Found;
+
+                index += 1;
+                length--;
+            }
+            return -1;
+
+        Found: // Workaround for https://github.com/dotnet/coreclr/issues/13549
+            return (int)(byte*)index;
+        Found1:
+            return (int)(byte*)(index + 1);
+        Found2:
+            return (int)(byte*)(index + 2);
+        Found3:
+            return (int)(byte*)(index + 3);
+        Found4:
+            return (int)(byte*)(index + 4);
+        Found5:
+            return (int)(byte*)(index + 5);
+        Found6:
+            return (int)(byte*)(index + 6);
+        Found7:
+            return (int)(byte*)(index + 7);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe int LastIndexOf<TSource>(in TSource searchSpace, int length, Func<TSource, bool> predicate)
+        {
+            Debug.Assert(length >= 0);
+            Debug.Assert(predicate != null);
+
+            while (length >= 8)
+            {
+                length -= 8;
+
+                if (predicate(UnsafeIn.Add(in searchSpace, length + 7)))
+                    goto Found7;
+                if (predicate(UnsafeIn.Add(in searchSpace, length + 6)))
+                    goto Found6;
+                if (predicate(UnsafeIn.Add(in searchSpace, length + 5)))
+                    goto Found5;
+                if (predicate(UnsafeIn.Add(in searchSpace, length + 4)))
+                    goto Found4;
+                if (predicate(UnsafeIn.Add(in searchSpace, length + 3)))
+                    goto Found3;
+                if (predicate(UnsafeIn.Add(in searchSpace, length + 2)))
+                    goto Found2;
+                if (predicate(UnsafeIn.Add(in searchSpace, length + 1)))
+                    goto Found1;
+                if (predicate(UnsafeIn.Add(in searchSpace, length)))
+                    goto Found;
+            }
+
+            if (length >= 4)
+            {
+                length -= 4;
+
+                if (predicate(UnsafeIn.Add(in searchSpace, length + 3)))
+                    goto Found3;
+                if (predicate(UnsafeIn.Add(in searchSpace, length + 2)))
+                    goto Found2;
+                if (predicate(UnsafeIn.Add(in searchSpace, length + 1)))
+                    goto Found1;
+                if (predicate(UnsafeIn.Add(in searchSpace, length)))
+                    goto Found;
+            }
+
+            while (length > 0)
+            {
+                length--;
+
+                if (predicate(UnsafeIn.Add(in searchSpace, length)))
+                    goto Found;
+            }
+            return -1;
+
+        Found: // Workaround for https://github.com/dotnet/coreclr/issues/13549
+            return length;
+        Found1:
+            return length + 1;
+        Found2:
+            return length + 2;
+        Found3:
+            return length + 3;
+        Found4:
+            return length + 4;
+        Found5:
+            return length + 5;
+        Found6:
+            return length + 6;
+        Found7:
+            return length + 7;
+
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe int IndexOf<TSource>(in TSource searchSpace, int length, 
+            Func<TSource, int, bool> predicate)
+        {
+            Debug.Assert(length >= 0);
+            Debug.Assert(predicate != null);
+
+            IntPtr index = (IntPtr)0; // Use IntPtr for arithmetic to avoid unnecessary 64->32->64 truncations
+            while (length >= 8)
+            {
+                length -= 8;
+                if (predicate(UnsafeIn.Add(in searchSpace, index), (int)index))
+                    goto Found;
+                if (predicate(UnsafeIn.Add(in searchSpace, index + 1), (int)index + 1))
+                    goto Found1;
+                if (predicate(UnsafeIn.Add(in searchSpace, index + 2), (int)index + 2))
+                    goto Found2;
+                if (predicate(UnsafeIn.Add(in searchSpace, index + 3), (int)index + 3))
+                    goto Found3;
+                if (predicate(UnsafeIn.Add(in searchSpace, index + 4), (int)index + 4))
+                    goto Found4;
+                if (predicate(UnsafeIn.Add(in searchSpace, index + 5), (int)index + 5))
+                    goto Found5;
+                if (predicate(UnsafeIn.Add(in searchSpace, index + 6), (int)index + 6))
+                    goto Found6;
+                if (predicate(UnsafeIn.Add(in searchSpace, index + 7), (int)index + 7))
+                    goto Found7;
+
+                index += 8;
+            }
+
+            if (length >= 4)
+            {
+                length -= 4;
+
+                if (predicate(UnsafeIn.Add(in searchSpace, index), (int)index))
+                    goto Found;
+                if (predicate(UnsafeIn.Add(in searchSpace, index + 1), (int)index + 1))
+                    goto Found1;
+                if (predicate(UnsafeIn.Add(in searchSpace, index + 2), (int)index + 2))
+                    goto Found2;
+                if (predicate(UnsafeIn.Add(in searchSpace, index + 3), (int)index + 3))
+                    goto Found3;
+
+                index += 4;
+            }
+
+            while (length > 0)
+            {
+                if (predicate(UnsafeIn.Add(in searchSpace, index), (int)index))
+                    goto Found;
+
+                index += 1;
+                length--;
+            }
+            return -1;
+
+        Found: // Workaround for https://github.com/dotnet/coreclr/issues/13549
+            return (int)(byte*)index;
+        Found1:
+            return (int)(byte*)(index + 1);
+        Found2:
+            return (int)(byte*)(index + 2);
+        Found3:
+            return (int)(byte*)(index + 3);
+        Found4:
+            return (int)(byte*)(index + 4);
+        Found5:
+            return (int)(byte*)(index + 5);
+        Found6:
+            return (int)(byte*)(index + 6);
+        Found7:
+            return (int)(byte*)(index + 7);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe int LastIndexOf<TSource>(in TSource searchSpace, int length,
+            Func<TSource, int, bool> predicate)
+        {
+            Debug.Assert(length >= 0);
+            Debug.Assert(predicate != null);
+
+            while (length >= 8)
+            {
+                length -= 8;
+
+                if (predicate(UnsafeIn.Add(in searchSpace, length + 7), length + 7))
+                    goto Found7;
+                if (predicate(UnsafeIn.Add(in searchSpace, length + 6), length + 6))
+                    goto Found6;
+                if (predicate(UnsafeIn.Add(in searchSpace, length + 5), length + 5))
+                    goto Found5;
+                if (predicate(UnsafeIn.Add(in searchSpace, length + 4), length + 4))
+                    goto Found4;
+                if (predicate(UnsafeIn.Add(in searchSpace, length + 3), length + 3))
+                    goto Found3;
+                if (predicate(UnsafeIn.Add(in searchSpace, length + 2), length + 2))
+                    goto Found2;
+                if (predicate(UnsafeIn.Add(in searchSpace, length + 1), length + 1))
+                    goto Found1;
+                if (predicate(UnsafeIn.Add(in searchSpace, length), length))
+                    goto Found;
+            }
+
+            if (length >= 4)
+            {
+                length -= 4;
+
+                if (predicate(UnsafeIn.Add(in searchSpace, length + 3), length + 3))
+                    goto Found3;
+                if (predicate(UnsafeIn.Add(in searchSpace, length + 2), length + 2))
+                    goto Found2;
+                if (predicate(UnsafeIn.Add(in searchSpace, length + 1), length + 1))
+                    goto Found1;
+                if (predicate(UnsafeIn.Add(in searchSpace, length), length))
+                    goto Found;
+            }
+
+            while (length > 0)
+            {
+                length--;
+
+                if (predicate(UnsafeIn.Add(in searchSpace, length), length))
+                    goto Found;
+            }
+            return -1;
+
+        Found: // Workaround for https://github.com/dotnet/coreclr/issues/13549
+            return length;
+        Found1:
+            return length + 1;
+        Found2:
+            return length + 2;
+        Found3:
+            return length + 3;
+        Found4:
+            return length + 4;
+        Found5:
+            return length + 5;
+        Found6:
+            return length + 6;
+        Found7:
+            return length + 7;
+
+        }
+
+        #endregion
+
         #region IndexOfEqual LastIndexOfEqual
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

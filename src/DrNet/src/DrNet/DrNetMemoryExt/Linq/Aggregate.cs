@@ -1,5 +1,6 @@
-﻿using DrNet.Unsafe;
-using System;
+﻿using System;
+
+using DrNet.Unsafe;
 
 namespace DrNet
 {
