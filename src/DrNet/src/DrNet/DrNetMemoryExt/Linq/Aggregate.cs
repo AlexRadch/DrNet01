@@ -6,6 +6,26 @@ namespace DrNet
 {
     public static partial class DrNetMemoryExt
     {
+        public static unsafe ref readonly TSource Aggregate<TSource>(this Span<TSource> span,
+            AgregateInRefs<TSource> func)
+        {
+            if (func == null)
+                throw new ArgumentNullException(nameof(func));
+
+            int count = span.Length;
+            if (count <= 0)
+                return ref UnsafeIn.AsRef<TSource>(null);
+
+            ref readonly TSource current = ref DrNetMarshal.GetReference(span);
+            ref readonly TSource result = ref current;
+            while (--count > 0)
+            {
+                UnsafeIn.Add(current, 1);
+                result = ref func(in result, in current);
+            }
+            return ref result;
+        }
+
         public static TSource Aggregate<TSource>(this Span<TSource> span, Func<TSource, TSource, TSource> func)
         {
             if (func == null)

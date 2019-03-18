@@ -1,6 +1,8 @@
-﻿using DrNet.Internal.Unsafe;
+﻿using System;
+
 using DrNet.Unsafe;
-using System;
+
+using DrNet.Internal.Unsafe;
 
 namespace DrNet
 {
