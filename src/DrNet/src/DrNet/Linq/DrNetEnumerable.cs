@@ -57,37 +57,32 @@ namespace DrNet.Linq
             if (generator == null)
                 throw new ArgumentNullException(nameof(generator));
 
-            for (;;)
-                yield return generator();
+            return DrNetInternalEnumerable.Repeat(generator);
         }
 
         public static IEnumerable<TResult> Repeat<TResult>(Func<TResult> generator, int count)
         {
             if (generator == null)
                 throw new ArgumentNullException(nameof(generator));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
+            if (count <= 0)
+            {
+                if (count < 0)
+                    throw new ArgumentOutOfRangeException(nameof(count));
 
-            if (count == 0)
                 return Enumerable.Empty<TResult>();
+            }
 
             return DrNetInternalEnumerable.Repeat(generator, count);
         }
 
         public static IEnumerable<TResult> Repeat<TResult>(TResult seed, Func<TResult, TResult> generator, 
-            bool fromSeed = false)
+            bool withSeed = false)
         {
             if (generator == null)
                 throw new ArgumentNullException(nameof(generator));
 
-            TResult value = seed;
-            if (fromSeed)
-                yield return value;
-            for (;;)
-            {
-                value = generator(value);
-                yield return value;
-            }
+            return withSeed ? DrNetInternalEnumerable.RepeatWithSeed(seed, generator) :
+                DrNetInternalEnumerable.RepeatWithoutSeed(seed, generator);
         }
 
         public static IEnumerable<TResult> Repeat<TResult>(TResult seed, Func<TResult, TResult> generator, int count,
@@ -95,11 +90,13 @@ namespace DrNet.Linq
         {
             if (generator == null)
                 throw new ArgumentNullException(nameof(generator));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
+            if (count <= 0)
+            {
+                if (count < 0)
+                    throw new ArgumentOutOfRangeException(nameof(count));
 
-            if (count == 0)
                 return Enumerable.Empty<TResult>();
+            }
 
             return withSeed ? DrNetInternalEnumerable.RepeatWithSeed(seed, generator, count) :
                 DrNetInternalEnumerable.RepeatWithoutSeed(seed, generator, count);

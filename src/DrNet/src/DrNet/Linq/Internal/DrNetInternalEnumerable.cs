@@ -9,10 +9,37 @@ namespace DrNet.Linq
     {
         #region Repeat
 
+        public static IEnumerable<TResult> Repeat<TResult>(Func<TResult> generator)
+        {
+            for (; ; )
+                yield return generator();
+        }
+
         public static IEnumerable<TResult> Repeat<TResult>(Func<TResult> generator, int count)
         {
             while (count-- > 0)
                 yield return generator();
+        }
+
+        public static IEnumerable<TResult> RepeatWithSeed<TResult>(TResult seed, Func<TResult, TResult> generator)
+        {
+            TResult value = seed;
+            yield return value;
+            for (; ; )
+            {
+                value = generator(value);
+                yield return value;
+            }
+        }
+
+        public static IEnumerable<TResult> RepeatWithoutSeed<TResult>(TResult seed, Func<TResult, TResult> generator)
+        {
+            TResult value = seed;
+            for (; ; )
+            {
+                value = generator(value);
+                yield return value;
+            }
         }
 
         public static IEnumerable<TResult> RepeatWithSeed<TResult>(TResult seed, Func<TResult, TResult> generator,
@@ -85,6 +112,5 @@ namespace DrNet.Linq
         }
 
         #endregion
-
     }
 }

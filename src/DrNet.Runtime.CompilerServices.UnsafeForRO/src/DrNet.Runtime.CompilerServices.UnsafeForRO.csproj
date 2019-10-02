@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.1</TargetFramework>
+    <AssemblyName>DrNet.Runtime.CompilerServices.UnsafeForRO</AssemblyName>
+    <RootNamespace>DrNet.Runtime.CompilerServices</RootNamespace>
+    <Authors>Alexander Radchenko</Authors>
+    <Company></Company>
+    <Product>DrNet Library</Product>
+    <Description>DrNet.Runtime.CompilerServices.UnsafeForRO</Description>
+    <Copyright>© Alexander Radchenko. All rights reserved.</Copyright>
+    <RepositoryType>git</RepositoryType>
+    <Version>4.6.0</Version>
+    <RepositoryUrl>git://github.com/AlexRadch/DrNet</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>
